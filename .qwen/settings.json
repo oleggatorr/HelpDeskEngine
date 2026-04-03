@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python *)",
+      "Bash(venv\\scripts\\pip.exe *)",
+      "Bash(mkdir *)",
+      "Bash(move *)",
+      "Bash(del *)",
+      "Bash(rmdir *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  },
+  "$version": 3
+}
