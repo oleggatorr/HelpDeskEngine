@@ -8,7 +8,13 @@
       "Bash(del *)",
       "Bash(rmdir *)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(venv\\scripts\\python.exe *)",
+      "Bash(alembic *)",
+      "Bash(pip show *)",
+      "Bash(pip install *)",
+      "Bash(venv\\scripts\\activate)"
     ]
   },
   "$version": 3
