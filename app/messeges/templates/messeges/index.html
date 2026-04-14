@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% set title = "Сообщения — Help Desk Engine" %}
+
+{% block content %}
+{% include 'partials/left_side_menu.html' %}
+{% include 'messeges/chat_styles.html' %}
+
+<div class="chat-page">
+    <div class="chat-layout">
+        {# Сайдбар — список чатов #}
+        <aside class="chat-sidebar-col">
+            {% from "messeges/chat_list.html" import render_chat_sidebar %}
+            {{ render_chat_sidebar(chats, total) }}
+        </aside>
+
+        {# Большая область — заглушка #}
+        <main class="chat-main-col">
+            <div class="chat-placeholder">
+                <div class="chat-placeholder-content">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="chat-placeholder-icon">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <p>Выберите чат для просмотра сообщений</p>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+{# Модальное окно настроек списка чатов #}
+{% from "messeges/chat_list_settings_modal.html" import render_chat_list_settings_modal %}
+{{ render_chat_list_settings_modal() }}
+{% endblock %}

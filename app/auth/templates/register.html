@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% set title = "Регистрация — Help Desk Engine" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            {% from "partials/document_canvas.html" import render_document_canvas, render_field, render_field_row %}
+
+            <form method="post" action="/auth/register">
+                {% call render_document_canvas(
+                    title="Регистрация",
+                    subtitle="Создайте учётную запись",
+                    actions=[
+                        {"label": "Зарегистрироваться", "style": "primary"},
+                        {"label": "Войти", "url": "/auth/login-page", "style": "outline-secondary"}
+                    ]
+                ) %}
+                    {{ render_field("Логин", "login", required=True, placeholder="Придумайте логин") }}
+                    {{ render_field("ФИО", "full_name", required=True, placeholder="Иванов Иван Иванович") }}
+                    {{ render_field("Email", "email", type="email", required=True, placeholder="user@example.com") }}
+                    {{ render_field("Пароль", "password", type="password", required=True, placeholder="Минимум 6 символов") }}
+                    {{ render_field("Подтверждение пароля", "password_confirm", type="password", required=True, placeholder="Повторите пароль") }}
+                {% endcall %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

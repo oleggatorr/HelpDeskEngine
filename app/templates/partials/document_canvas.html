@@ -1,0 +1,130 @@
+{% macro render_document_canvas(title=None, subtitle=None, doc_number=None, doc_date=None, actions=None) %}
+<div class="document-canvas bg-white border rounded shadow-sm p-4 my-4">
+    {# Шапка документа #}
+    {% if title or doc_number or doc_date %}
+    <div class="document-header border-bottom pb-3 mb-4">
+        <div class="row align-items-center">
+            <div class="col">
+                {% if title %}
+                <h3 class="mb-1">{{ title }}</h3>
+                {% endif %}
+                {% if subtitle %}
+                <p class="text-muted mb-0">{{ subtitle }}</p>
+                {% endif %}
+            </div>
+            <div class="col-auto text-end">
+                {% if doc_number %}
+                <div class="mb-1">
+                    <span class="text-muted">№</span> <strong>{{ doc_number }}</strong>
+                </div>
+                {% endif %}
+                {% if doc_date %}
+                <div class="text-muted small">{{ doc_date }}</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# Тело документа — зона для контента #}
+    <div class="document-body">
+        {{ caller() }}
+    </div>
+
+    {# Подвал документа — действия #}
+    {% if actions %}
+    <div class="document-footer border-top pt-3 mt-4">
+        <div class="d-flex justify-content-end gap-2">
+            {% for action in actions %}
+            {% if action.url %}
+            <a href="{{ action.url }}" class="btn btn-{{ action.style or 'secondary' }} btn-sm">
+                {{ action.label }}
+            </a>
+            {% else %}
+            <button type="submit" class="btn btn-{{ action.style or 'secondary' }} btn-sm"
+                    {% if action.name %}name="{{ action.name }}"{% endif %}
+                    {% if action.value %}value="{{ action.value }}"{% endif %}>
+                {{ action.label }}
+            </button>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+
+{# Макрос для поля формы в документе #}
+{% macro render_field(label, name, value=None, type="text", required=False, placeholder=None, help_text=None, readonly=False) %}
+<div class="mb-3">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <input type="{{ type }}"
+           class="form-control {% if readonly %}bg-light{% endif %}"
+           id="{{ name }}"
+           name="{{ name }}"
+           value="{{ value or '' }}"
+           {% if required %}required{% endif %}
+           {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+           {% if readonly %}readonly{% endif %}>
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+
+{# Макрос для текстового поля (textarea) #}
+{% macro render_textarea(label, name, value=None, required=False, placeholder=None, rows=4, help_text=None) %}
+<div class="mb-3">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <textarea class="form-control"
+              id="{{ name }}"
+              name="{{ name }}"
+              rows="{{ rows }}"
+              {% if required %}required{% endif %}
+              {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}>{{ value or '' }}</textarea>
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+
+{# Макрос для выпадающего списка #}
+{% macro render_select(label, name, options, selected=None, required=False, help_text=None) %}
+<div class="mb-3">
+    <label for="{{ name }}" class="form-label">
+        {{ label }}
+        {% if required %}<span class="text-danger">*</span>{% endif %}
+    </label>
+    <select class="form-select" id="{{ name }}" name="{{ name }}" {% if required %}required{% endif %}>
+        <option value="" disabled {% if not selected %}selected{% endif %}>— Выберите —</option>
+        {% for opt_value, opt_label in options %}
+        <option value="{{ opt_value }}" {% if opt_value == selected %}selected{% endif %}>{{ opt_label }}</option>
+        {% endfor %}
+    </select>
+    {% if help_text %}
+    <div class="form-text">{{ help_text }}</div>
+    {% endif %}
+</div>
+{% endmacro %}
+
+
+{# Макрос для строки из двух полей #}
+{% macro render_field_row(field1, field2) %}
+<div class="row">
+    <div class="col-md-6">
+        {{ field1 }}
+    </div>
+    <div class="col-md-6">
+        {{ field2 }}
+    </div>
+</div>
+{% endmacro %}

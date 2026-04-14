@@ -1,7 +1,15 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
+from enum import Enum as PyEnum
+
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from app.database import Base
+from app.core.database import Base
+
+
+class UserRole(str, PyEnum):
+    ADMIN = "admin"
+    OPERATOR = "operator"
+    USER = "user"
 
 
 class User(Base):
@@ -28,9 +36,12 @@ class UserProfile(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
-    role = Column(String(255))  # роль
+    role = Column(
+        Enum(UserRole, values_callable=lambda e: [m.value for m in e]),
+        default=UserRole.USER,
+    )  # роль
     position = Column(String(100))  # должность
-    clearances = Column(String(255))  # допуски (текстовое поле)
+    permissions = Column(String(255))  # допуски (текстовое поле)
 
     # Связь 1 к 1 с User
     user = relationship("User", back_populates="profile")

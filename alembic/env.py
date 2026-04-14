@@ -21,13 +21,14 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from app.database import Base
-from app.config import settings
+from app.core.database import Base
+from app.core.config import settings
 
 # Import all models here to ensure they are registered with Base.metadata
 from app.auth.models import User, UserProfile
-from app.reports.models import Document, NonconformityReport, NonconformityAnalysis, CorrectiveAction
-from app.messeges.models import Chat, Message
+from app.reports.models import Document, DocumentType, DocumentAttachment, ProblemRegistration, ProblemConfirmation, RootCause, CorrectiveAction, ActionExecution, DocumentLog
+from app.messeges.models import Chat, Message, MessageAttachment
+from app.knowledge_base.models import Department, Location, CauseCode
 
 target_metadata = Base.metadata
 

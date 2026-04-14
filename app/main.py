@@ -1,21 +1,46 @@
 from fastapi import FastAPI
-from apps.auth.routes import router as auth_router
-from apps.reports.routes import router as reports_router
-from apps.messeges.routes import router as messeges_router
-from apps.tasks.routes import router as tasks_router
-from apps.admin.routes import router as admin_router
-from apps.knowledge_base.routes import router as knowledge_base_router
+from app.home.routes_jinja import router as home_router
+from app.auth.routes import router as auth_router
+from app.auth.routes_jinja import router as auth_jinja_router
+from app.reports.documents.routes.document import router as reports_router
+from app.reports.problem_registrations.routes.problem_registration import router as problem_registration_router
+from app.reports.documents.routes_jinja.document import router as reports_jinja_router
+from app.reports.problem_registrations.routes_jinja.problem_registration import router as problem_registration_jinja_router
+from app.messeges.routes import router as messeges_router
+from app.messeges.routes_jinja import router as messeges_jinja_router
+from app.tasks.routes import router as tasks_router
+from app.admin.users.routes import router as admin_users_router
+from app.admin.messages.routes import router as admin_messages_router
+from app.admin.tasks.routes import router as admin_tasks_router
+from app.admin.knowledge_base.routes import router as admin_kb_router
+from app.admin.reports.document_routes import router as admin_documents_router
+from app.knowledge_base.routes import router as knowledge_base_router
 
-app = FastAPI(title="Help Desk Engine", version="0.1.0")
+app = FastAPI(
+    title="Help Desk Engine",
+    version="0.1.0",
+    swagger_ui_oauth2_redirect_url="/docs/oauth2-redirect",
+    swagger_ui_init_oauth={
+        "usePkceWithAuthorizationCodeGrant": False,
+    },
+)
 
-app.include_router(auth_router, prefix="/auth", tags=["Auth"])
-app.include_router(reports_router, prefix="/reports", tags=["Reports"])
-app.include_router(messeges_router, prefix="/messeges", tags=["Messages"])
-app.include_router(tasks_router, prefix="/tasks", tags=["Tasks"])
-app.include_router(admin_router, prefix="/admin", tags=["Admin"])
-app.include_router(knowledge_base_router, prefix="/knowledge-base", tags=["Knowledge Base"])
+# Jinja-страницы (без префикса)
+app.include_router(home_router, tags=["Home"])
+app.include_router(auth_jinja_router, prefix="/auth", tags=["Auth — Pages"])
+app.include_router(messeges_jinja_router, tags=["Messages — Pages"])
 
-
-@app.get("/")
-def root():
-    return {"status": "ok", "service": "Help Desk Engine"}
+# API-роуты (префикс /api)
+app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
+app.include_router(reports_router, prefix="/api/reports", tags=["Documents"])
+app.include_router(problem_registration_router, prefix="/api/reports", tags=["Problem Registrations"])
+app.include_router(reports_jinja_router, tags=["Reports — Pages"])
+app.include_router(problem_registration_jinja_router, tags=["Problem Registrations — Pages"])
+app.include_router(messeges_router, prefix="/api/messeges", tags=["Messages"])
+app.include_router(tasks_router, prefix="/api/tasks", tags=["Tasks"])
+app.include_router(admin_users_router, prefix="/api/admin", tags=["Admin — Users"])
+app.include_router(admin_messages_router, prefix="/api/admin", tags=["Admin — Messages"])
+app.include_router(admin_tasks_router, prefix="/api/admin", tags=["Admin — Tasks"])
+app.include_router(admin_kb_router, prefix="/api/admin", tags=["Admin — Knowledge Base"])
+app.include_router(admin_documents_router, prefix="/api/admin", tags=["Admin — Documents"])
+app.include_router(knowledge_base_router, prefix="/api/knowledge-base", tags=["Knowledge Base"])

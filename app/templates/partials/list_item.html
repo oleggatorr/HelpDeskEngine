@@ -1,0 +1,17 @@
+{% macro render_list_item(item, index=None, url=None, badge=None, badge_class="bg-primary") %}
+<li class="list-group-item d-flex justify-content-between align-items-center {% if loop and loop.first %}list-group-item-action{% endif %}">
+    <div>
+        {% if index is not none %}
+        <span class="badge bg-secondary me-2">{{ index }}</span>
+        {% endif %}
+        {% if url %}
+        <a href="{{ url }}">{{ item }}</a>
+        {% else %}
+        {{ item }}
+        {% endif %}
+    </div>
+    {% if badge %}
+    <span class="badge {{ badge_class }}">{{ badge }}</span>
+    {% endif %}
+</li>
+{% endmacro %}

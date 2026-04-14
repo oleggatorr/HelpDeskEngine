@@ -1,0 +1,29 @@
+{% macro render_list(items, item_key="name", item_url=None, badge_key=None, empty_text="Список пуст", title=None, bordered=True, flush=False, hover=True) %}
+<div class="card {% if not bordered %}border-0{% endif %}">
+    {% if title %}
+    <div class="card-header">
+        <h5 class="mb-0">{{ title }}</h5>
+    </div>
+    {% endif %}
+    <ul class="list-group {% if flush %}list-group-flush{% endif %} {% if hover %}list-group-hover{% endif %}">
+        {% if items %}
+            {% for item in items %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="flex-grow-1">
+                    {% if item_url %}
+                    <a href="{{ item_url(item) }}" class="text-decoration-none">{{ item[item_key] if item is mapping else item }}</a>
+                    {% else %}
+                    {{ item[item_key] if item is mapping else item }}
+                    {% endif %}
+                </div>
+                {% if badge_key and item.get(badge_key) %}
+                <span class="badge bg-primary ms-2">{{ item[badge_key] }}</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item text-muted text-center">{{ empty_text }}</li>
+        {% endif %}
+    </ul>
+</div>
+{% endmacro %}

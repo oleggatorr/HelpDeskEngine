@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% set title = "Help Desk Engine" %}
+
+{% block content %}
+<div class="container mt-5">
+    {% if current_user %}
+    {# Авторизованный пользователь #}
+    <div class="p-5 mb-4 bg-body-tertiary rounded-3 text-center">
+        <h1 class="display-5 fw-bold">Добро пожаловать, {{ current_user.full_name or current_user.login }}!</h1>
+        <p class="col-md-8 fs-4 mx-auto text-muted">
+            Выберите раздел для работы
+        </p>
+    </div>
+    {% else %}
+    {# Гость #}
+    <div class="p-5 mb-4 bg-body-tertiary rounded-3 text-center">
+        <h1 class="display-5 fw-bold">Help Desk Engine</h1>
+        <p class="col-md-8 fs-4 mx-auto text-muted">
+            Система управления заявками и обращениями технической поддержки
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="/auth/login-page" class="btn btn-primary btn-lg px-4">Войти</a>
+            <a href="/auth/register-page" class="btn btn-outline-secondary btn-lg px-4">Регистрация</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row g-4 mt-3">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">📋 Заявки</h5>
+                    <p class="card-text text-muted">Создание и отслеживание обращений</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">💬 Чаты</h5>
+                    <p class="card-text text-muted">Общение с операторами поддержки</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">📚 База знаний</h5>
+                    <p class="card-text text-muted">Справочники и документация</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% set title = "Вход — Help Desk Engine" %}
+
+{% block content %}
+{% include 'partials/left_side_menu.html' %}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            {% from "partials/document_canvas.html" import render_document_canvas, render_field %}
+
+            {% if error %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Ошибка!</strong> {{ error }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endif %}
+
+            <form method="post" action="/auth/login-page">
+                {% call render_document_canvas(
+                    title="Вход в систему",
+                    subtitle="Введите логин и пароль",
+                    actions=[
+                        {"label": "Войти", "style": "primary"},
+                        {"label": "Регистрация", "url": "/auth/register-page", "style": "outline-secondary"}
+                    ]
+                ) %}
+                    {{ render_field("Логин", "username", required=True, placeholder="Введите логин") }}
+                    {{ render_field("Пароль", "password", type="password", required=True, placeholder="Введите пароль") }}
+                {% endcall %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

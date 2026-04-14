@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% set title = "Редактирование регистрации — Help Desk Engine" %}
+
+{% block content %}
+{% include 'partials/left_side_menu.html' %}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Редактирование #{{ item.id }}</h1>
+        <a href="/reports/problem-registrations/{{ item.id }}" class="btn btn-outline-secondary">← Назад</a>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/reports/problem-registrations/{{ item.id }}/edit" enctype="multipart/form-data">
+        <div class="card mb-3">
+            <div class="card-header"><h6 class="mb-0">Регистрация проблемы</h6></div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Тема</label>
+                        <input type="text" name="subject" class="form-control"
+                               value="{{ form_data.subject if form_data else item.subject }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Дата обнаружения</label>
+                        <input type="datetime-local" name="detected_at" class="form-control"
+                               value="{{ form_data.detected_at if form_data else (item.detected_at.strftime('%Y-%m-%dT%H:%M') if item.detected_at else '') }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Локация</label>
+                        <select name="location_id" class="form-select">
+                            <option value="">— Не выбрано —</option>
+                            {% for loc in locations %}
+                            <option value="{{ loc.id }}" {% if form_data and form_data.location_id == loc.id %}selected{% elif item.location_id == loc.id %}selected{% endif %}>{{ loc.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Номенклатура</label>
+                        <input type="text" name="nomenclature" class="form-control"
+                               value="{{ form_data.nomenclature if form_data else (item.nomenclature or '') }}">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Описание</label>
+                        <textarea name="description" class="form-control" rows="4">{{ form_data.description if form_data else (item.description or '') }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Вложения #}
+        <div class="card mb-3">
+            <div class="card-header"><h6 class="mb-0">Вложения</h6></div>
+            <div class="card-body">
+                {% if attachments %}
+                <div class="list-group mb-3">
+                    {% for att in attachments %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 6px;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                            {{ att.original_filename or att.file_path.split("/")[-1] }}
+                        </div>
+                        <div class="d-flex gap-1">
+                            <a href="/reports/documents/attachments/{{ att.id }}/download" class="btn btn-sm btn-outline-primary">Скачать</a>
+                            <a href="/reports/problem-registrations/{{ item.id }}/attachments/{{ att.id }}/delete" class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('Удалить вложение?')">Удалить</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="mb-2">
+                    <label class="form-label">Добавить новые вложения</label>
+                    <input type="file" name="files" class="form-control" multiple accept="*/*">
+                    <div class="form-text">Можно выбрать несколько файлов</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a href="/reports/problem-registrations/{{ item.id }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

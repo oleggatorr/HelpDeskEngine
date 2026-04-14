@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% set title = item.track_id or "Просмотр регистрации — Help Desk Engine" %}
+
+{% block content %}
+{% include 'partials/left_side_menu.html' %}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">{{ item.track_id or "—" }}</h1>
+        <div class="d-flex gap-2">
+            {% if chat_id %}
+            <a href="/messeges/{{ chat_id }}" class="btn btn-outline-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Сообщения
+            </a>
+            {% endif %}
+            {% if item.is_locked %}
+            <span class="badge bg-success" style="font-size: 1rem; padding: 0.5em 1em;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Подтверждено
+            </span>
+            <form method="post" action="/reports/problem-registrations/{{ item.id }}/unlock" style="display: inline;">
+                <button type="submit" class="btn btn-outline-warning">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path></svg>
+                    Передать на редактирование
+                </button>
+            </form>
+            <a href="/reports/problem-registrations/{{ item.id }}/edit" class="btn btn-outline-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                Редактировать
+            </a>
+            {% else %}
+            <form method="post" action="/reports/problem-registrations/{{ item.id }}/confirm" style="display: inline;">
+                <button type="submit" class="btn btn-success">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17,21 17,13 7,13 7,21"></polyline><polyline points="7,3 7,8 15,8"></polyline></svg>
+                    Подтвердить
+                </button>
+            </form>
+            {% endif %}
+            {% if not item.is_locked %}
+            <a href="/reports/problem-registrations/{{ item.id }}/edit" class="btn btn-outline-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                Редактировать
+            </a>
+            {% endif %}
+            <a href="/reports/problem-registrations" class="btn btn-outline-secondary">← Назад к списку</a>
+        </div>
+    </div>
+
+    {# Информация о проблеме #}
+    <div class="card mb-3">
+        <div class="card-header"><h6 class="mb-0">Информация о проблеме</h6></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="text-muted small">Тема</label>
+                    <div>{{ item.subject or "—" }}</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="text-muted small">Дата обнаружения</label>
+                    <div>{{ item.detected_at.strftime("%d.%m.%Y %H:%M") if item.detected_at else "—" }}</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="text-muted small">Номенклатура</label>
+                    <div>{{ item.nomenclature or "—" }}</div>
+                </div>
+                <div class="col-12">
+                    <label class="text-muted small">Описание</label>
+                    <div>{{ item.description or "—" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Параметры документа #}
+    <div class="card mb-3">
+        <div class="card-header"><h6 class="mb-0">Параметры документа</h6></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="text-muted small">Трек-номер</label>
+                    <div>{{ item.track_id or "—" }}</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="text-muted small">Статус</label>
+                    <div><span class="badge bg-info">{{ item.doc_status or "—" }}</span></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="text-muted small">Этап</label>
+                    <div><span class="badge bg-secondary">{{ item.doc_current_stage or "—" }}</span></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="text-muted small">Дата создания документа</label>
+                    <div>{{ item.doc_created_at.strftime("%d.%m.%Y %H:%M") if item.doc_created_at else "—" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Вложения #}
+    {% if attachments %}
+    <div class="card mb-3">
+        <div class="card-header"><h6 class="mb-0">Вложения</h6></div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for att in attachments %}
+                <a href="/reports/documents/attachments/{{ att.id }}/download" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 6px;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                        {{ att.original_filename or att.file_path.split("/")[-1] }}
+                    </div>
+                    <small class="text-muted">{{ att.uploaded_at.strftime("%d.%m.%Y %H:%M") }}</small>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

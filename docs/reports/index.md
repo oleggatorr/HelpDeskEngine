@@ -2,35 +2,19 @@
 
 ## Обзор
 
-Модуль управления документами и их расширениями:
-- Отчет о несоответствии (`NonconformityReport`)
-- Анализ несоответствия (`NonconformityAnalysis`)
-- Корректирующее действие (`CorrectiveAction`)
+Модуль управления базовыми документами.
 
-## Архитектура
+## Модель данных
 
-### Модель данных
+### Document
 
-```
-┌─────────────┐
-│  Document   │  ← базовый документ (id, status, doc_type, creator_id)
-└──────┬──────┘
-       │ 1:1
-       ├──────────────────┬──────────────────┐
-       ▼                  ▼                  ▼
-┌─────────────────┐ ┌──────────────────┐ ┌──────────────────┐
-│Nonconformity    │ │Nonconformity     │ │Corrective        │
-│Report           │ │Analysis          │ │Action            │
-└─────────────────┘ └──────────────────┘ └──────────────────┘
-```
-
-### Связи
-
-- `Document` ↔ `NonconformityReport` — **1:1** (PK-FK)
-- `Document` ↔ `NonconformityAnalysis` — **1:1** (PK-FK)
-- `Document` ↔ `CorrectiveAction` — **1:1** (PK-FK)
-
-При создании расширения автоматически создается базовый `Document`.
+| Поле | Тип | Описание |
+|------|-----|----------|
+| `id` | Integer | Первичный ключ |
+| `created_at` | DateTime | Время создания |
+| `status` | String(255) | Статус документа |
+| `doc_type` | String(20) | Тип документа |
+| `creator_id` | Integer (FK) | Ссылка на `users.id` |
 
 ## Типы документов
 
@@ -54,44 +38,12 @@
 
 ### IDocumentService (`document_service.py`)
 
-Работа с базовыми документами.
-
 | Метод | Вход | Выход | Описание |
 |-------|------|-------|----------|
 | `get_by_id` | `doc_id: int` | `Optional[DocumentResponse]` | Получение документа по ID |
 | `get_all` | `skip, limit, фильтры` | `DocumentListResponse` | Пагинированный список |
 | `update_status` | `doc_id, status` | `DocumentResponse` | Изменение статуса |
-| `delete` | `doc_id` | `bool` | Удаление с каскадом |
-
-### INonconformityReportService (`nonconformity_report_service.py`)
-
-Создание и получение отчетов о несоответствии.
-
-| Метод | Вход | Выход | Описание |
-|-------|------|-------|----------|
-| `create` | `NonconformityReportCreate` | `NonconformityReportResponse` | Создание Document + Report |
-| `get_by_id` | `report_id: int` | `Optional[NonconformityReportResponse]` | Получение по ID |
-| `get_by_document_id` | `doc_id: int` | `Optional[NonconformityReportResponse]` | Получение по ID документа |
-
-### INonconformityAnalysisService (`nonconformity_analysis_service.py`)
-
-Создание и получение анализов несоответствий.
-
-| Метод | Вход | Выход | Описание |
-|-------|------|-------|----------|
-| `create` | `NonconformityAnalysisCreate` | `NonconformityAnalysisResponse` | Создание Document + Analysis |
-| `get_by_id` | `analysis_id: int` | `Optional[NonconformityAnalysisResponse]` | Получение по ID |
-| `get_by_document_id` | `doc_id: int` | `Optional[NonconformityAnalysisResponse]` | Получение по ID документа |
-
-### ICorrectiveActionService (`corrective_action_service.py`)
-
-Создание и получение корректирующих действий.
-
-| Метод | Вход | Выход | Описание |
-|-------|------|-------|----------|
-| `create` | `CorrectiveActionCreate` | `CorrectiveActionResponse` | Создание Document + Action |
-| `get_by_id` | `action_id: int` | `Optional[CorrectiveActionResponse]` | Получение по ID |
-| `get_by_document_id` | `doc_id: int` | `Optional[CorrectiveActionResponse]` | Получение по ID документа |
+| `delete` | `doc_id` | `bool` | Удаление документа |
 
 ## Схемы (Pydantic)
 
@@ -104,31 +56,10 @@ creator_id: Optional[int]
 created_at: datetime
 ```
 
-### NonconformityReportResponse
-```python
-id: int
-document: DocumentResponse
-```
-
-### NonconformityAnalysisResponse
-```python
-id: int
-document: DocumentResponse
-```
-
-### CorrectiveActionResponse
-```python
-id: int
-document: DocumentResponse
-```
-
 ## Файлы модуля
 
 | Файл | Описание |
 |------|----------|
 | `models.py` | SQLAlchemy модели |
 | `schemas.py` | Pydantic схемы |
-| `services/document_service.py` | Сервис базовых документов |
-| `services/nonconformity_report_service.py` | Сервис отчетов о несоответствии |
-| `services/nonconformity_analysis_service.py` | Сервис анализа несоответствий |
-| `services/corrective_action_service.py` | Сервис корректирующих действий |
+| `services/document_service.py` | Сервис документов |

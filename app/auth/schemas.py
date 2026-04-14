@@ -2,6 +2,8 @@ from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
 
+from app.auth.models import UserRole
+
 
 # ==========================================
 # AUTH SCHEMAS
@@ -80,9 +82,9 @@ class UserProfileDTO(BaseModel):
     """Схема профиля пользователя"""
     id: int
     user_id: int
-    role: Optional[str] = None
+    role: Optional[UserRole] = None
     position: Optional[str] = None
-    clearances: Optional[str] = None
+    permissions: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -90,9 +92,20 @@ class UserProfileDTO(BaseModel):
 
 class ProfileUpdateRequest(BaseModel):
     """Схема обновления профиля"""
-    role: Optional[str] = None
+    role: Optional[UserRole] = None
     position: Optional[str] = None
-    clearances: Optional[str] = None
+    permissions: Optional[str] = None
+
+
+class UserFilter(BaseModel):
+    """Фильтры для поиска пользователей"""
+    login: Optional[str] = None
+    full_name: Optional[str] = None
+    email: Optional[str] = None
+    is_active: Optional[bool] = None
+    role: Optional[UserRole] = None
+    position: Optional[str] = None
+    permissions: Optional[str] = None
 
 
 class UserListResponse(BaseModel):

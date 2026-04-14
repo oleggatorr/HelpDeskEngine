@@ -1,50 +1,48 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from app.database import Base
+from sqlalchemy import Enum as SAEnum
+from app.core.database import Base
+import enum
+
+# Импортируем справочники для корректного разрешения relationship
+from app.knowledge_base.models import Department, Location, CauseCode  # noqa: F401
+
+# Импортируем модели из доменов
+from app.reports.documents.models import (  # noqa: F401
+    Document, DocumentType, DocumentAttachment, DocumentLog,
+)
+from app.reports.problem_registrations.models import ProblemRegistration  # noqa: F401
+from app.reports.problem_confirmations.models import ProblemConfirmation  # noqa: F401
+from app.reports.root_causes.models import RootCause  # noqa: F401
+from app.reports.corrective_actions.models import CorrectiveAction  # noqa: F401
+from app.reports.action_executions.models import ActionExecution  # noqa: F401
 
 
-class Document(Base):
-    __tablename__ = "documents"
-
-    id = Column(Integer, primary_key=True, index=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    status = Column(String(255))
-    doc_type = Column(String(20))
-    creator_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-
-    # Связь с User
-    creator = relationship("User", backref="documents")
-
-    def __repr__(self):
-        return f"<Document {self.id} - {self.status}>"
+# 📊 Этап
+class DocumentStage(enum.Enum):
+    NEW = 1
+    IN_PROGRESS = 2
+    WAITING = 3
+    CLOSED = 4
 
 
-class NonconformityReport(Base):
-    """Отчет о несоответствии"""
-    __tablename__ = "nonconformity_reports"
-
-    id = Column(Integer, ForeignKey("documents.id", ondelete="CASCADE"), primary_key=True)
-
-    def __repr__(self):
-        return f"<NonconformityReport {self.id}>"
+# 🌐 Язык
+class DocumentLanguage(str, enum.Enum):
+    RU = "ru"
+    EN = "en"
+    CH = "ch"
 
 
-class NonconformityAnalysis(Base):
-    """Анализ несоответствия"""
-    __tablename__ = "nonconformity_analyses"
-
-    id = Column(Integer, ForeignKey("documents.id", ondelete="CASCADE"), primary_key=True)
-
-    def __repr__(self):
-        return f"<NonconformityAnalysis {self.id}>"
+# 🔥 Приоритет
+class DocumentPriority(str, enum.Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    URGENT = "urgent"
 
 
-class CorrectiveAction(Base):
-    """Корректирующее действие"""
-    __tablename__ = "corrective_actions"
-
-    id = Column(Integer, ForeignKey("documents.id", ondelete="CASCADE"), primary_key=True)
-
-    def __repr__(self):
-        return f"<CorrectiveAction {self.id}>"
+# 📋 Статус
+class DocumentStatus(str, enum.Enum):
+    OPEN = "open"
+    IN_PROGRESS = "in_progress"
+    WAITING = "waiting"
+    CLOSED = "closed"
+    REJECTED = "rejected"

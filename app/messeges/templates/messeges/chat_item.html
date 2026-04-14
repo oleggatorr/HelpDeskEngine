@@ -1,0 +1,27 @@
+{# Макрос: карточка чата в сайдбаре #}
+{% macro render_chat_card(chat, current_chat_id=None) %}
+<a href="/messeges/{{ chat.id }}"
+   class="chat-card list-group-item list-group-item-action {% if chat.id == current_chat_id %}active{% endif %}"
+   data-archived="{{ chat.is_archived|lower }}"
+   data-closed="{{ chat.is_closed|lower }}">
+    <div class="d-flex justify-content-between align-items-center">
+        <div class="chat-card-info">
+            <div class="chat-card-name">{{ chat.name or "Без названия" }}</div>
+            <div class="chat-card-meta">
+                <span class="chat-participants">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    {{ chat.participant_ids|length }}
+                </span>
+            </div>
+        </div>
+        {% if chat.unread_count and chat.unread_count > 0 %}
+        <span class="badge bg-danger rounded-pill chat-unread">{{ chat.unread_count }}</span>
+        {% endif %}
+    </div>
+</a>
+{% endmacro %}

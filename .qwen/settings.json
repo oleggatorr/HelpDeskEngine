@@ -14,7 +14,10 @@
       "Bash(alembic *)",
       "Bash(pip show *)",
       "Bash(pip install *)",
-      "Bash(venv\\scripts\\activate)"
+      "Bash(venv\\scripts\\activate)",
+      "Bash(venv\\scripts\\python *)",
+      "Bash(copy *)",
+      "Bash(type *)"
     ]
   },
   "$version": 3

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% set title = chat.name or "Чат — Help Desk Engine" %}
+
+{% block content %}
+{% include 'partials/left_side_menu.html' %}
+{% include 'messeges/chat_styles.html' %}
+
+<div class="chat-page">
+    <div class="chat-layout">
+        {# Сайдбар — список чатов #}
+        <aside class="chat-sidebar-col">
+            {% from "messeges/chat_list.html" import render_chat_sidebar %}
+            {{ render_chat_sidebar(chats, total, current_chat_id=chat.id) }}
+        </aside>
+
+        {# Основная область — сообщения #}
+        <main class="chat-main-col">
+            <div class="chat-view">
+                {# Шапка чата с настройками #}
+                {% from "messeges/chat_header.html" import render_chat_header %}
+                {{ render_chat_header(chat.name) }}
+
+                {# Баннер документа #}
+                {% from "messeges/chat_document_banner.html" import render_chat_document_banner %}
+                {{ render_chat_document_banner(chat.document_id) }}
+
+                {# Сообщения #}
+                {% from "messeges/chat_messages.html" import render_messages %}
+                {{ render_messages(messages, current_user, error) }}
+
+                {# Форма отправки #}
+                {% from "messeges/chat_input.html" import render_message_input %}
+                {{ render_message_input(chat.id) }}
+            </div>
+        </main>
+    </div>
+</div>
+
+{# Модальное окно настроек #}
+{% from "messeges/chat_settings_modal.html" import render_chat_settings_modal %}
+{{ render_chat_settings_modal(chat_id=chat.id, chat_name=chat.name, participant_ids=chat.participant_ids, current_user_id=current_user.id, access_token=access_token) }}
+
+{# Модальное окно настроек списка чатов #}
+{% from "messeges/chat_list_settings_modal.html" import render_chat_list_settings_modal %}
+{{ render_chat_list_settings_modal() }}
+
+{# Автоскролл вниз #}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var area = document.getElementById("messages-area");
+        if (area) area.scrollTop = area.scrollHeight;
+    });
+</script>
+{% endblock %}

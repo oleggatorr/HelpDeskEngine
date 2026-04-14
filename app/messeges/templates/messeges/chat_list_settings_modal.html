@@ -1,0 +1,184 @@
+{# Макрос: модальное окно настроек списка чатов #}
+{% macro render_chat_list_settings_modal() %}
+<div class="chat-list-settings-modal" id="chat-list-settings-modal">
+    <div class="chat-list-settings-modal-backdrop"></div>
+    <div class="chat-list-settings-modal-content">
+        <div class="chat-list-settings-modal-header">
+            <h5 class="mb-0">Настройки чатов</h5>
+            <button class="chat-list-settings-modal-close" id="chat-list-settings-modal-close" aria-label="Закрыть">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="chat-list-settings-modal-body">
+            {# Поиск по чатам #}
+            <div class="chat-settings-section">
+                <label class="chat-settings-label">Поиск</label>
+                <input type="text" id="chat-search-input" class="chat-settings-input" placeholder="Введите название чата...">
+            </div>
+
+            {# Фильтры #}
+            <div class="chat-settings-section">
+                <label class="chat-settings-label">Фильтры</label>
+                <div class="chat-settings-filters">
+                    <label class="chat-settings-checkbox">
+                        <input type="checkbox" id="filter-active" checked>
+                        <span>Активные чаты</span>
+                    </label>
+                    <label class="chat-settings-checkbox">
+                        <input type="checkbox" id="filter-archived">
+                        <span>Архивированные</span>
+                    </label>
+                    <label class="chat-settings-checkbox">
+                        <input type="checkbox" id="filter-closed">
+                        <span>Закрытые</span>
+                    </label>
+                </div>
+            </div>
+
+            {# Кнопка отметить все прочитанными #}
+            <div class="chat-settings-section">
+                <button id="mark-all-read-btn" class="chat-settings-btn-full">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    Отметить все чаты прочитанными
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const openBtn = document.getElementById('chat-list-settings-btn');
+        const modal = document.getElementById('chat-list-settings-modal');
+        const closeBtn = document.getElementById('chat-list-settings-modal-close');
+        const backdrop = modal ? modal.querySelector('.chat-list-settings-modal-backdrop') : null;
+        const searchInput = document.getElementById('chat-search-input');
+        const filterActive = document.getElementById('filter-active');
+        const filterArchived = document.getElementById('filter-archived');
+        const filterClosed = document.getElementById('filter-closed');
+        const markAllReadBtn = document.getElementById('mark-all-read-btn');
+
+        // Фильтры — определение выше
+        function applyFilters() {
+            const showActive = filterActive ? filterActive.checked : true;
+            const showArchived = filterArchived ? filterArchived.checked : false;
+            const showClosed = filterClosed ? filterClosed.checked : false;
+
+            const cards = document.querySelectorAll('.chat-card');
+            cards.forEach(function (card) {
+                const isArchived = card.dataset.archived === 'true';
+                const isClosed = card.dataset.closed === 'true';
+
+                let visible = false;
+                if (isArchived && showArchived) visible = true;
+                if (isClosed && showClosed) visible = true;
+                if (!isArchived && !isClosed && showActive) visible = true;
+
+                card.style.display = visible ? '' : 'none';
+            });
+            saveFilterState();
+        }
+
+        // Сохранение/загрузка фильтров
+        function loadFilterState() {
+            try {
+                const saved = JSON.parse(localStorage.getItem('chat_filters') || '{}');
+                if (saved.search && searchInput) searchInput.value = saved.search;
+                if (saved.active !== undefined && filterActive) filterActive.checked = saved.active;
+                if (saved.archived !== undefined && filterArchived) filterArchived.checked = saved.archived;
+                if (saved.closed !== undefined && filterClosed) filterClosed.checked = saved.closed;
+            } catch (e) {}
+        }
+
+        function saveFilterState() {
+            try {
+                localStorage.setItem('chat_filters', JSON.stringify({
+                    search: searchInput ? searchInput.value : '',
+                    active: filterActive ? filterActive.checked : true,
+                    archived: filterArchived ? filterArchived.checked : false,
+                    closed: filterClosed ? filterClosed.checked : false,
+                }));
+            } catch (e) {}
+        }
+
+        // Загружаем и применяем сохранённые фильтры
+        loadFilterState();
+        applyFilters();
+        // Восстанавливаем поиск
+        if (searchInput && searchInput.value) {
+            searchInput.dispatchEvent(new Event('input'));
+        }
+
+        if (openBtn && modal) {
+            openBtn.addEventListener('click', function () {
+                modal.classList.add('active');
+            });
+        }
+
+        if (closeBtn && modal) {
+            closeBtn.addEventListener('click', function () {
+                modal.classList.remove('active');
+            });
+        }
+
+        if (backdrop && modal) {
+            backdrop.addEventListener('click', function () {
+                modal.classList.remove('active');
+            });
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Поиск по чатам
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const query = this.value.toLowerCase();
+                saveFilterState();
+                const cards = document.querySelectorAll('.chat-card');
+                cards.forEach(function (card) {
+                    const name = card.querySelector('.chat-card-name');
+                    if (name) {
+                        const text = name.textContent.toLowerCase();
+                        card.style.display = text.includes(query) ? '' : 'none';
+                    }
+                });
+            });
+        }
+
+        // Фильтры
+        if (filterActive) filterActive.addEventListener('change', applyFilters);
+        if (filterArchived) filterArchived.addEventListener('change', applyFilters);
+        if (filterClosed) filterClosed.addEventListener('change', applyFilters);
+
+        // Отметить все прочитанными
+        if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', function () {
+                const token = document.cookie.split('; ').find(function (row) { return row.startsWith('access_token='); });
+                const tokenValue = token ? token.split('=')[1] : '';
+                const headers = tokenValue ? { 'Authorization': 'Bearer ' + tokenValue, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+                fetch('/api/messeges/chats/mark-all-read', {
+                    method: 'POST',
+                    headers: headers,
+                })
+                .then(function (res) {
+                    if (res.ok) {
+                        document.querySelectorAll('.chat-unread').forEach(function (badge) {
+                            badge.remove();
+                        });
+                    }
+                })
+                .catch(function () {});
+            });
+        }
+    })();
+</script>
+{% endmacro %}

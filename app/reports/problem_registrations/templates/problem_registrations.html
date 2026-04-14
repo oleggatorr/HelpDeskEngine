@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% set title = "Регистрации проблем — Help Desk Engine" %}
+
+{% block content %}
+{% include 'partials/left_side_menu.html' %}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Регистрации проблем</h1>
+        <a href="/reports/problem-registrations/create" class="btn btn-primary">+ Создать</a>
+    </div>
+
+    {# Фильтры #}
+    <div class="card mb-4">
+        <div class="card-header"><h6 class="mb-0">Фильтры</h6></div>
+        <div class="card-body">
+            <form method="get" action="/reports/problem-registrations" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Тема</label>
+                    <input type="text" name="subject" class="form-control form-control-sm"
+                           value="{{ filters.subject }}" placeholder="Тема проблемы">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Трек-номер</label>
+                    <input type="text" name="track_id" class="form-control form-control-sm"
+                           value="{{ filters.track_id }}" placeholder="XXX-XXXX-XXX">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Статус</label>
+                    <select name="doc_status" class="form-select form-select-sm">
+                        <option value="">Все</option>
+                        {% for s in statuses %}
+                        <option value="{{ s }}" {% if filters.doc_status == s %}selected{% endif %}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Этап</label>
+                    <select name="doc_current_stage" class="form-select form-select-sm">
+                        <option value="">Все</option>
+                        {% for stage in stages %}
+                        <option value="{{ stage }}" {% if filters.doc_current_stage == stage %}selected{% endif %}>{{ stage }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Дата от</label>
+                    <input type="date" name="detected_from" class="form-control form-control-sm"
+                           value="{{ filters.detected_from }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Дата до</label>
+                    <input type="date" name="detected_to" class="form-control form-control-sm"
+                           value="{{ filters.detected_to }}">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-sm btn-primary w-100">Найти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {# Сортировка #}
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="text-muted">Всего: {{ total }}</span>
+        <div class="d-flex gap-2">
+            <form method="get" action="/reports/problem-registrations" class="d-flex gap-2 align-items-center">
+                {% for k, v in filters.items() %}{% if k not in ['sort_by', 'sort_order'] %}
+                <input type="hidden" name="{{ k }}" value="{{ v }}">
+                {% endif %}{% endfor %}
+                <select name="sort_by" class="form-select form-select-sm" style="width: auto;">
+                    <option value="id" {% if filters.sort_by == 'id' %}selected{% endif %}>По ID</option>
+                    <option value="subject" {% if filters.sort_by == 'subject' %}selected{% endif %}>По теме</option>
+                    <option value="detected_at" {% if filters.sort_by == 'detected_at' %}selected{% endif %}>По дате</option>
+                </select>
+                <select name="sort_order" class="form-select form-select-sm" style="width: auto;">
+                    <option value="desc" {% if filters.sort_order == 'desc' %}selected{% endif %}>↓ Убыв</option>
+                    <option value="asc" {% if filters.sort_order == 'asc' %}selected{% endif %}>↑ Возр</option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-outline-secondary">Сорт.</button>
+            </form>
+        </div>
+    </div>
+
+    {# Таблица регистраций #}
+    <div class="card">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Тема</th>
+                    <th>Трек-номер</th>
+                    <th>Статус</th>
+                    <th>Этап</th>
+                    <th>Обнаружено</th>
+                    <th>Описание</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if items %}
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ item.id }}</td>
+                        <td><a href="/reports/problem-registrations/{{ item.id }}" class="text-decoration-none">{{ item.subject or "—" }}</a></td>
+                        <td>{{ item.track_id or "—" }}</td>
+                        <td><span class="badge bg-info">{{ item.doc_status or "—" }}</span></td>
+                        <td><span class="badge bg-secondary">{{ item.doc_current_stage or "—" }}</span></td>
+                        <td>{{ item.detected_at.strftime("%d.%m.%Y %H:%M") if item.detected_at else "—" }}</td>
+                        <td class="text-truncate" style="max-width: 200px;">{{ item.description or "—" }}</td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <a href="/reports/problem-registrations/{{ item.id }}" class="btn btn-sm btn-outline-primary" title="Просмотр">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </a>
+                                <a href="/reports/problem-registrations/{{ item.id }}/edit" class="btn btn-sm btn-outline-secondary" title="Редактировать">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="8" class="text-center text-muted">Регистрации не найдены</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    {# Пагинация #}
+    {% if total_pages > 1 %}
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center">
+            {% for p in range(1, total_pages + 1) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link" href="?page={{ p }}{% for k, v in filters.items() %}&{{ k }}={{ v }}{% endfor %}">{{ p }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

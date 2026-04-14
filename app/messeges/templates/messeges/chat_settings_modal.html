@@ -1,0 +1,230 @@
+{# Макрос: модальное окно настроек чата #}
+{% macro render_chat_settings_modal(chat_id=None, chat_name=None, participant_ids=None, current_user_id=None, access_token=None) %}
+<div class="chat-settings-modal" id="chat-settings-modal">
+    <div class="chat-settings-modal-backdrop"></div>
+    <div class="chat-settings-modal-content">
+        <div class="chat-settings-modal-header">
+            <h5 class="mb-0">Настройки чата</h5>
+            <button class="chat-settings-modal-close" id="chat-settings-modal-close" aria-label="Закрыть">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        <div class="chat-settings-modal-body">
+            {# Имя чата #}
+            <div class="chat-settings-section">
+                <label class="chat-settings-label">Имя чата</label>
+                <div class="d-flex gap-2">
+                    <input type="text" id="chat-name-input" class="chat-settings-input" value="{{ chat_name or '' }}" placeholder="Введите имя чата">
+                    <button id="chat-name-btn" class="chat-add-btn" style="white-space: nowrap;">Сохранить</button>
+                </div>
+            </div>
+
+            {# Список участников #}
+            <div class="chat-settings-section">
+                <label class="chat-settings-label">Участники <span class="chat-participant-count">({{ participant_ids|length if participant_ids else 0 }})</span></label>
+                <div id="chat-participants-list" class="chat-participants-list">
+                    {% if participant_ids %}
+                        {% for uid in participant_ids %}
+                        <div class="chat-participant-item {% if uid == current_user_id %}chat-participant-own{% endif %}" data-user-id="{{ uid }}">
+                            <span class="chat-participant-id">
+                                {% if uid == current_user_id %}
+                                    ID: {{ uid }} <span class="chat-participant-badge">Вы</span>
+                                {% else %}
+                                    ID: {{ uid }}
+                                {% endif %}
+                            </span>
+                            {% if uid != current_user_id %}
+                            <button class="chat-remove-participant-btn btn btn-sm btn-outline-danger" data-user-id="{{ uid }}">Удалить</button>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="chat-settings-empty">Нет участников</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Добавить участника #}
+            <div class="chat-settings-section">
+                <label class="chat-settings-label">Добавить участника</label>
+                <div class="chat-add-participant">
+                    <input type="number" id="add-participant-input" class="chat-settings-input" placeholder="ID пользователя">
+                    <button id="add-participant-btn" class="chat-add-btn">Добавить</button>
+                </div>
+            </div>
+
+            {# Действия с чатом #}
+            <div class="chat-settings-section">
+                <label class="chat-settings-label">Действия</label>
+                <div class="chat-actions-list">
+                    <button id="chat-archive-btn" class="chat-action-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8"></path><path d="M1 3h22v5H1z"></path><path d="M10 12h4"></path></svg>
+                        <span>Архивировать</span>
+                    </button>
+                    <button id="chat-close-btn" class="chat-action-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg>
+                        <span>Закрыть чат</span>
+                    </button>
+                    <button id="chat-leave-btn" class="chat-action-btn chat-action-btn-danger">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        <span>Покинуть чат</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const openBtn = document.getElementById('chat-settings-btn');
+        const modal = document.getElementById('chat-settings-modal');
+        const closeBtn = document.getElementById('chat-settings-modal-close');
+        const backdrop = modal ? modal.querySelector('.chat-settings-modal-backdrop') : null;
+        const addParticipantBtn = document.getElementById('add-participant-btn');
+        const addParticipantInput = document.getElementById('add-participant-input');
+        const participantsList = document.getElementById('chat-participants-list');
+        const archiveBtn = document.getElementById('chat-archive-btn');
+        const closeChatBtn = document.getElementById('chat-close-btn');
+        const leaveChatBtn = document.getElementById('chat-leave-btn');
+        const chatNameInput = document.getElementById('chat-name-input');
+        const chatNameBtn = document.getElementById('chat-name-btn');
+
+        const chatId = {{ chat_id if chat_id else 'null' }};
+        const accessToken = '{{ access_token or "" }}';
+
+        function authHeaders() {
+            return accessToken ? { 'Authorization': 'Bearer ' + accessToken, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+        }
+
+        if (openBtn && modal) {
+            openBtn.addEventListener('click', function () {
+                modal.classList.add('active');
+            });
+        }
+
+        if (closeBtn && modal) {
+            closeBtn.addEventListener('click', function () {
+                modal.classList.remove('active');
+            });
+        }
+
+        if (backdrop && modal) {
+            backdrop.addEventListener('click', function () {
+                modal.classList.remove('active');
+            });
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Сохранить имя чата
+        if (chatNameBtn && chatNameInput) {
+            chatNameBtn.addEventListener('click', function () {
+                var name = chatNameInput.value.trim();
+                if (!name || !chatId) return;
+                fetch('/api/messeges/chats/' + chatId, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ name: name }),
+                })
+                .then(function (res) {
+                    if (res.ok) location.reload();
+                })
+                .catch(function () {});
+            });
+        }
+
+        // Добавить участника
+        if (addParticipantBtn) {
+            addParticipantBtn.addEventListener('click', function () {
+                const userId = addParticipantInput ? addParticipantInput.value.trim() : '';
+                if (!userId || !chatId) return;
+                fetch('/api/messeges/chats/' + chatId + '/add-participant', {
+                    method: 'POST',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ user_id: parseInt(userId) }),
+                })
+                .then(function (res) {
+                    if (res.ok) location.reload();
+                })
+                .catch(function () {});
+            });
+        }
+
+        // Удалить участника (делегирование событий)
+        if (participantsList) {
+            participantsList.addEventListener('click', function (e) {
+                var btn = e.target.closest('.chat-remove-participant-btn');
+                if (!btn || !chatId) return;
+                var uid = parseInt(btn.getAttribute('data-user-id'));
+                if (!uid) return;
+                if (!confirm('Удалить участника ID ' + uid + ' из чата?')) return;
+                fetch('/api/messeges/chats/' + chatId, {
+                    method: 'PUT',
+                    headers: authHeaders(),
+                    body: JSON.stringify({ remove_participant_ids: [uid] }),
+                })
+                .then(function (res) {
+                    return res.json().then(function (data) {
+                        if (res.ok) {
+                            // Если участников больше нет — чат удалён
+                            if (!data.participant_ids || data.participant_ids.length === 0) {
+                                window.location.href = '/messeges';
+                            } else {
+                                location.reload();
+                            }
+                        }
+                    });
+                })
+                .catch(function () {});
+            });
+        }
+
+        // Архивировать
+        if (archiveBtn) {
+            archiveBtn.addEventListener('click', function () {
+                if (!chatId) return;
+                fetch('/api/messeges/chats/' + chatId + '/archive', { method: 'POST', headers: authHeaders() })
+                    .then(function (res) { if (res.ok) location.reload(); })
+                    .catch(function () {});
+            });
+        }
+
+        // Закрыть чат
+        if (closeChatBtn) {
+            closeChatBtn.addEventListener('click', function () {
+                if (!chatId) return;
+                fetch('/api/messeges/chats/' + chatId + '/close', { method: 'POST', headers: authHeaders() })
+                    .then(function (res) { if (res.ok) location.reload(); })
+                    .catch(function () {});
+            });
+        }
+
+        // Покинуть чат
+        if (leaveChatBtn) {
+            leaveChatBtn.addEventListener('click', function () {
+                if (!chatId) return;
+                // Проверяем, последний ли пользователь
+                var participantCount = {{ participant_ids|length if participant_ids else 0 }};
+                if (participantCount <= 1) {
+                    if (!confirm('Вы последний участник в чате.\n\nПри выходе чат будет удалён (все вложения будут скрыты).\n\nПродолжить?')) return;
+                } else {
+                    if (!confirm('Вы уверены, что хотите покинуть этот чат?')) return;
+                }
+                fetch('/api/messeges/chats/' + chatId + '/leave', { method: 'POST', headers: authHeaders() })
+                    .then(function (res) {
+                        if (res.ok) window.location.href = '/messeges';
+                    })
+                    .catch(function () {});
+            });
+        }
+    })();
+</script>
+{% endmacro %}
