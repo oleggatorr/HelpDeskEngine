@@ -348,3 +348,79 @@ class DocumentService:
             }
             for log in logs
         ]
+
+    async def archive(self, doc_id: int, user_id: int) -> DocumentResponse:
+        """Архивировать документ."""
+        result = await self.db.execute(select(Document).where(Document.id == doc_id))
+        doc = result.scalar_one_or_none()
+        if not doc:
+            raise ValueError(f"Document {doc_id} not found")
+
+        doc.is_archived = True
+        await self.db.flush()
+
+        log = DocumentLog(
+            document_id=doc_id,
+            user_id=user_id,
+            action="ARCHIVED",
+            new_value="Document archived",
+        )
+        self.db.add(log)
+        await self.db.commit()
+        await self.db.refresh(doc)
+
+        return DocumentResponse.model_validate(doc)
+
+    async def unarchive(self, doc_id: int, user_id: int) -> DocumentResponse:
+        """Восстановить документ из архива."""
+        result = await self.db.execute(select(Document).where(Document.id == doc_id))
+        doc = result.scalar_one_or_none()
+        if not doc:
+            raise ValueError(f"Document {doc_id} not found")
+
+        doc.is_archived = False
+        await self.db.flush()
+
+        log = DocumentLog(
+            document_id=doc_id,
+            user_id=user_id,
+            action="UNARCHIVED",
+            new_value="Document unarchived",
+        )
+        self.db.add(log)
+        await self.db.commit()
+        await self.db.refresh(doc)
+
+        return DocumentResponse.model_validate(doc)
+
+    async def assign_user(self, doc_id: int, user_id_to_assign: int, current_user_id: int) -> DocumentResponse:
+        """Назначить пользователя на документ."""
+        from app.auth.models import User
+        user_result = await self.db.execute(
+            select(func.count()).select_from(User).where(User.id == user_id_to_assign)
+        )
+        if user_result.scalar_one() == 0:
+            raise ValueError(f"User {user_id_to_assign} not found")
+
+        result = await self.db.execute(select(Document).where(Document.id == doc_id))
+        doc = result.scalar_one_or_none()
+        if not doc:
+            raise ValueError(f"Document {doc_id} not found")
+
+        old_assigned = doc.assigned_to
+        doc.assigned_to = user_id_to_assign
+        await self.db.flush()
+
+        log = DocumentLog(
+            document_id=doc_id,
+            user_id=current_user_id,
+            action="ASSIGNMENT_CHANGED",
+            field_name="assigned_to",
+            old_value=str(old_assigned) if old_assigned else None,
+            new_value=str(user_id_to_assign),
+        )
+        self.db.add(log)
+        await self.db.commit()
+        await self.db.refresh(doc)
+
+        return DocumentResponse.model_validate(doc)

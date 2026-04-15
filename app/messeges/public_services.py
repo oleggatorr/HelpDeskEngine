@@ -7,6 +7,18 @@ from app.messeges.services.message_service import MessageService
 from app.messeges.schemas import ChatResponse
 
 
+class PublicProblemRegistrationService:
+    """Публичный сервис для работы с назначениями проблем."""
+
+    def __init__(self, db: AsyncSession):
+        from app.reports.problem_registrations.public_services.problem_registration import PublicProblemRegistrationService as PRService
+        self._service = PRService(db)
+
+    async def get_assigned(self, user_id: int, skip: int = 0, limit: int = 100):
+        """Получить список регистраций проблем, назначенных на пользователя."""
+        return await self._service.get_assigned(user_id=user_id, skip=skip, limit=limit)
+
+
 class PublicChatService:
     """Публичный слой чатов."""
 
@@ -142,6 +154,30 @@ class PublicChatService:
             select(Chat.id).where(Chat.document_id == document_id)
         )
         return result.scalar_one_or_none()
+
+    async def add_participant_by_document(self, document_id: int, user_id: int) -> bool:
+        """Добавить пользователя в чат, привязанный к документу.
+        Возвращает True если участник добавлен, False если чат не найден.
+        Выбрасывает ValueError если пользователь уже участник.
+        """
+        chat_id = await self.get_chat_id_by_document(document_id)
+        if not chat_id:
+            return False
+
+        # Проверяем, является ли пользователь уже участником (напрямую через БД)
+        from app.messeges.models import chat_participants
+        result = await self.db.execute(
+            select(chat_participants.c.user_id).where(
+                chat_participants.c.chat_id == chat_id,
+                chat_participants.c.user_id == user_id,
+            )
+        )
+        if result.scalar_one_or_none() is not None:
+            raise ValueError(f"Пользователь ID {user_id} уже является участником чата")
+
+        from app.messeges.schemas import ChatUpdate
+        await self.update(chat_id, ChatUpdate(add_participant_ids=[user_id]))
+        return True
 
 
 class PublicMessageService:

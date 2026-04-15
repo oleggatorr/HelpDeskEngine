@@ -74,7 +74,7 @@ class MessageAttachment(Base):
     message_id = Column(Integer, ForeignKey("messages.id", ondelete="CASCADE"), nullable=False)
     file_path = Column(String(255), nullable=False)
     original_filename = Column(String(255), nullable=True)
-    file_type = Column(String(50))
+    file_type = Column(String(255))
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
     is_deleted = Column(Boolean, default=False, nullable=False)
 

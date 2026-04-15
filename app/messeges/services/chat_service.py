@@ -2,7 +2,7 @@ from typing import Optional, List
 from datetime import datetime
 
 from fastapi import HTTPException, status
-from sqlalchemy import select, func, delete
+from sqlalchemy import select, func, delete, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -15,6 +15,7 @@ from app.messeges.schemas import (
     ChatFilter,
 )
 from app.auth.models import User
+from app.reports.documents.models import Document
 
 
 # ==========================================
@@ -115,7 +116,7 @@ class ChatService:
         Выход: ChatListResponse.
         Комментарий: все чаты пользователя (обёртка над list_all).
         """
-        filters = ChatFilter(participant_id=user_id)
+        filters = ChatFilter(participant_id=user_id, creator_id=user_id)
         return await self.list_all(filters=filters, skip=skip, limit=limit)
 
     async def list_all(
@@ -124,18 +125,33 @@ class ChatService:
         skip: int = 0,
         limit: int = 100,
     ) -> ChatListResponse:
-        """
-        Вход: ChatFilter, skip, limit.
-        Выход: ChatListResponse.
-        Комментарий: все чаты с фильтрами и сортировкой.
-        """
         conditions = []
-        needs_participant_join = False
-
+        print( filters)
         if filters:
-            if filters.participant_id is not None:
-                needs_participant_join = True
-                conditions.append(chat_participants.c.user_id == filters.participant_id)
+            uid = filters.participant_id
+
+            # 🔒 1. ЖЁСТКОЕ УСЛОВИЕ: пользователь ОБЯЗАН быть участником чата
+            conditions.append(Chat.participants.any(id=uid))
+
+            # 🎛️ 2. Комбинируемые роли (объединяются через OR)
+            scope_conditions = []
+            
+            if filters.include_creator:
+                scope_conditions.append(Chat.document.has(created_by=uid))
+                
+            if filters.include_assigned:
+                scope_conditions.append(Chat.document.has(assigned_to=uid))
+                
+            if filters.include_other:
+                # Не создатель И не назначен
+                not_creator = ~Chat.document.has(created_by=uid)
+                not_assigned = ~Chat.document.has(assigned_to=uid)
+                scope_conditions.append(not_creator & not_assigned)
+
+            if scope_conditions:
+                conditions.append(or_(*scope_conditions))
+
+            # 📋 3. Остальные фильтры (всегда AND)
             if filters.document_id is not None:
                 conditions.append(Chat.document_id == filters.document_id)
             if filters.name:
@@ -151,28 +167,24 @@ class ChatService:
             if filters.created_to is not None:
                 conditions.append(Chat.created_at <= filters.created_to)
 
-        # Базовый запрос
-        if needs_participant_join:
-            query_base = select(Chat).join(chat_participants)
-        else:
-            query_base = select(Chat)
-
+        # 📦 Базовый запрос + DISTINCT (гарантия уникальности)
+        stmt = select(Chat).distinct()
         if conditions:
-            from sqlalchemy import and_
-            query_base = query_base.where(and_(*conditions))
+            stmt = stmt.where(and_(*conditions))
 
-        # Подсчёт
-        count_query = select(func.count()).select_from(query_base.subquery())
-        count_result = await self.db.execute(count_query)
-        total = count_result.scalar_one()
+        # 🔢 Подсчёт total (зеркально повторяет WHERE основного запроса)
+        count_stmt = select(func.count(Chat.id.distinct()))
+        if conditions:
+            count_stmt = count_stmt.where(and_(*conditions))
+        total = (await self.db.execute(count_stmt)).scalar_one()
 
-        # Сортировка
-        sort_col = getattr(Chat, filters.sort_by) if filters and filters.sort_by else Chat.updated_at
+        # 📐 Сортировка
+        sort_col = getattr(Chat, filters.sort_by) if filters and hasattr(Chat, filters.sort_by) else Chat.updated_at
         order_fn = sort_col.asc if (filters and filters.sort_order == "asc") else sort_col.desc
 
-        # Пагинация
+        # 📥 Пагинация + eager-load участников
         result = await self.db.execute(
-            query_base
+            stmt
             .options(selectinload(Chat.participants))
             .order_by(order_fn())
             .offset(skip)
@@ -196,95 +208,6 @@ class ChatService:
                 for c in chats
             ],
             total=total,
-        )
-
-    async def update(self, chat_id: int, request: ChatUpdate, remover_id: Optional[int] = None) -> ChatResponse:
-        """
-        Вход: chat_id, ChatUpdate, remover_id (для защиты от самоудаления).
-        Выход: ChatResponse.
-        Комментарий: добавление/удаление участников.
-        """
-        result = await self.db.execute(
-            select(Chat).where(Chat.id == chat_id).options(selectinload(Chat.participants))
-        )
-        chat = result.scalar_one_or_none()
-        if not chat:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Чат не найден",
-            )
-
-        # Обновление названия
-        if request.name is not None:
-            chat.name = request.name
-
-        # Обновление статуса архива
-        if request.is_archived is not None:
-            chat.is_archived = int(request.is_archived)
-
-        # Обновление статуса закрытия
-        if request.is_closed is not None:
-            chat.is_closed = int(request.is_closed)
-
-        # Обновление статуса анонимизации
-        if request.is_anonymized is not None:
-            chat.is_anonymized = int(request.is_anonymized)
-
-        # Добавление участников
-        if request.add_participant_ids:
-            result = await self.db.execute(
-                select(User).where(User.id.in_(request.add_participant_ids))
-            )
-            users_to_add = result.scalars().all()
-            existing_ids = {u.id for u in chat.participants}
-            for user in users_to_add:
-                if user.id not in existing_ids:
-                    chat.participants.append(user)
-
-        # Удаление участников — защита от самоудаления
-        if request.remove_participant_ids:
-            if remover_id and remover_id in request.remove_participant_ids:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail="Нельзя удалить себя из чата. Используйте «Покинуть чат».",
-                )
-            chat.participants = [
-                p for p in chat.participants
-                if p.id not in request.remove_participant_ids
-            ]
-
-        # Сохраняем ID до коммита
-        participant_ids = [] if chat.is_anonymized else [p.id for p in chat.participants]
-
-        await self.db.commit()
-        await self.db.refresh(chat)
-
-        # Если участников не осталось — удаляем чат каскадно (вложения мягко)
-        if not chat.participants:
-            await self._delete_chat_with_soft_attachments(chat_id)
-            # Возвращаем response с флагом удаления через participant_ids = []
-            return ChatResponse(
-                id=chat.id,
-                name=chat.name,
-                document_id=chat.document_id,
-                is_archived=bool(chat.is_archived),
-                is_closed=bool(chat.is_closed),
-                is_anonymized=bool(chat.is_anonymized),
-                participant_ids=[],
-                created_at=chat.created_at,
-                updated_at=chat.updated_at,
-            )
-
-        return ChatResponse(
-            id=chat.id,
-            name=chat.name,
-            document_id=chat.document_id,
-            is_archived=bool(chat.is_archived),
-            is_closed=bool(chat.is_closed),
-            is_anonymized=bool(chat.is_anonymized),
-            participant_ids=participant_ids,
-            created_at=chat.created_at,
-            updated_at=chat.updated_at,
         )
 
     async def _delete_chat_with_soft_attachments(self, chat_id: int):
@@ -358,3 +281,5 @@ class ChatService:
     # ==========================================
     # HELPERS
     # ==========================================
+
+

@@ -144,9 +144,11 @@ async def chat_send(
             attachments=attachments if attachments else None,
         )
         await message_service.create(msg, sender_id=current_user.id)
-    except Exception:
+    except Exception as e:
+        import logging
+        logging.error(f"Ошибка отправки сообщения в чат {chat_id}: {e}", exc_info=True)
         return RedirectResponse(
-            url=f"/messeges/{chat_id}?error=Ошибка отправки сообщения",
+            url=f"/messeges/{chat_id}?error=Ошибка отправки сообщения: {str(e)}",
             status_code=303,
         )
 

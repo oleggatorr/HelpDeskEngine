@@ -17,7 +17,8 @@
       "Bash(venv\\scripts\\activate)",
       "Bash(venv\\scripts\\python *)",
       "Bash(copy *)",
-      "Bash(type *)"
+      "Bash(type *)",
+      "Bash(venv\\scripts\\alembic *)"
     ]
   },
   "$version": 3

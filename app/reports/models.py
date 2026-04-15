@@ -10,7 +10,6 @@ from app.reports.documents.models import (  # noqa: F401
     Document, DocumentType, DocumentAttachment, DocumentLog,
 )
 from app.reports.problem_registrations.models import ProblemRegistration  # noqa: F401
-from app.reports.problem_confirmations.models import ProblemConfirmation  # noqa: F401
 from app.reports.root_causes.models import RootCause  # noqa: F401
 from app.reports.corrective_actions.models import CorrectiveAction  # noqa: F401
 from app.reports.action_executions.models import ActionExecution  # noqa: F401

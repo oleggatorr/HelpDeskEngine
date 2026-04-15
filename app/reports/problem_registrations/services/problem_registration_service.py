@@ -195,7 +195,7 @@ class ProblemRegistrationService:
         from app.reports.models import DocumentStage as DocumentStageEnum
 
         conditions = []
-
+        print(filters.assigned_to)
         if filters:
             # Фильтры по ProblemRegistration
             if filters.subject:
@@ -230,6 +230,15 @@ class ProblemRegistrationService:
                     pass
             if filters.created_by is not None:
                 conditions.append(Document.created_by == filters.created_by)
+                
+            if filters.assigned_to is not None:
+                if filters.assigned_to == -1:
+                    # 🔹 Специальное значение -1 → ищем где assigned_to IS NULL
+                    conditions.append(Document.assigned_to.is_(None))
+                elif filters.assigned_to > 0:
+                    # 🔹 Положительное число → ищем по точному ID
+                    conditions.append(Document.assigned_to == filters.assigned_to)
+                # Если 0 или отрицательное (кроме -1) — игнорируем фильтр
 
         # Базовый запрос с JOIN
         query_base = select(ProblemRegistration, Document).join(
@@ -285,9 +294,23 @@ class ProblemRegistrationService:
             doc_current_stage=stage_str,
             doc_status=doc.status.value if hasattr(doc.status, 'value') else doc.status,
             is_locked=doc.is_locked,
+            is_archived=doc.is_archived,
+            assigned_to=doc.assigned_to,
             subject=reg.subject,
             detected_at=reg.detected_at,
             location_id=reg.location_id,
             description=reg.description,
             nomenclature=reg.nomenclature,
         )
+
+    async def archive_document(self, doc_id: int, user_id: int) -> ProblemRegistrationResponse:
+        """Архивировать документ и регистрацию."""
+        return await self.doc_service.archive(doc_id, user_id)
+
+    async def unarchive_document(self, doc_id: int, user_id: int) -> ProblemRegistrationResponse:
+        """Восстановить документ и регистрацию из архива."""
+        return await self.doc_service.unarchive(doc_id, user_id)
+
+    async def assign_user_to_document(self, doc_id: int, user_id: int, current_user_id: int) -> ProblemRegistrationResponse:
+        """Назначить пользователя на документ."""
+        return await self.doc_service.assign_user(doc_id, user_id, current_user_id)

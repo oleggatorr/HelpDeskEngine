@@ -1,13 +1,25 @@
 {# Макрос: форма отправки сообщения #}
 {% macro render_message_input(chat_id) %}
+<style>
+.message-textarea {
+    resize: none;
+    min-height: 44px;
+    max-height: 200px;
+    overflow-y: hidden;
+    line-height: 1.5;
+    padding: 0.5rem 0.75rem;
+}
+</style>
+
 <div class="card-footer">
-    <form method="post" action="/messeges/{{ chat_id }}/send" class="d-flex gap-2" enctype="multipart/form-data" id="message-form">
-        <input type="text"
+    <form method="post" action="/messeges/{{ chat_id }}/send" class="d-flex gap-2 align-items-end" enctype="multipart/form-data" id="message-form">
+        <textarea id="message-input"
                 name="content"
-                class="form-control"
+                class="form-control message-textarea"
                 placeholder="Введите сообщение..."
+                rows="1"
                 required
-                autofocus>
+                autofocus></textarea>
         <label for="file-input" class="btn btn-outline-secondary" title="Прикрепить файл" style="padding: 0.375rem 0.5rem;">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
         </label>
@@ -23,21 +35,68 @@
 </div>
 
 <script>
-document.getElementById('file-input').addEventListener('change', function() {
-    var preview = document.getElementById('file-preview');
-    var list = document.getElementById('file-list');
-    list.innerHTML = '';
-    if (this.files.length > 0) {
-        preview.style.display = 'block';
-        for (var i = 0; i < this.files.length; i++) {
-            var badge = document.createElement('span');
-            badge.className = 'badge bg-light text-dark';
-            badge.textContent = this.files[i].name;
-            list.appendChild(badge);
-        }
-    } else {
-        preview.style.display = 'none';
+(function() {
+    var textarea = document.getElementById('message-input');
+    var fileInput = document.getElementById('file-input');
+    var form = document.getElementById('message-form');
+
+    // Авторасширение textarea
+    if (textarea) {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 200) + 'px';
+            this.style.overflowY = this.scrollHeight > 200 ? 'auto' : 'hidden';
+        });
+
+        // Enter — новая строка, Shift+Enter — отправка
+        textarea.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.shiftKey) {
+                e.preventDefault();
+                var btn = this.closest('form').querySelector('button[type="submit"]');
+                if (btn) btn.click();
+            }
+        });
     }
-});
+
+    // Обработка файлов — убираем required если есть вложения
+    function updateRequired() {
+        if (textarea && fileInput) {
+            var hasFiles = fileInput.files.length > 0;
+            var hasText = textarea.value.trim().length > 0;
+            textarea.required = !hasFiles && !hasText;
+        }
+    }
+
+    if (textarea) {
+        textarea.addEventListener('input', updateRequired);
+    }
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            var preview = document.getElementById('file-preview');
+            var list = document.getElementById('file-list');
+            list.innerHTML = '';
+            if (this.files.length > 0) {
+                preview.style.display = 'block';
+                for (var i = 0; i < this.files.length; i++) {
+                    var badge = document.createElement('span');
+                    badge.className = 'badge bg-light text-dark';
+                    badge.textContent = this.files[i].name;
+                    list.appendChild(badge);
+                }
+            } else {
+                preview.style.display = 'none';
+            }
+            updateRequired();
+        });
+    }
+
+    // При отправке тоже проверяем
+    if (form) {
+        form.addEventListener('submit', function() {
+            updateRequired();
+        });
+    }
+})();
 </script>
 {% endmacro %}

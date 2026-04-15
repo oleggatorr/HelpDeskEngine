@@ -71,6 +71,7 @@ class ProblemRegistrationUpdate(BaseModel):
     location_id: Optional[int] = None
     description: Optional[str] = None
     nomenclature: Optional[str] = None
+    doc_assigned_to: Optional[int] = None
 
 
 class ProblemRegistrationResponse(BaseModel):
@@ -82,6 +83,8 @@ class ProblemRegistrationResponse(BaseModel):
     doc_current_stage: Optional[str] = None
     doc_status: Optional[DocumentStatus] = None
     is_locked: bool = False
+    is_archived: bool = False
+    assigned_to: Optional[int] = None
     # Собственные поля
     subject: Optional[str] = None
     detected_at: Optional[datetime] = None
@@ -125,6 +128,7 @@ class ProblemRegistrationFilter(BaseModel):
     doc_type_id: Optional[int] = None
     doc_current_stage: Optional[str] = None
     created_by: Optional[int] = None
+    assigned_to: Optional[int] = None
     # Пагинация и сортировка
     sort_by: Optional[str] = "id"
     sort_order: Optional[str] = "desc"

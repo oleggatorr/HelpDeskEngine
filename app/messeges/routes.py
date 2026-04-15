@@ -1,5 +1,9 @@
 from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from jinja2 import ChoiceLoader, FileSystemLoader, Environment
+from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
 import os
 import uuid
@@ -23,6 +27,19 @@ from app.messeges.schemas import (
 )
 
 router = APIRouter()
+
+local_templates = Path(__file__).parent / "templates"
+global_templates = Path(__file__).parent.parent / "templates"
+
+env = Environment(
+    loader=ChoiceLoader([
+        FileSystemLoader(str(local_templates)),
+        FileSystemLoader(str(global_templates)),
+    ]),
+    autoescape=True,
+)
+
+templates = Jinja2Templates(env=env)
 
 
 def _get_public_chat_service(db: AsyncSession = Depends(get_db)) -> PublicChatService:
@@ -219,6 +236,56 @@ async def get_chat_messages(
         skip=skip,
         limit=limit,
     )
+
+
+@router.get(
+    "/chats/{chat_id}/messages/fragment",
+    response_class=HTMLResponse,
+    summary="HTML-фрагмент сообщений чата (для автообновления)",
+)
+async def get_chat_messages_fragment(
+    request: Request,
+    chat_id: int,
+    skip: int = 0,
+    limit: int = 200,
+    current_user: User = Depends(get_current_user),
+    service: PublicMessageService = Depends(_get_public_message_service),
+):
+    """Возвращает HTML-фрагмент сообщений для автообновления без перезагрузки страницы."""
+    messages_result = await service.get_chat_messages(
+        chat_id=chat_id, user_id=current_user.id, skip=skip, limit=limit
+    )
+    return templates.TemplateResponse("messeges/chat_messages_fragment.html", {
+        "request": request,
+        "messages": messages_result.messages,
+        "current_user": current_user,
+        "error": None,
+    })
+
+
+@router.get(
+    "/chats/sidebar/fragment",
+    response_class=HTMLResponse,
+    summary="HTML-фрагмент сайдбара чатов (для автообновления)",
+)
+async def get_chat_sidebar_fragment(
+    request: Request,
+    skip: int = 0,
+    limit: int = 100,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Возвращает HTML-фрагмент сайдбара чатов для автообновления."""
+    chat_service = PublicChatService(db)
+    chats_result = await chat_service.get_user_chats_with_unread(
+        user_id=current_user.id, skip=skip, limit=limit
+    )
+    return templates.TemplateResponse("messeges/chat_list.html", {
+        "request": request,
+        "chats": chats_result.chats,
+        "total": chats_result.total,
+        "current_user": current_user,
+    })
 
 
 @router.get(

@@ -1,8 +1,8 @@
-"""add problem_registration table
+"""empty message
 
-Revision ID: 25fe9d619075
-Revises: 667dcd79c3e1
-Create Date: 2026-04-06 14:57:53.174846
+Revision ID: 7ff2f83e7a5f
+Revises: 
+Create Date: 2026-04-15 15:55:49.749776
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '25fe9d619075'
-down_revision: Union[str, None] = '667dcd79c3e1'
+revision: str = '7ff2f83e7a5f'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -24,11 +24,17 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('document_id', sa.Integer(), nullable=False),
     sa.Column('detected_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('subject', sa.String(length=200), nullable=True),
     sa.Column('location_id', sa.Integer(), nullable=True),
     sa.Column('description', sa.Text(), nullable=True),
-    sa.Column('nomenclature_id', sa.Integer(), nullable=True),
+    sa.Column('nomenclature', sa.String(length=100), nullable=True),
+    sa.Column('approved_at', sa.DateTime(timezone=True), nullable=True, comment='Дата утверждения'),
+    sa.Column('action', sa.Enum('UNDEFINED', 'REJECTED', 'CLOSED', 'ANALYSIS_REQUIRED', 'ASSIGN_EXECUTOR', name='problem_action_enum', create_constraint=True), server_default=sa.text("'analysis_required'"), nullable=True, comment='Действие по проблеме'),
+    sa.Column('responsible_department_id', sa.Integer(), nullable=True, comment='ID ответственного отделения'),
+    sa.Column('comment', sa.Text(), nullable=True, comment='Комментарий к проблеме'),
     sa.ForeignKeyConstraint(['document_id'], ['documents.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['location_id'], ['locations.id'], ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['responsible_department_id'], ['departments.id'], ondelete='SET NULL'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('document_id')
     )

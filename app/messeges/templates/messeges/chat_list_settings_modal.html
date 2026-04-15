@@ -1,5 +1,5 @@
 {# Макрос: модальное окно настроек списка чатов #}
-{% macro render_chat_list_settings_modal() %}
+{% macro render_chat_list_settings_modal(access_token=None) %}
 <div class="chat-list-settings-modal" id="chat-list-settings-modal">
     <div class="chat-list-settings-modal-backdrop"></div>
     <div class="chat-list-settings-modal-content">
@@ -162,9 +162,8 @@
         // Отметить все прочитанными
         if (markAllReadBtn) {
             markAllReadBtn.addEventListener('click', function () {
-                const token = document.cookie.split('; ').find(function (row) { return row.startsWith('access_token='); });
-                const tokenValue = token ? token.split('=')[1] : '';
-                const headers = tokenValue ? { 'Authorization': 'Bearer ' + tokenValue, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+                var token = "{{ access_token }}";
+                var headers = token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
                 fetch('/api/messeges/chats/mark-all-read', {
                     method: 'POST',
                     headers: headers,

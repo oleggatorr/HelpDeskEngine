@@ -53,6 +53,9 @@ class ChatListResponse(BaseModel):
 class ChatFilter(BaseModel):
     """Фильтры и сортировка для поиска чатов"""
     participant_id: Optional[int] = None
+    include_creator: Optional[bool] = None
+    include_assigned: Optional[bool] = None
+    include_other: Optional[bool] = None 
     document_id: Optional[int] = None
     name: Optional[str] = None
     is_archived: Optional[bool] = None

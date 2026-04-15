@@ -15,6 +15,7 @@ from app.admin.tasks.routes import router as admin_tasks_router
 from app.admin.knowledge_base.routes import router as admin_kb_router
 from app.admin.reports.document_routes import router as admin_documents_router
 from app.knowledge_base.routes import router as knowledge_base_router
+from app.notifications import include_notification_routers
 
 app = FastAPI(
     title="Help Desk Engine",
@@ -44,3 +45,6 @@ app.include_router(admin_tasks_router, prefix="/api/admin", tags=["Admin — Tas
 app.include_router(admin_kb_router, prefix="/api/admin", tags=["Admin — Knowledge Base"])
 app.include_router(admin_documents_router, prefix="/api/admin", tags=["Admin — Documents"])
 app.include_router(knowledge_base_router, prefix="/api/knowledge-base", tags=["Knowledge Base"])
+
+# Уведомления
+include_notification_routers(app)

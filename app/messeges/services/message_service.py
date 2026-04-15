@@ -35,8 +35,9 @@ class MessageService:
         message = Message(
             chat_id=request.chat_id,
             sender_id=sender_id,
-            content=request.content,
+            content=request.content.replace('\n', '<br>'),
         )
+
         self.db.add(message)
         await self.db.flush()
 

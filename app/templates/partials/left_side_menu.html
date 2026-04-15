@@ -17,12 +17,42 @@
 <!-- Боковое меню -->
 <nav id="side-menu" class="side-menu">
     <ul class="side-menu-list">
-        <li><a href="/" class="side-menu-link">Главная</a></li>
-        <li><a href="/reports/problem-registrations/create" class="side-menu-link">Создать обращение</a></li>
-        <li><a href="/reports/problem-registrations/my" class="side-menu-link">Мои обращения</a></li>
-        <li><a href="/messeges" class="side-menu-link">Сообщения</a></li>
-        
-        
+        <!-- Обычный пункт -->
+        <li class="side-menu-item">
+            <a href="/" class="side-menu-link">Главная</a>
+        </li>
+
+        <!-- Каталог 1: Регистрация проблем -->
+        <li class="side-menu-item has-submenu">
+            <button class="side-menu-toggle" aria-expanded="false">
+                <span>Регистрации проблем</span>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <ul class="side-menu-submenu">
+                <li><a href="/reports/problem-registrations/create" class="side-menu-link">Создать обращение</a></li>
+                <li><a href="/reports/problem-registrations/my" class="side-menu-link">Мои обращения</a></li>
+            </ul>
+        </li>
+
+        <li class="side-menu-item has-submenu">
+            <button class="side-menu-toggle" aria-expanded="false">
+                <span>Инженер по качеству</span>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <ul class="side-menu-submenu">
+                <li><a href="/reports/problem-registrations/list" class="side-menu-link">Список обращений</a></li>
+                <li><a href="/reports/problem-registrations/assigned" class="side-menu-link">Назначенные</a></li>
+            </ul>
+        </li>
+
+        <!-- Обычный пункт -->
+        <li class="side-menu-item">
+            <a href="/messeges" class="side-menu-link">Сообщения</a>
+        </li>
     </ul>
 </nav>
 
@@ -89,21 +119,88 @@
         padding: 64px 0 16px;
     }
 
-    .side-menu-list li {
+    .side-menu-item {
         margin: 0;
+        position: relative;
     }
 
+    /* Ссылка верхнего уровня */
     .side-menu-link {
         display: block;
         padding: 12px 24px;
         color: #333;
         text-decoration: none;
         font-size: 16px;
-        transition: background 0.2s;
+        transition: background 0.2s, color 0.2s;
     }
 
     .side-menu-link:hover {
         background: #f5f5f5;
+        color: #000;
+    }
+
+    /* Кнопка каталога */
+    .side-menu-toggle {
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 12px 24px;
+        color: #333;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+        transition: background 0.2s;
+    }
+
+    .side-menu-toggle:hover {
+        background: #f5f5f5;
+    }
+
+    .side-menu-toggle:focus-visible {
+        outline: 2px solid #0056b3;
+        outline-offset: -2px;
+    }
+
+    /* Стрелка */
+    .chevron {
+        transition: transform 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .side-menu-item.open > .side-menu-toggle .chevron {
+        transform: rotate(180deg);
+    }
+
+    /* Вложенный список */
+    .side-menu-submenu {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        background: #fafafa;
+    }
+
+    .side-menu-item.open > .side-menu-submenu {
+        max-height: 1000px; /* Достаточно для большинства меню */
+    }
+
+    /* Ссылки внутри каталога */
+    .side-menu-submenu .side-menu-link {
+        padding: 10px 24px 10px 40px;
+        font-size: 14px;
+        color: #555;
+        border-left: 2px solid transparent;
+    }
+
+    .side-menu-submenu .side-menu-link:hover {
+        background: #f0f0f0;
+        color: #000;
+        border-left-color: #0056b3;
     }
 </style>
 
@@ -139,5 +236,18 @@
                 closeMenu();
             }
         });
+
+        // 🔽 Логика раскрытия каталогов
+        const menuList = document.querySelector('.side-menu-list');
+        if (menuList) {
+            menuList.addEventListener('click', function(e) {
+                const toggleBtn = e.target.closest('.side-menu-toggle');
+                if (toggleBtn) {
+                    const parentItem = toggleBtn.closest('.side-menu-item');
+                    const isOpen = parentItem.classList.toggle('open');
+                    toggleBtn.setAttribute('aria-expanded', isOpen);
+                }
+            });
+        }
     })();
 </script>

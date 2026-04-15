@@ -129,3 +129,84 @@ async def delete_problem_registration(
     deleted = await service.delete(registration_id)
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Регистрация не найдена")
+
+
+@router.post(
+    "/problem-registrations/{registration_id}/archive",
+    response_model=ProblemRegistrationResponse,
+    summary="Архивировать регистрацию проблемы",
+)
+async def archive_problem_registration(
+    registration_id: int,
+    user_id: int,
+    service: PublicProblemRegistrationService = Depends(_get_service),
+):
+    """Архивировать регистрацию проблемы."""
+    result = await service.archive(registration_id, user_id=user_id)
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Регистрация не найдена")
+    return result
+
+
+@router.post(
+    "/problem-registrations/{registration_id}/unarchive",
+    response_model=ProblemRegistrationResponse,
+    summary="Восстановить регистрацию проблемы из архива",
+)
+async def unarchive_problem_registration(
+    registration_id: int,
+    user_id: int,
+    service: PublicProblemRegistrationService = Depends(_get_service),
+):
+    """Восстановить регистрацию проблемы из архива."""
+    result = await service.unarchive(registration_id, user_id=user_id)
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Регистрация не найдена")
+    return result
+
+
+@router.post(
+    "/problem-registrations/{registration_id}/assign",
+    response_model=ProblemRegistrationResponse,
+    summary="Назначить пользователя на регистрацию проблемы",
+)
+async def assign_user_to_problem_registration(
+    registration_id: int,
+    user_id_to_assign: int,
+    current_user_id: int,
+    service: PublicProblemRegistrationService = Depends(_get_service),
+):
+    """Назначить пользователя на регистрацию проблемы."""
+    result = await service.assign_user(registration_id, user_id_to_assign=user_id_to_assign, current_user_id=current_user_id)
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Регистрация не найдена")
+    return result
+
+
+@router.post(
+    "/problem-registrations/{registration_id}/assign-self",
+    response_model=ProblemRegistrationResponse,
+    summary="Назначить себя на регистрацию проблемы",
+)
+async def assign_self_to_problem_registration(
+    registration_id: int,
+    user_id: int,
+    service: PublicProblemRegistrationService = Depends(_get_service),
+):
+    """Назначить себя на регистрацию проблемы."""
+    result = await service.assign_self(registration_id, user_id=user_id)
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Регистрация не найдена")
+    return result
+
+
+@router.post(
+    "/problem-registrations/{registration_id}/unassign"
+)
+async def anassign_problem_registration(
+    registration_id: int,
+    service: PublicProblemRegistrationService = Depends(_get_service),
+):
+    '''Снять назначение с регистрации проблемы'''
+    result = await service.unassign(registration_id, )
+    pass

@@ -7,6 +7,8 @@ from pathlib import Path
 from datetime import datetime
 import os
 import uuid
+from fastapi import Query
+from typing import Optional
 
 from app.core.database import get_db
 from app.auth.routes_jinja import require_auth
@@ -48,6 +50,32 @@ async def my_problem_registrations_page(
     total_pages = max(1, (result.total + 49) // 50)
 
     return templates.TemplateResponse("my_problem_registrations.html", {
+        "request": request,
+        "items": result.items,
+        "total": result.total,
+        "page": page,
+        "total_pages": total_pages,
+        "current_user": current_user,
+    })
+
+
+@router.get("/reports/problem-registrations/assigned")
+async def assigned_registration_page(
+    request: Request,
+    page: int = 1,
+    db=Depends(get_db),):
+    """Страница назначенных регистраций проблем на текущего пользователя."""
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+    skip = (page - 1) * 50
+
+    result = await service.get_assigned(user_id=current_user.id, skip=skip, limit=50)
+    total_pages = max(1, (result.total + 49) // 50)
+    return templates.TemplateResponse("assigned_problem_registrations.html",{
         "request": request,
         "items": result.items,
         "total": result.total,
@@ -122,6 +150,91 @@ async def problem_registrations_page(
             "doc_status": doc_status,
             "doc_type_id": doc_type_id,
             "doc_current_stage": doc_current_stage,
+            "sort_by": sort_by,
+            "sort_order": sort_order,
+        },
+        "stages": [s.name for s in DocumentStage],
+        "statuses": [s.value for s in DocumentStatus],
+    })
+
+
+@router.get("/reports/problem-registrations/list")
+async def problem_registrations_list_page(
+    request: Request,
+    subject: str = "",
+    detected_from: str = "",
+    detected_to: str = "",
+    location_id: int = 0,
+    description: str = "",
+    nomenclature: str = "",
+    track_id: str = "",
+    doc_status: str = "",
+    doc_type_id: int = 0,
+    doc_current_stage: str = "",
+    created_by_username: str = "",
+    sort_by: str = "id",
+    sort_order: str = "desc",
+    page: int = 1,
+    assigned_to: str = "",
+    db=Depends(get_db),
+):
+    """Страница списка всех регистраций проблем с фильтрами и пагинацией."""
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+    skip = (page - 1) * 50
+    # 🔽 Хелпер для безопасной конвертации str → int | None
+    def to_int_or_none(val: str) -> int | None:
+        if not val or not val.strip():
+            return None
+        try:
+            return int(val.strip())
+        except (ValueError, TypeError):
+            return None
+    from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationFilter
+    filters = ProblemRegistrationFilter(
+        subject=subject or None,
+        detected_from=datetime.fromisoformat(detected_from) if detected_from else None,
+        detected_to=datetime.fromisoformat(detected_to + "T23:59:59") if detected_to else None,
+        location_id=location_id or None,
+        description=description or None,
+        nomenclature=nomenclature or None,
+        track_id=track_id or None,
+        doc_status=doc_status or None,
+        doc_type_id=doc_type_id or None,
+        doc_current_stage=doc_current_stage or None,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        assigned_to=to_int_or_none(assigned_to),
+    )
+    print(assigned_to)
+    result = await service.get_all(skip=skip, limit=50, filters=filters)
+
+    total_pages = max(1, (result.total + 49) // 50)
+
+    return templates.TemplateResponse("problem_registrations_list.html", {
+        "request": request,
+        "items": result.items,
+        "total": result.total,
+        "page": page,
+        "total_pages": total_pages,
+        "current_user": current_user,
+        "filters": {
+            "subject": subject,
+            "detected_from": detected_from,
+            "detected_to": detected_to,
+            "location_id": location_id,
+            "description": description,
+            "nomenclature": nomenclature,
+            "track_id": track_id,
+            "doc_status": doc_status,
+            "doc_type_id": doc_type_id,
+            "doc_current_stage": doc_current_stage,
+            "created_by_username": created_by_username,
+            "assigned_to": assigned_to,
             "sort_by": sort_by,
             "sort_order": sort_order,
         },
@@ -305,6 +418,9 @@ async def view_problem_registration_page(
     from app.messeges.public_services import PublicChatService
     chat_service = PublicChatService(db)
     chat_id = await chat_service.get_chat_id_by_document(item.document_id)
+
+    print('\n\n',current_user,'\n\n', item, '\n\n')
+    print(current_user.id, item.assigned_to)
 
     return templates.TemplateResponse("view_problem_registration.html", {
         "request": request,
@@ -546,3 +662,152 @@ async def delete_document_attachment(
     await doc_service.delete_attachment(attachment_id, user_id=current_user.id)
 
     return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}/edit", status_code=303)
+
+
+@router.post("/reports/problem-registrations/{registration_id}/archive")
+async def archive_problem_registration(
+    request: Request,
+    registration_id: int,
+    db=Depends(get_db),
+):
+    """Архивировать регистрацию проблемы."""
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+    item = await service.get_by_id(registration_id)
+    if not item:
+        return RedirectResponse(url="/reports/problem-registrations", status_code=303)
+
+    await service.archive(registration_id, user_id=current_user.id)
+    return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}", status_code=303)
+
+
+@router.post("/reports/problem-registrations/{registration_id}/unarchive")
+async def unarchive_problem_registration(
+    request: Request,
+    registration_id: int,
+    db=Depends(get_db),
+):
+    """Восстановить регистрацию проблемы из архива."""
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+    item = await service.get_by_id(registration_id)
+    if not item:
+        return RedirectResponse(url="/reports/problem-registrations", status_code=303)
+
+    await service.unarchive(registration_id, user_id=current_user.id)
+    return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}", status_code=303)
+
+
+@router.post("/reports/problem-registrations/{registration_id}/assign")
+async def assign_user_to_problem_registration(
+    request: Request,
+    registration_id: int,
+    user_id_to_assign: int = Form(...),
+    db=Depends(get_db),
+):
+    """Назначить пользователя на регистрацию проблемы."""
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+    item = await service.get_by_id(registration_id)
+    if not item:
+        return RedirectResponse(url="/reports/problem-registrations", status_code=303)
+
+    try:
+        await service.assign_user(registration_id, user_id_to_assign=user_id_to_assign, current_user_id=current_user.id)
+    except ValueError as e:
+        # Пользователь уже участник чата — показываем ошибку
+        return templates.TemplateResponse("view_problem_registration.html", {
+            "request": request,
+            "item": item,
+            "current_user": current_user,
+            "error": str(e),
+        })
+
+    return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}", status_code=303)
+
+
+@router.post("/reports/problem-registrations/{registration_id}/assign-self")
+async def assign_self_to_problem_registration(
+    request: Request,
+    registration_id: int,
+    db=Depends(get_db),
+):
+    """Назначить себя на регистрацию проблемы."""
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+    item = await service.get_by_id(registration_id)
+    if not item:
+        return RedirectResponse(url="/reports/problem-registrations", status_code=303)
+
+    await service.assign_self(registration_id, user_id=current_user.id)
+    return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}", status_code=303)
+
+
+@router.post("/reports/problem-registrations/{registration_id}/delete")
+async def delete_problem_registration(
+    request: Request,
+    registration_id: int,
+    db=Depends(get_db),
+):
+    """Удалить регистрацию проблемы."""
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+    item = await service.get_by_id(registration_id)
+    if not item:
+        return RedirectResponse(url="/reports/problem-registrations", status_code=303)
+
+    await service.delete(registration_id)
+    return RedirectResponse(url="/reports/problem-registrations/list", status_code=303)
+
+
+@router.post("/reports/problem-registrations/{registration_id}/unassign")
+async def unassign_problem_registration(
+    request: Request,
+    registration_id: int,
+    db=Depends(get_db),
+):
+    """Снять назначенного пользователя"""
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+    item = await service.get_by_id(registration_id)
+    if not item:
+        return RedirectResponse(url="/reports/problem-registrations", status_code=303)
+
+    try:
+        await service.unassign(registration_id, current_user_id=current_user.id)
+    except ValueError as e:
+        # Пользователь уже участник чата — показываем ошибку
+        return templates.TemplateResponse("view_problem_registration.html", {
+            "request": request,
+            "item": item,
+            "current_user": current_user,
+            "error": str(e),
+        })
+
+    return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}", status_code=303)
+
+

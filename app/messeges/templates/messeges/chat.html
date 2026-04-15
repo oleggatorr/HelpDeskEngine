@@ -42,7 +42,7 @@
 
 {# Модальное окно настроек списка чатов #}
 {% from "messeges/chat_list_settings_modal.html" import render_chat_list_settings_modal %}
-{{ render_chat_list_settings_modal() }}
+{{ render_chat_list_settings_modal(access_token=access_token) }}
 
 {# Автоскролл вниз #}
 <script>
@@ -50,5 +50,101 @@
         var area = document.getElementById("messages-area");
         if (area) area.scrollTop = area.scrollHeight;
     });
+</script>
+
+{# Автообновление сообщений каждые 10 секунд #}
+<script>
+(function() {
+    var chatId = {{ chat.id }};
+    var refreshInterval = 15000; // 15 секунд
+    var lastMessageCount = -1; // -1 = ещё не загружено
+    var accessToken = "{{ access_token }}";
+
+    function fetchMessages() {
+        fetch("/api/messeges/chats/" + chatId + "/messages/fragment?skip=0&limit=200", {
+            headers: {
+                "Authorization": "Bearer " + accessToken
+            }
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                return null;
+            }
+            return response.text();
+        })
+        .then(function(html) {
+            if (!html) return;
+
+            var area = document.getElementById("messages-area");
+            if (!area) return;
+
+            // Отладка: выводим первые 500 символов HTML
+            // console.log("Полученный HTML (первые 500 симв.):", html.substring(0, 500));
+
+            // Создаём временный элемент для парсинга HTML
+            var temp = document.createElement("div");
+            temp.innerHTML = html;
+            var newMessages = temp.querySelectorAll(".message-card");
+            var newCount = newMessages.length;
+
+            // Обновляем если количество изменилось или это первый запуск
+            var isFirstLoad = (lastMessageCount < 0);
+            if (newCount !== lastMessageCount || isFirstLoad) {
+                area.innerHTML = html;
+                lastMessageCount = newCount;
+
+                // Прокручиваем к последнему сообщению
+                var scrollToLast = function() {
+                    var lastMsg = area.querySelector(".message-card:last-child");
+                    if (lastMsg) {
+                        lastMsg.scrollIntoView({ behavior: isFirstLoad ? "auto" : "smooth", block: "end" });
+                    }
+                };
+
+                if (isFirstLoad) {
+                    // При первой загрузке — мгновенная прокрутка
+                    requestAnimationFrame(function() {
+                        requestAnimationFrame(scrollToLast);
+                    });
+                } else {
+                    // При обновлении — с небольшой задержкой
+                    setTimeout(scrollToLast, 100);
+                }
+
+                // Обновляем сайдбар с непрочитанными
+                fetchSidebar();
+            }
+        })
+        .catch(function(err) { /* Автообновление сообщений: silent */ });
+    }
+
+    function fetchSidebar() {
+        fetch("/api/messeges/chats/sidebar/fragment", {
+            headers: {
+                "Authorization": "Bearer " + accessToken
+            }
+        })
+        .then(function(response) {
+            if (!response.ok) return null;
+            return response.text();
+        })
+        .then(function(html) {
+            if (!html) return;
+            var sidebar = document.querySelector(".chat-sidebar");
+            if (!sidebar) return;
+
+            var temp = document.createElement("div");
+            temp.innerHTML = html;
+            var newSidebar = temp.querySelector(".chat-sidebar");
+            if (newSidebar) {
+                sidebar.innerHTML = newSidebar.innerHTML;
+            }
+        })
+        .catch(function(err) { /* fetchSidebar: silent */ });
+    }
+
+    // Запускаем интервал
+    setInterval(fetchMessages, refreshInterval);
+})();
 </script>
 {% endblock %}
