@@ -1,9 +1,10 @@
 from typing import Optional, List
 from datetime import datetime
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, ConfigDict
 
 from app.reports.enums import DocumentStage, DocumentStatus, DocumentLanguage, DocumentPriority
 
+from app.reports.models import ProblemAction
 
 class ProblemRegistrationCreate(BaseModel):
     """Схема создания регистрации проблемы (документ создаётся автоматически)."""
@@ -13,11 +14,17 @@ class ProblemRegistrationCreate(BaseModel):
     location_id: Optional[int] = None
     description: Optional[str] = None
     nomenclature: Optional[str] = None
+    approved_at: Optional[datetime] = None
+    action: Optional[ProblemAction] = None
+    responsible_department_id: Optional[int] = None
+    comment: Optional[str] = None
+    
     # Поля Document (создаётся автоматически)
     doc_status: Optional[DocumentStatus] = DocumentStatus.OPEN
     doc_language: Optional[DocumentLanguage] = DocumentLanguage.RU
     doc_priority: Optional[DocumentPriority] = DocumentPriority.MEDIUM
     doc_assigned_to: Optional[int] = None
+    
     # Вложения
     attachment_files: Optional[List[dict]] = None  # [{"file_path": str, "file_type": str}]
 
@@ -33,6 +40,20 @@ class ProblemRegistrationCreate(BaseModel):
                 return DocumentStatus(v)
             except ValueError:
                 return DocumentStatus.OPEN
+        return v
+
+    @field_validator("action", mode="before")
+    @classmethod
+    def parse_action(cls, v):
+        if v is None or v == "":
+            return None
+        if isinstance(v, ProblemAction):
+            return v
+        if isinstance(v, str):
+            try:
+                return ProblemAction(v)
+            except ValueError:
+                return None
         return v
 
     @field_validator("doc_language", mode="before")
@@ -71,10 +92,30 @@ class ProblemRegistrationUpdate(BaseModel):
     location_id: Optional[int] = None
     description: Optional[str] = None
     nomenclature: Optional[str] = None
+    approved_at: Optional[datetime] = None
+    action: Optional[ProblemAction] = None
+    responsible_department_id: Optional[int] = None
+    comment: Optional[str] = None
     doc_assigned_to: Optional[int] = None
+
+    @field_validator("action", mode="before")
+    @classmethod
+    def parse_action(cls, v):
+        if v is None or v == "":
+            return None
+        if isinstance(v, ProblemAction):
+            return v
+        if isinstance(v, str):
+            try:
+                return ProblemAction(v)
+            except ValueError:
+                return None
+        return v
 
 
 class ProblemRegistrationResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
     id: int
     document_id: int
     # Поля из документа (join)
@@ -91,13 +132,14 @@ class ProblemRegistrationResponse(BaseModel):
     location_id: Optional[int] = None
     description: Optional[str] = None
     nomenclature: Optional[str] = None
+    approved_at: Optional[datetime] = None
+    action: Optional[ProblemAction] = None
+    responsible_department_id: Optional[int] = None
+    comment: Optional[str] = None
 
-    class Config:
-        from_attributes = True
-
-    @field_validator("doc_status", mode="before")
+    @field_validator("doc_status", "action", mode="before")
     @classmethod
-    def parse_doc_status(cls, v):
+    def parse_db_values(cls, v, info):
         if isinstance(v, str):
             return v
         if hasattr(v, 'value'):
@@ -120,6 +162,12 @@ class ProblemRegistrationFilter(BaseModel):
     location_id: Optional[int] = None
     description: Optional[str] = None
     nomenclature: Optional[str] = None
+    approved_from: Optional[datetime] = None
+    approved_to: Optional[datetime] = None
+    action: Optional[ProblemAction] = None
+    responsible_department_id: Optional[int] = None
+    comment: Optional[str] = None
+    
     # Поля Document (через join)
     track_id: Optional[str] = None
     doc_created_from: Optional[datetime] = None
@@ -129,15 +177,17 @@ class ProblemRegistrationFilter(BaseModel):
     doc_current_stage: Optional[str] = None
     created_by: Optional[int] = None
     assigned_to: Optional[int] = None
+    
     # Пагинация и сортировка
     sort_by: Optional[str] = "id"
     sort_order: Optional[str] = "desc"
 
-    @field_validator("doc_status", mode="before")
+    @field_validator("doc_status", "action", mode="before")
     @classmethod
-    def parse_doc_status_filter(cls, v):
+    def parse_filter_enums(cls, v):
         if isinstance(v, str):
             return v
         if hasattr(v, 'value'):
             return v.value
         return v
+

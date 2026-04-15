@@ -10,9 +10,7 @@ from app.reports.documents.models import (  # noqa: F401
     Document, DocumentType, DocumentAttachment, DocumentLog,
 )
 from app.reports.problem_registrations.models import ProblemRegistration  # noqa: F401
-from app.reports.root_causes.models import RootCause  # noqa: F401
-from app.reports.corrective_actions.models import CorrectiveAction  # noqa: F401
-from app.reports.action_executions.models import ActionExecution  # noqa: F401
+
 
 
 # 📊 Этап
@@ -45,3 +43,12 @@ class DocumentStatus(str, enum.Enum):
     WAITING = "waiting"
     CLOSED = "closed"
     REJECTED = "rejected"
+
+
+class ProblemAction(enum.Enum):
+    """Статусы обработки проблемы (значения должны точно совпадать с БД)"""
+    UNDEFINED = "UNDEFINED"               
+    REJECTED = "REJECTED"                 
+    CLOSED = "CLOSED"                     
+    ANALYSIS_REQUIRED = "ANALYSIS_REQUIRED"  
+    ASSIGN_EXECUTOR = "ASSIGN_EXEC"    
