@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Request, Depends, Form, HTTPException, status
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
-from jinja2 import ChoiceLoader, FileSystemLoader, Environment
+
+# from fastapi.templating import Jinja2Templates
+# from jinja2 import ChoiceLoader, FileSystemLoader, Environment
+from app.core.templates import templates
+
 from pathlib import Path
 from urllib.parse import urlencode
 from jose import jwt, JWTError
@@ -10,6 +13,7 @@ from app.core.database import get_db
 from app.core.config import settings
 from app.auth.public_services import PublicAuthService, PublicUserService
 from app.auth.models import User
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter()
 
@@ -17,18 +21,18 @@ router = APIRouter()
 local_templates = Path(__file__).parent / "templates"
 global_templates = Path(__file__).parent.parent / "templates"
 
-env = Environment(
-    loader=ChoiceLoader([
-        FileSystemLoader(str(local_templates)),
-        FileSystemLoader(str(global_templates)),
-    ]),
-    autoescape=True,
-)
+# env = Environment(
+#     loader=ChoiceLoader([
+#         FileSystemLoader(str(local_templates)),
+#         FileSystemLoader(str(global_templates)),
+#     ]),
+#     autoescape=True,
+# )
 
-templates = Jinja2Templates(env=env)
+# templates = Jinja2Templates(env=env)
 
 
-async def get_current_user_from_cookie(request: Request, db=Depends(get_db)) -> User | None:
+async def get_current_user_from_cookie(request: Request, db: AsyncSession) -> User | None:
     """Получение пользователя из cookie (не вызывает ошибку, если не авторизован)."""
     token = request.cookies.get("access_token")
     if not token:
@@ -52,10 +56,16 @@ async def require_auth(request: Request, db) -> User | RedirectResponse:
 
 
 @router.get("/login-page")
-async def login_page(request: Request, error: str = ""):
+async def login_page(
+    request: Request, 
+    error: str = "", 
+    db: AsyncSession = Depends(get_db)  # ← Добавили получение сессии
+):
     """Страница входа (Jinja2)."""
     # Если уже авторизован — редирект на главную
-    user = await get_current_user_from_cookie(request)
+    # ← Передаём db явно, так как хелпер больше не резолвит Depends сам
+    user = await get_current_user_from_cookie(request, db=db)  # ← Исправлено!
+    
     if user:
         return RedirectResponse(url="/", status_code=303)
     return templates.TemplateResponse("login.html", {

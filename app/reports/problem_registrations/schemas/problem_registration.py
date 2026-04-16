@@ -14,10 +14,10 @@ class ProblemRegistrationCreate(BaseModel):
     location_id: Optional[int] = None
     description: Optional[str] = None
     nomenclature: Optional[str] = None
-    approved_at: Optional[datetime] = None
-    action: Optional[ProblemAction] = None
-    responsible_department_id: Optional[int] = None
-    comment: Optional[str] = None
+    # approved_at: Optional[datetime] = None
+    # action: Optional[ProblemAction] = None
+    # responsible_department_id: Optional[int] = None
+    # comment: Optional[str] = None
     
     # Поля Document (создаётся автоматически)
     doc_status: Optional[DocumentStatus] = DocumentStatus.OPEN
@@ -42,19 +42,19 @@ class ProblemRegistrationCreate(BaseModel):
                 return DocumentStatus.OPEN
         return v
 
-    @field_validator("action", mode="before")
-    @classmethod
-    def parse_action(cls, v):
-        if v is None or v == "":
-            return None
-        if isinstance(v, ProblemAction):
-            return v
-        if isinstance(v, str):
-            try:
-                return ProblemAction(v)
-            except ValueError:
-                return None
-        return v
+    # @field_validator("action", mode="before")
+    # @classmethod
+    # def parse_action(cls, v):
+    #     if v is None or v == "":
+    #         return None
+    #     if isinstance(v, ProblemAction):
+    #         return v
+    #     if isinstance(v, str):
+    #         try:
+    #             return ProblemAction(v)
+    #         except ValueError:
+    #             return None
+    #     return v
 
     @field_validator("doc_language", mode="before")
     @classmethod
@@ -92,25 +92,25 @@ class ProblemRegistrationUpdate(BaseModel):
     location_id: Optional[int] = None
     description: Optional[str] = None
     nomenclature: Optional[str] = None
-    approved_at: Optional[datetime] = None
-    action: Optional[ProblemAction] = None
-    responsible_department_id: Optional[int] = None
-    comment: Optional[str] = None
+    # approved_at: Optional[datetime] = None
+    # action: Optional[ProblemAction] = None
+    # responsible_department_id: Optional[int] = None
+    # comment: Optional[str] = None
     doc_assigned_to: Optional[int] = None
 
-    @field_validator("action", mode="before")
-    @classmethod
-    def parse_action(cls, v):
-        if v is None or v == "":
-            return None
-        if isinstance(v, ProblemAction):
-            return v
-        if isinstance(v, str):
-            try:
-                return ProblemAction(v)
-            except ValueError:
-                return None
-        return v
+    # @field_validator("action", mode="before")
+    # @classmethod
+    # def parse_action(cls, v):
+    #     if v is None or v == "":
+    #         return None
+    #     if isinstance(v, ProblemAction):
+    #         return v
+    #     if isinstance(v, str):
+    #         try:
+    #             return ProblemAction(v)
+    #         except ValueError:
+    #             return None
+    #     return v
 
 
 class ProblemRegistrationResponse(BaseModel):
@@ -191,3 +191,27 @@ class ProblemRegistrationFilter(BaseModel):
             return v.value
         return v
 
+
+
+class ProblemRegistration_DetaleUpdate(BaseModel):
+    """Схема обновления доп информации о регистрации проблемы."""
+    approved_at: Optional[datetime] = None
+    action: Optional[str] = ProblemAction.UNDEFINED.value 
+    responsible_department_id: Optional[int] = None
+    comment: Optional[str] = None
+
+    @field_validator("action", mode="before")
+    @classmethod
+    def parse_action(cls, v):
+        if v is None or v == "":
+            return None
+        if isinstance(v, ProblemAction):
+            return v.value  # Возвращаем строку 'CLOSED'
+        if isinstance(v, str):
+            try:
+                # Валидируем, что строка допустима, но возвращаем её же
+                ProblemAction(v)
+                return v
+            except ValueError:
+                return None
+        return v

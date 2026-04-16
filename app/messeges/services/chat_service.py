@@ -278,6 +278,80 @@ class ChatService:
         result = await self.db.execute(select(subq - read_subq))
         return result.scalar_one() or 0
 
+
+
+    async def update(self, chat_id: int, request: ChatUpdate, **kwargs) -> Optional[ChatResponse]:
+        """
+        Вход: chat_id, ChatUpdate.
+        Выход: Optional[ChatResponse].
+        Комментарий: обновление чата (поля + участники).
+        """
+        # Получаем чат с участниками
+        result = await self.db.execute(
+            select(Chat)
+            .where(Chat.id == chat_id)
+            .options(selectinload(Chat.participants))
+        )
+        chat = result.scalar_one_or_none()
+        if not chat:
+            return None
+        
+        update_data = request.model_dump(exclude_unset=True)
+        
+        # 🔹 Обработка добавления участников (через ассоциативную таблицу)
+        if "add_participant_ids" in update_data and update_data["add_participant_ids"]:
+            for user_id in update_data["add_participant_ids"]:
+                # Проверяем существование пользователя
+                user_result = await self.db.execute(select(User).where(User.id == user_id))
+                if not user_result.scalar_one_or_none():
+                    continue  # Пропускаем несуществующих, или можно raise HTTPException
+                
+                # Проверяем, нет ли уже такого участника
+                exists = await self.db.execute(
+                    select(chat_participants.c.user_id).where(
+                        chat_participants.c.chat_id == chat_id,
+                        chat_participants.c.user_id == user_id
+                    )
+                )
+                if not exists.scalar_one_or_none():
+                    # Добавляем в ассоциативную таблицу
+                    stmt = chat_participants.insert().values(chat_id=chat_id, user_id=user_id)
+                    await self.db.execute(stmt)
+            update_data.pop("add_participant_ids")
+        
+        # 🔹 Обработка удаления участников
+        if "remove_participant_ids" in update_data and update_data["remove_participant_ids"]:
+            for user_id in update_data["remove_participant_ids"]:
+                stmt = chat_participants.delete().where(
+                    chat_participants.c.chat_id == chat_id,
+                    chat_participants.c.user_id == user_id
+                )
+                await self.db.execute(stmt)
+            update_data.pop("remove_participant_ids")
+        
+        # 🔹 Обновление остальных полей модели
+        for field, value in update_data.items():
+            if value is not None and hasattr(chat, field):
+                setattr(chat, field, value)
+        
+        # Обновляем timestamp
+        chat.updated_at = datetime.utcnow()
+        
+        await self.db.commit()
+        await self.db.refresh(chat)
+        
+        # Возвращаем ChatResponse в том же формате, что и другие методы
+        return ChatResponse(
+            id=chat.id,
+            name=chat.name,
+            document_id=chat.document_id,
+            is_archived=bool(chat.is_archived),
+            is_closed=bool(chat.is_closed),
+            is_anonymized=bool(chat.is_anonymized),
+            participant_ids=[] if chat.is_anonymized else [p.id for p in chat.participants],
+            created_at=chat.created_at,
+            updated_at=chat.updated_at,
+        )
     # ==========================================
     # HELPERS
     # ==========================================

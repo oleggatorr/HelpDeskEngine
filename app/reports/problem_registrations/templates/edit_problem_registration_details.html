@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% set title = "Редактирование дополнительной информации — Help Desk Engine" %}
+
+{% block content %}
+{% include 'partials/left_side_menu.html' %}
+
+{# 🌐 Маппинг действий на русский. Замените ключи на реальные .value или .name вашего Enum #}
+{% set action_labels = {
+    "UNDEFINED" : "Не определено",
+    "REJECTED" : "Отклонено",
+    "CLOSED" : "Закрыто",
+    "ANALYSIS_REQUIRED" : "Нужен анализ",
+    "ASSIGN_EXEC" : "Нужно исправление"
+} %}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Редактирование дополнительной информации #{{ item.id }}</h1>
+        <a href="/reports/problem-registrations/{{ item.id }}" class="btn btn-outline-secondary">← Назад</a>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    
+    {# Информация о проблеме #}
+    <div class="card mb-3">
+        <div class="card-header"><h6 class="mb-0">Информация о проблеме</h6></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="text-muted small">Тема</label>
+                    <div>{{ item.subject or "—" }}</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="text-muted small">Дата обнаружения</label>
+                    <div>{{ item.detected_at.strftime("%d.%m.%Y %H:%M") if item.detected_at else "—" }}</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="text-muted small">Номенклатура</label>
+                    <div>{{ item.nomenclature or "—" }}</div>
+                </div>
+                <div class="col-12">
+                    <label class="text-muted small">Описание</label>
+                    <div>{{ item.description or "—" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Параметры документа #}
+    <div class="card mb-3">
+        <div class="card-header"><h6 class="mb-0">Параметры документа</h6></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="text-muted small">Трек-номер</label>
+                    <div>{{ item.track_id or "—" }}</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="text-muted small">Статус</label>
+                    <div><span class="badge bg-info">{{ item.doc_status or "—" }}</span></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="text-muted small">Этап</label>
+                    <div><span class="badge bg-secondary">{{ item.doc_current_stage or "—" }}</span></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="text-muted small">Дата создания документа</label>
+                    <div>{{ item.doc_created_at.strftime("%d.%m.%Y %H:%M") if item.doc_created_at else "—" }}</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="text-muted small">Назначен на</label>
+                    <div>{{ item.assigned_to or "—" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    {# Вложения #}
+    {% if attachments %}
+    <div class="card mb-3">
+        <div class="card-header"><h6 class="mb-0">Вложения</h6></div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for att in attachments %}
+                <a href="/reports/documents/attachments/{{ att.id }}/download" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 6px;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                        {{ att.original_filename or att.file_path.split("/")[-1] }}
+                    </div>
+                    <small class="text-muted">{{ att.uploaded_at.strftime("%d.%m.%Y %H:%M") }}</small>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+    <form method="post" action="/reports/problem-registrations/{{ item.id }}/edit-details">
+        <div class="card mb-3">
+            <div class="card-header"><h6 class="mb-0">Дополнительные параметры</h6></div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Дата согласования</label>
+                        <input type="datetime-local" name="approved_at" class="form-control"
+                               value="{{ form_data.approved_at if form_data else (item.approved_at.strftime('%Y-%m-%dT%H:%M') if item.approved_at else '') }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Действие (Action)</label>
+                        {% set current_action = form_data.action if form_data else (item.action.value if item.action else item.action) %}
+                        <select name="action" class="form-select">
+                            <option value="">— Не выбрано —</option>
+                            {% for act in ProblemAction %}
+                            <option value="{{ act.value }}" {% if current_action|string == act.value|string %}selected{% endif %}>
+                                {{ action_labels.get(act.value, act.name) }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Ответственный отдел</label>
+                        {% set current_dept = form_data.responsible_department_id if form_data else item.responsible_department_id %}
+                        <select name="responsible_department_id" class="form-select">
+                            <option value="">— Не выбран —</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.id }}" {% if current_dept|string == dept.id|string %}selected{% endif %}>{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Комментарий</label>
+                        <input type="text" name="comment" class="form-control"
+                                value="{{ form_data.comment if form_data else (item.comment or '') }}">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">Подтвердить</button>
+            <a href="/reports/problem-registrations/{{ item.id }}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

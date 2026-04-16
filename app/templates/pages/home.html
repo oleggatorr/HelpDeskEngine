@@ -6,5 +6,12 @@
 <main class="home-content">
     <h1>Добро пожаловать</h1>
     <p>Это главная страница системы Help Desk.</p>
+    {% if user_has_role(current_user, 'admin') %}
+            👑 Панель администратора
+        {% elif user_has_role(current_user, 'qe') %}
+            🔍 Контроль качества
+        {% else %}
+            📄 Просмотр
+        {% endif %}
 </main>
 {% endblock %}

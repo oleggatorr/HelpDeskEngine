@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
-from jinja2 import FileSystemLoader, Environment
+
+# from fastapi.templating import Jinja2Templates
+# from jinja2 import FileSystemLoader, Environment
+from app.core.templates import templates
+
 from pathlib import Path
 
 from app.core.database import get_db
@@ -12,12 +15,12 @@ router = APIRouter()
 local_templates = Path(__file__).parent / "templates"
 global_templates = Path(__file__).parent.parent / "templates"
 
-env = Environment(
-    loader=FileSystemLoader(str(global_templates)),
-    autoescape=True,
-)
+# env = Environment(
+#     loader=FileSystemLoader(str(global_templates)),
+#     autoescape=True,
+# )
 
-templates = Jinja2Templates(env=env)
+# templates = Jinja2Templates(env=env)
 
 
 @router.get("/")
@@ -30,6 +33,7 @@ async def home_page(
     if isinstance(auth_result, RedirectResponse):
         return auth_result
     current_user = auth_result
+    print(current_user)
 
     return templates.TemplateResponse("pages/home.html", {
         "request": request,

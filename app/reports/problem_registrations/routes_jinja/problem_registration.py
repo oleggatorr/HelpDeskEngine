@@ -1,8 +1,11 @@
 from typing import List
 from fastapi import APIRouter, Request, Depends, Form, UploadFile, File
 from fastapi.responses import RedirectResponse, FileResponse
-from fastapi.templating import Jinja2Templates
-from jinja2 import ChoiceLoader, FileSystemLoader, Environment
+
+# from fastapi.templating import Jinja2Templates
+# from jinja2 import ChoiceLoader, FileSystemLoader, Environment
+from app.core.templates import templates
+
 from pathlib import Path
 from datetime import datetime
 import os
@@ -12,6 +15,7 @@ from typing import Optional
 
 from app.core.database import get_db
 from app.auth.routes_jinja import require_auth
+from app.auth.permission_service import PermissionService
 from app.reports.problem_registrations.public_services.problem_registration import PublicProblemRegistrationService
 from app.reports.enums import DocumentStage, DocumentStatus
 
@@ -20,15 +24,15 @@ router = APIRouter()
 local_templates = Path(__file__).parent.parent / "templates"
 global_templates = Path(__file__).parent.parent.parent.parent / "templates"
 
-env = Environment(
-    loader=ChoiceLoader([
-        FileSystemLoader(str(local_templates)),
-        FileSystemLoader(str(global_templates)),
-    ]),
-    autoescape=True,
-)
+# env = Environment(
+#     loader=ChoiceLoader([
+#         FileSystemLoader(str(local_templates)),
+#         FileSystemLoader(str(global_templates)),
+#     ]),
+#     autoescape=True,
+# )
 
-templates = Jinja2Templates(env=env)
+# templates = Jinja2Templates(env=env)
 
 
 @router.get("/reports/problem-registrations/my")
@@ -210,7 +214,6 @@ async def problem_registrations_list_page(
         sort_order=sort_order,
         assigned_to=to_int_or_none(assigned_to),
     )
-    print(assigned_to)
     result = await service.get_all(skip=skip, limit=50, filters=filters)
 
     total_pages = max(1, (result.total + 49) // 50)
@@ -419,9 +422,6 @@ async def view_problem_registration_page(
     chat_service = PublicChatService(db)
     chat_id = await chat_service.get_chat_id_by_document(item.document_id)
 
-    print('\n\n',current_user,'\n\n', item, '\n\n')
-    print(current_user.id, item.assigned_to)
-
     return templates.TemplateResponse("view_problem_registration.html", {
         "request": request,
         "item": item,
@@ -431,7 +431,7 @@ async def view_problem_registration_page(
     })
 
 
-@router.post("/reports/problem-registrations/{registration_id}/confirm")
+@router.get("/reports/problem-registrations/{registration_id}/confirm")
 async def confirm_problem_registration(
     request: Request,
     registration_id: int,
@@ -718,7 +718,7 @@ async def assign_user_to_problem_registration(
     if isinstance(auth_result, RedirectResponse):
         return auth_result
     current_user = auth_result
-
+    print("routes_as")
     service = PublicProblemRegistrationService(db)
     item = await service.get_by_id(registration_id)
     if not item:
@@ -749,7 +749,7 @@ async def assign_self_to_problem_registration(
     if isinstance(auth_result, RedirectResponse):
         return auth_result
     current_user = auth_result
-
+    print("routes_as_self")
     service = PublicProblemRegistrationService(db)
     item = await service.get_by_id(registration_id)
     if not item:
@@ -811,3 +811,138 @@ async def unassign_problem_registration(
     return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}", status_code=303)
 
 
+@router.get("/reports/problem-registrations/{registration_id}/edit-details")
+async def edit_problem_registration_details_page(
+    request: Request,
+    registration_id: int,
+    db=Depends(get_db),
+):
+    """Страница редактирования дополнительной информации регистрации проблемы."""
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+    item = await service.get_by_id(registration_id)
+    if not item:
+        return RedirectResponse(url="/reports/problem-registrations", status_code=404)
+    if item.is_locked:
+        return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}", status_code=303)
+
+    # Получаем список отделов для выпадающего списка
+    from app.knowledge_base.public_services import PublicDepartmentService
+    department_service = PublicDepartmentService(db)
+    departments = await department_service.get_all(skip=0, limit=1000)
+
+    # Пробрасываем enum в шаблон для генерации <option>
+    from app.reports.problem_registrations.schemas.problem_registration import ProblemAction
+    from app.reports.documents.public_services.document import PublicDocumentService
+    # Получаем прикреплёные документы
+    doc_service = PublicDocumentService(db)
+    attachments = await doc_service.get_attachments(item.document_id)
+
+    return templates.TemplateResponse("edit_problem_registration_details.html", {
+        "request": request,
+        "item": item,
+        "attachments": attachments,
+        "current_user": current_user,
+        "departments": departments.items,
+        "ProblemAction": ProblemAction,
+    })
+
+
+@router.post("/reports/problem-registrations/{registration_id}/edit-details")
+async def edit_problem_registration_details_post(
+    request: Request,
+    registration_id: int,
+    approved_at: str = Form(""),
+    action: str = Form(""),
+    responsible_department_id: str = Form(""),
+    comment: str = Form(""),
+    db=Depends(get_db),
+):
+    """Обработка формы редактирования дополнительной информации регистрации проблемы."""
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+    item = await service.get_by_id(registration_id)
+    if not item:
+        return RedirectResponse(url="/reports/problem-registrations", status_code=404)
+    if item.is_locked:
+        return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}", status_code=303)
+
+    # --- Парсинг данных формы ---
+    parsed_approved_at = None
+    if approved_at and approved_at.strip():
+        try:
+            parsed_approved_at = datetime.fromisoformat(approved_at.strip())
+        except (ValueError, TypeError):
+            pass
+
+    parsed_dept_id = None
+    if responsible_department_id and responsible_department_id.strip():
+        try:
+            parsed_dept_id = int(responsible_department_id.strip())
+        except ValueError:
+            pass
+
+    parsed_comment = comment.strip() if comment else None
+
+    try:
+        from app.reports.problem_registrations.schemas.problem_registration import (
+            ProblemRegistration_DetaleUpdate,
+            ProblemRegistrationUpdate,
+        )
+        
+        # 🔧 FIX 1: Передаём пустую строку вместо None — валидатор подставит дефолт
+        update_data = ProblemRegistration_DetaleUpdate(
+            approved_at=parsed_approved_at,
+            action=action.strip() if action else "",  # ← Было: else None
+            responsible_department_id=parsed_dept_id,
+            comment=parsed_comment,
+        )
+
+        # 1️⃣ Сохраняем детали
+        await service.update_detale(registration_id, update_data)
+
+        # 🔒 2️⃣ Блокируем регистрацию
+        await service.update(registration_id, ProblemRegistrationUpdate(is_locked=True))
+
+        return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}/confirm", status_code=303)
+
+    except Exception as e:
+        # 🔧 FIX 2: Обязательно сбрасываем сессию после ошибки!
+        await db.rollback()
+        error_msg = str(e)
+
+    # В случае ошибки возвращаем форму с сохранёнными данными
+    from app.knowledge_base.public_services import PublicDepartmentService
+    department_service = PublicDepartmentService(db)
+    departments = await department_service.get_all(skip=0, limit=1000)
+
+    # Получаем прикреплёные документы
+    from app.reports.documents.public_services.document import PublicDocumentService
+    doc_service = PublicDocumentService(db)
+    attachments = await doc_service.get_attachments(item.document_id)
+
+    from app.reports.problem_registrations.schemas.problem_registration import ProblemAction
+
+    return templates.TemplateResponse("edit_problem_registration_details.html", {
+        "request": request,
+        "item": item,
+        "current_user": current_user,
+        "departments": departments.items,
+        "ProblemAction": ProblemAction,
+        "attachments": attachments,
+        "error": error_msg,
+        "form_data": {
+            "approved_at": approved_at,
+            "action": action,
+            "responsible_department_id": responsible_department_id,
+            "comment": comment,
+        },
+    })

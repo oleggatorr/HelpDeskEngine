@@ -424,3 +424,43 @@ class DocumentService:
         await self.db.refresh(doc)
 
         return DocumentResponse.model_validate(doc)
+
+    async def lock(self, doc_id:int, user_id: int) -> DocumentResponse:
+        result = await self.db.execute(select(Document).where(Document.id == doc_id))
+        doc = result.scalar_one_or_none()
+        if not doc:
+            raise ValueError(f"Document {doc_id} not found")
+        doc.is_locked = True
+        await self.db.flush()
+
+        log = DocumentLog(
+            document_id=doc_id,
+            user_id=user_id,
+            action="ARCHIVED",
+            new_value="Document archived",
+        )
+        self.db.add(log)
+        await self.db.commit()
+        await self.db.refresh(doc)
+
+        return DocumentResponse.model_validate(doc)
+
+    async def unlock(self, doc_id:int, user_id: int) -> DocumentResponse:
+        result = await self.db.execute(select(Document).where(Document.id == doc_id))
+        doc = result.scalar_one_or_none()
+        if not doc:
+            raise ValueError(f"Document {doc_id} not found")
+        doc.is_locked = False
+        await self.db.flush()
+
+        log = DocumentLog(
+            document_id=doc_id,
+            user_id=user_id,
+            action="ARCHIVED",
+            new_value="Document archived",
+        )
+        self.db.add(log)
+        await self.db.commit()
+        await self.db.refresh(doc)
+
+        return DocumentResponse.model_validate(doc)

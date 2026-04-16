@@ -7,9 +7,10 @@ from app.reports.problem_registrations.schemas.problem_registration import (
     ProblemRegistrationCreate,
     ProblemRegistrationUpdate,
     ProblemRegistrationResponse,
+    ProblemRegistration_DetaleUpdate,
 )
 from app.reports.documents.schemas.document import DocumentCreate, DocumentStage
-from app.reports.documents.services.document_service import DocumentService
+from app.reports.documents.public_services.document import PublicDocumentService
 from app.messeges.models import Chat, Message, MessageAttachment, chat_participants
 from app.auth.models import User
 
@@ -20,7 +21,7 @@ class ProblemRegistrationService:
     Использует DocumentService для работы с документами.
     """
 
-    def __init__(self, db: AsyncSession, doc_service: DocumentService):
+    def __init__(self, db: AsyncSession, doc_service: PublicDocumentService):
         self.db = db
         self.doc_service = doc_service
 
@@ -143,6 +144,10 @@ class ProblemRegistrationService:
 
     async def update(self, registration_id: int, request: ProblemRegistrationUpdate) -> Optional[ProblemRegistrationResponse]:
         """Обновить регистрацию проблемы."""
+        from sqlalchemy import select, func
+        from app.reports.models import ProblemRegistration
+        from app.reports.models import ProblemAction  # Ваш enum
+        
         result = await self.db.execute(
             select(ProblemRegistration).where(ProblemRegistration.id == registration_id)
         )
@@ -151,12 +156,13 @@ class ProblemRegistrationService:
             return None
 
         update_data = request.model_dump(exclude_unset=True)
+        
         if update_data:
-            # Нормализуем FK-поля: 0 → None
+            # 🔧 Нормализуем FK-поля: 0 → None
             if "location_id" in update_data and not update_data["location_id"]:
                 update_data["location_id"] = None
 
-            # Проверяем существование location_id
+            # 🔧 Проверяем существование location_id
             if update_data.get("location_id"):
                 from app.knowledge_base.models import Location
                 loc_result = await self.db.execute(
@@ -165,8 +171,16 @@ class ProblemRegistrationService:
                 if loc_result.scalar_one() == 0:
                     update_data["location_id"] = None
 
+            # 🔥 ГЛАВНОЕ ИСПРАВЛЕНИЕ: пропускаем None для полей с NOT NULL
             for field, value in update_data.items():
-                setattr(registration, field, value)
+                # Для поля action: если None или пустая строка — подставляем дефолт
+                if field == "action" and (value is None or value == ""):
+                    value = ProblemAction.UNDEFINED.value
+                
+                # Обновляем только если значение не None (защита от NOT NULL)
+                if value is not None:
+                    setattr(registration, field, value)
+                    
             await self.db.commit()
             await self.db.refresh(registration)
 
@@ -302,6 +316,50 @@ class ProblemRegistrationService:
             description=reg.description,
             nomenclature=reg.nomenclature,
         )
+    
+
+    async def update_response_details(
+        self, 
+        registration_id: int, 
+        request: ProblemRegistration_DetaleUpdate
+    ) -> Optional[ProblemRegistrationResponse]:
+        """Обновить дополнительную информацию/обработку регистрации проблемы."""
+        result = await self.db.execute(
+            select(ProblemRegistration).where(ProblemRegistration.id == registration_id)
+        )
+        registration = result.scalar_one_or_none()
+        if not registration:
+            return None
+
+        update_data = request.model_dump(exclude_unset=True)
+        if update_data:
+            # 1. Нормализуем FK: 0 или пустое значение → None
+            if "responsible_department_id" in update_data and not update_data["responsible_department_id"]:
+                update_data["responsible_department_id"] = None
+
+            # 2. (Опционально) Проверка существования department_id
+            if update_data.get("responsible_department_id"):
+                from app.knowledge_base.models import Department  # замените на ваш реальный путь
+                dept_exists = await self.db.execute(
+                    select(func.count()).select_from(Department).where(
+                        Department.id == update_data["responsible_department_id"]
+                    )
+                )
+                if dept_exists.scalar_one() == 0:
+                    update_data["responsible_department_id"] = None
+
+            # 3. Безопасное применение полей
+            for field, value in update_data.items():
+                # Если action приходит как Enum, а в БД колонка String/Integer
+                if field == "action" and hasattr(value, "value"):
+                    value = value.value
+                setattr(registration, field, value)
+
+            await self.db.commit()
+            await self.db.refresh(registration)
+
+        return await self.get_by_id(registration_id)
+    
 
     async def archive_document(self, doc_id: int, user_id: int) -> ProblemRegistrationResponse:
         """Архивировать документ и регистрацию."""
@@ -313,4 +371,6 @@ class ProblemRegistrationService:
 
     async def assign_user_to_document(self, doc_id: int, user_id: int, current_user_id: int) -> ProblemRegistrationResponse:
         """Назначить пользователя на документ."""
-        return await self.doc_service.assign_user(doc_id, user_id, current_user_id)
+        return await self.doc_service.assign_to_user(doc_id, user_id, current_user_id)
+    
+

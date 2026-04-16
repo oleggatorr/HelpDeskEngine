@@ -6,6 +6,7 @@ from jose import jwt, JWTError
 from fastapi import HTTPException, status
 from sqlalchemy import select, func, update as sa_update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.auth.schemas import (
     LoginRequest,
@@ -72,17 +73,20 @@ def _user_to_response(user: User) -> UserResponse:
         email=user.email,
         is_active=user.is_active,
         created_at=user.created_at,
+        profile=_profile_to_dto(user.profile) if user.profile else None,
     )
 
 
-def _profile_to_dto(profile: UserProfile) -> UserProfileDTO:
+def _profile_to_dto(profile: UserProfile) -> Optional[UserProfileDTO]:
     """Конвертация ORM-модели UserProfile в UserProfileDTO."""
+    if not profile:
+        return None
     return UserProfileDTO(
         id=profile.id,
         user_id=profile.user_id,
         role=profile.role,
         position=profile.position,
-        clearances=profile.permissions,
+        permissions=profile.permissions,
     )
 
 
@@ -260,13 +264,10 @@ class UserService:
         self.db = db
 
     async def get_by_id(self, user_id: int) -> Optional[UserResponse]:
-        """
-        Вход: user_id.
-        Выход: Optional[UserResponse].
-        Комментарий: получение пользователя по ID.
-        """
         result = await self.db.execute(
-            select(User).where(User.id == user_id)
+            select(User)
+            .where(User.id == user_id)
+            .options(selectinload(User.profile))  # ← Загружаем профиль одним запросом
         )
         user = result.scalar_one_or_none()
         return _user_to_response(user) if user else None

@@ -2,12 +2,13 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.reports.problem_registrations.services.problem_registration_service import ProblemRegistrationService
-from app.reports.documents.services.document_service import DocumentService
+from app.reports.documents.public_services.document import PublicDocumentService
 from app.reports.problem_registrations.schemas.problem_registration import (
     ProblemRegistrationCreate,
     ProblemRegistrationUpdate,
     ProblemRegistrationResponse,
     ProblemRegistrationListResponse,
+    ProblemRegistration_DetaleUpdate,
 )
 
 
@@ -15,7 +16,7 @@ class PublicProblemRegistrationService:
     """Публичный слой регистраций проблем."""
 
     def __init__(self, db: AsyncSession):
-        doc_service = DocumentService(db)
+        doc_service = PublicDocumentService(db)
         self._service = ProblemRegistrationService(db, doc_service)
 
     async def _send_chat_notification(self, document_id: int, message: str):
@@ -94,6 +95,9 @@ class PublicProblemRegistrationService:
             return None
         if item.is_locked:
             return item  # Уже заблокирован
+
+        if user_id == item.assigned_to:
+            return item 
 
         from app.reports.documents.public_services.document import PublicDocumentService
         doc_service = PublicDocumentService(self._service.db)
@@ -196,6 +200,7 @@ class PublicProblemRegistrationService:
     async def assign_user(self, registration_id: int, user_id_to_assign: int, current_user_id: int) -> Optional[ProblemRegistrationResponse]:
         """Назначить пользователя на регистрацию проблемы."""
         item = await self.get_by_id(registration_id)
+        print("asaasa")
         if not item:
             return None
         await self._service.assign_user_to_document(item.document_id, user_id_to_assign, current_user_id)
@@ -222,7 +227,7 @@ class PublicProblemRegistrationService:
     
     async def unassign(self, registration_id: int, current_user_id: int) -> Optional[ProblemRegistrationResponse]:
         item = await self.get_by_id(registration_id)
-        print(registration_id,item, sep= '\n')
+        
         if not item:
             return None
         
@@ -239,3 +244,36 @@ class PublicProblemRegistrationService:
             f"👤 Пользователь снят с регистрации проблемы {item.track_id}",
         )
         return await self.get_by_id(registration_id)
+    
+
+    async def update_detale(self, registration_id: int, request: ProblemRegistration_DetaleUpdate) -> Optional[ProblemRegistrationResponse]:
+        """Обновить регистрацию проблемы."""
+        # Проверяем, заблокирован ли документ
+        item = await self.get_by_id(registration_id)
+        if item and item.is_locked:
+            raise ValueError("Редактирование заблокированного документа невозможно")
+
+        result = await self._service.update(registration_id, request)
+        if not result:
+            return None
+
+        # Формируем описание изменений для уведомления
+        changes = []
+        # update_data = request.model_dump(exclude_unset=True)
+        # if update_data.get("subject"):
+        #     changes.append(f"Тема: {update_data['subject']}")
+        # if update_data.get("description"):
+        #     changes.append("Описание изменено")
+        # if update_data.get("nomenclature"):
+        #     changes.append(f"Номенклатура: {update_data['nomenclature']}")
+        # if update_data.get("detected_at"):
+        #     changes.append("Дата обнаружения изменена")
+        # if update_data.get("location_id"):
+        #     changes.append("Локация изменена")
+
+        if changes:
+            await self._send_chat_notification(
+                result.document_id,
+                f"✏️ Регистрация проблемы {result.track_id} обновлена: {'; '.join(changes)}",
+            )
+        return result

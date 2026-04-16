@@ -9,6 +9,7 @@ from app.reports.problem_registrations.schemas.problem_registration import (
     ProblemRegistrationResponse,
     ProblemRegistrationListResponse,
     ProblemRegistrationFilter,
+    ProblemRegistration_DetaleUpdate,
 )
 
 router = APIRouter()
@@ -210,3 +211,21 @@ async def anassign_problem_registration(
     '''Снять назначение с регистрации проблемы'''
     result = await service.unassign(registration_id, )
     pass
+
+
+@router.put(
+    "/problem-registrations/{registration_id}/details",
+    response_model=ProblemRegistrationResponse,
+    summary="Обновить дополнительную информацию регистрации проблемы",
+)
+async def update_problem_registration_details(
+    registration_id: int,
+    request: ProblemRegistration_DetaleUpdate,
+    service: PublicProblemRegistrationService = Depends(_get_service),
+):
+    """Обновить дополнительную информацию о регистрации проблемы по ID."""
+    # Предполагается, что в сервисе реализован метод update_details
+    result = await service.update_detale(registration_id, request)
+    if not result:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Регистрация не найдена")
+    return result

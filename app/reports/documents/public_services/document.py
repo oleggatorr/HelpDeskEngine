@@ -28,8 +28,25 @@ class PublicDocumentService:
     async def update_stage(self, *args, **kwargs):
         return await self._service.update_stage(*args, **kwargs)
 
-    async def update(self, *args, **kwargs):
-        return await self._service.update(*args, **kwargs)
+    async def update(self, doc_id: int, request, user_id: int = None, **kwargs):
+        """Обновить документ с жёсткой проверкой блокировки."""
+        from fastapi import HTTPException, status
+        from app.reports.documents.models import Document
+        from sqlalchemy import select
+        # 🔒 Проверяем блокировку, если явно не разрешено её обходить
+
+        lock_result = await self._service.db.execute(select(Document.is_locked).where(Document.id == doc_id))
+        is_locked = lock_result.scalar_one_or_none()
+        print(lock_result)
+
+        if is_locked:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Документ заблокирован. Редактирование, назначение и снятие назначения невозможны."
+            )
+
+        # ✅ Делегируем обновление нижнему слою
+        return await self._service.update(doc_id, request, user_id=user_id, **kwargs)
 
     async def delete(self, *args, **kwargs):
         return await self._service.delete(*args, **kwargs)
@@ -39,57 +56,57 @@ class PublicDocumentService:
 
     async def assign_to_me(self, doc_id: int, user_id: int):
         """Назначить документ на текущего пользователя."""
+        print("sdsdfsfwweqwwww")
         from app.reports.documents.schemas.document import DocumentUpdate
         return await self.update(doc_id, DocumentUpdate(assigned_to=user_id), user_id=user_id)
 
-    async def assign_to_user(self, doc_id: int, assignee_id: int):
+    async def assign_to_user(self, doc_id: int, assignee_id: int, current_user_id:int):
+        print("sdsdfsf")
         """Назначить документ на указанного пользователя."""
         from app.reports.documents.schemas.document import DocumentUpdate
-        return await self.update(doc_id, DocumentUpdate(assigned_to=assignee_id), user_id=assignee_id)
+        return await self.update(doc_id, DocumentUpdate(assigned_to=assignee_id), user_id=current_user_id)
 
     async def unassign(self, doc_id: int):
         """Снять назначение с документа."""
         from app.reports.documents.schemas.document import DocumentUpdate
         return await self.update(doc_id, DocumentUpdate(assigned_to=None), user_id=None)
 
+
     # === Блокировка ===
     async def lock(self, doc_id: int, user_id: int):
         """Заблокировать документ."""
         from app.reports.documents.schemas.document import DocumentUpdate
-        return await self.update(doc_id, DocumentUpdate(is_locked=True), user_id=user_id)
+        return await self._service.update(doc_id, DocumentUpdate(is_locked=True), user_id=user_id )
 
     async def unlock(self, doc_id: int, user_id: int):
         """Разблокировать документ."""
         from app.reports.documents.schemas.document import DocumentUpdate
-        return await self.update(doc_id, DocumentUpdate(is_locked=False), user_id=user_id)
+        return await self._service.update(doc_id, DocumentUpdate(is_locked=False), user_id=user_id)
 
     # === Архив ===
+
     async def archive(self, doc_id: int, user_id: int):
         """Архивировать документ."""
         from app.reports.documents.schemas.document import DocumentUpdate
-        result = await self.update(doc_id, DocumentUpdate(is_archived=True), user_id=user_id)
+        result = await self._service.update(doc_id, DocumentUpdate(is_archived=True), user_id=user_id)
 
-        # Архивируем чат, привязанный к документу
         chat_id = await self.get_chat_id(doc_id)
         if chat_id:
             from app.messeges.public_services import PublicChatService
             chat_service = PublicChatService(self._service.db)
             await chat_service.archive(chat_id, user_id)
-
         return result
-
+    
     async def unarchive(self, doc_id: int, user_id: int):
         """Разархивировать документ."""
         from app.reports.documents.schemas.document import DocumentUpdate
-        result = await self.update(doc_id, DocumentUpdate(is_archived=False), user_id=user_id)
+        result = await self._service.update(doc_id, DocumentUpdate(is_archived=False), user_id=user_id)
 
-        # Разархивируем чат, привязанный к документу
         chat_id = await self.get_chat_id(doc_id)
         if chat_id:
             from app.messeges.public_services import PublicChatService
             chat_service = PublicChatService(self._service.db)
             await chat_service.unarchive(chat_id, user_id)
-
         return result
 
     # === Анонимизация ===

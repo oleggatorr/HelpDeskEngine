@@ -8,8 +8,8 @@ from app.core.database import Base
 
 class UserRole(str, PyEnum):
     ADMIN = "admin"
-    OPERATOR = "operator"
     USER = "user"
+    QE = "qe" 
 
 
 class User(Base):

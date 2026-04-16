@@ -35,7 +35,7 @@
                 <li><a href="/reports/problem-registrations/my" class="side-menu-link">Мои обращения</a></li>
             </ul>
         </li>
-
+        {# {% if user_has_role(current_user, 'qe') %} #}
         <li class="side-menu-item has-submenu">
             <button class="side-menu-toggle" aria-expanded="false">
                 <span>Инженер по качеству</span>
@@ -48,10 +48,20 @@
                 <li><a href="/reports/problem-registrations/assigned" class="side-menu-link">Назначенные</a></li>
             </ul>
         </li>
+        {# {% endif %} #}
+        
+        
 
         <!-- Обычный пункт -->
         <li class="side-menu-item">
             <a href="/messeges" class="side-menu-link">Сообщения</a>
+            {% if user_has_role(current_user, 'admin') %}
+            👑 Панель администратора
+        {% elif user_has_role(current_user, 'qe') %}
+            🔍 Контроль качества
+        {% else %}
+            📄 Просмотр
+        {% endif %}
         </li>
     </ul>
 </nav>

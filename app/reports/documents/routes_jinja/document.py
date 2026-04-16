@@ -1,7 +1,10 @@
 from fastapi import APIRouter, Request, Depends
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
-from jinja2 import ChoiceLoader, FileSystemLoader, Environment
+
+# from fastapi.templating import Jinja2Templates
+# from jinja2 import ChoiceLoader, FileSystemLoader, Environment
+from app.core.templates import templates
+
 from pathlib import Path
 from datetime import datetime
 
@@ -15,15 +18,15 @@ router = APIRouter()
 local_templates = Path(__file__).parent.parent / "templates"
 global_templates = Path(__file__).parent.parent.parent.parent / "templates"
 
-env = Environment(
-    loader=ChoiceLoader([
-        FileSystemLoader(str(local_templates)),
-        FileSystemLoader(str(global_templates)),
-    ]),
-    autoescape=True,
-)
+# env = Environment(
+#     loader=ChoiceLoader([
+#         FileSystemLoader(str(local_templates)),
+#         FileSystemLoader(str(global_templates)),
+#     ]),
+#     autoescape=True,
+# )
 
-templates = Jinja2Templates(env=env)
+# templates = Jinja2Templates(env=env)
 
 
 @router.get("/reports/documents")
