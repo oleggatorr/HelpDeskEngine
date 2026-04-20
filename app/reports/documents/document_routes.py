@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
-from app.reports.documents.public_services.document import PublicDocumentService
+from app.reports.documents.document_public_service import PublicDocumentService
 from app.reports.documents.schemas.document import (
     DocumentCreate,
     DocumentUpdate,

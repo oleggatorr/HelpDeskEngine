@@ -1,4 +1,5 @@
-from pydantic_settings import BaseSettings
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -7,14 +8,15 @@ class Settings(BaseSettings):
 
     # Database
     DB_HOST: str = "localhost"
-    DB_PORT: int = 3306
+    DB_PORT: int = 5432  # ✅ Исправлено на порт PostgreSQL
     DB_USER: str = "root"
     DB_PASSWORD: str = ""
     DB_NAME: str = "helpdesk"
 
     @property
     def DATABASE_URL(self) -> str:
-        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        auth = f"{self.DB_USER}:{self.DB_PASSWORD}" if self.DB_PASSWORD else self.DB_USER
+        return f"postgresql+asyncpg://{auth}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     # JWT
     SECRET_KEY: str = "change-me-in-production"

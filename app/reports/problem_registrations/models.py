@@ -47,9 +47,15 @@ class ProblemRegistration(Base):
     
     # 👇 ИСПРАВЛЕНО: server_default теперь совпадает с английским значением enum
     action = Column(
-        SAEnum(ProblemAction, name="problem_action_enum", create_constraint=True),
+        SAEnum(
+            ProblemAction, 
+            name="problem_action_enum", 
+            create_constraint=True,
+            # 👇 Ключевое исправление: использовать значения, а не имена членов Enum
+            values_callable=lambda enum_cls: [e.value for e in enum_cls],
+        ),
         nullable=True, 
-        server_default=text("'analysis_required'"),  # Английский value + безопасное экранирование
+        server_default=text("'ANALYSIS_REQUIRED'"),  # ⚠️ Исправлено: uppercase, как в Enum.value
         comment="Действие по проблеме"
     )
     
@@ -59,7 +65,6 @@ class ProblemRegistration(Base):
     # Связи
     document = relationship("Document", backref="problem_registration")
     location = relationship("Location", backref="problem_registrations")
-    responsible_department = relationship("Department", backref="problem_registrations")
-
+    responsible_department = relationship("Department", back_populates="problem_registrations")
     def __repr__(self):
         return f"<ProblemRegistration {self.id}>"

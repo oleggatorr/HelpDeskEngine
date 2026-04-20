@@ -109,7 +109,7 @@
                     <div class="col-md-6">
                         <label class="form-label">Дата согласования</label>
                         <input type="datetime-local" name="approved_at" class="form-control"
-                               value="{{ form_data.approved_at if form_data else (item.approved_at.strftime('%Y-%m-%dT%H:%M') if item.approved_at else '') }}">
+                               value="{{ form_data.approved_at if form_data else now().strftime('%Y-%m-%dT%H:%M')}}">
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Действие (Action)</label>
@@ -135,8 +135,9 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Комментарий</label>
-                        <input type="text" name="comment" class="form-control"
-                                value="{{ form_data.comment if form_data else (item.comment or '') }}">
+                        <textarea name="comment" class="form-control" rows="4" 
+                                placeholder="Введите комментарий...">{{ form_data.comment if form_data else (item.comment or '') }}</textarea>
+                        <small class="text-muted">Поддерживается ввод с переносом строк (Enter)</small>
                     </div>
                 </div>
             </div>

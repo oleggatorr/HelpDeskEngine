@@ -20,25 +20,28 @@ class PermissionService:
         """
         Проверка, есть ли у пользователя конкретная роль.
         Работает и с SQLAlchemy-моделью, и с Pydantic-схемой.
+        Если профиль отсутствует или роль в нём не указана, 
+        по умолчанию используется UserRole.USER.
         """
         if not user:
             return False
         
-        # Получаем профиль: для модели - атрибут, для схемы - поле
+        # Получаем профиль
         profile = getattr(user, 'profile', None)
-        if not profile:
-            return False
         
-        # Получаем роль из профиля
-        user_role = getattr(profile, 'role', None)
-        if not user_role:
-            return False
+        # Если профиля нет или в нём нет поля role, берём роль по умолчанию
+        user_role = getattr(profile, 'role', None) if profile else None
+        if user_role is None:
+            user_role = UserRole.USER
+        elif user_role == UserRole.ADMIN:
+            return True
+            
+        # Приводим обе роли к сопоставимому виду (значение Enum или строка)
+        user_role_value = user_role.value if hasattr(user_role, 'value') else str(user_role)
+        target_role_value = role.value if hasattr(role, 'value') else str(role)
         
-        # Сравниваем: если роль — Enum, берём .value, иначе сравниваем как строку
-        role_value = user_role.value if hasattr(user_role, 'value') else str(user_role)
-        target_value = role.value if hasattr(role, 'value') else str(role)
-        
-        return role_value == target_value
+        return user_role_value == target_role_value
+    
 
     @staticmethod
     def has_any_role(user, roles: list[UserRole]) -> bool:

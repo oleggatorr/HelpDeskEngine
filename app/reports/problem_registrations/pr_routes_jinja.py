@@ -1,6 +1,7 @@
 from typing import List
 from fastapi import APIRouter, Request, Depends, Form, UploadFile, File
 from fastapi.responses import RedirectResponse, FileResponse
+from app.knowledge_base.models import Department
 
 # from fastapi.templating import Jinja2Templates
 # from jinja2 import ChoiceLoader, FileSystemLoader, Environment
@@ -16,7 +17,7 @@ from typing import Optional
 from app.core.database import get_db
 from app.auth.routes_jinja import require_auth
 from app.auth.permission_service import PermissionService
-from app.reports.problem_registrations.public_services.problem_registration import PublicProblemRegistrationService
+from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
 from app.reports.enums import DocumentStage, DocumentStatus
 
 router = APIRouter()
@@ -88,26 +89,40 @@ async def assigned_registration_page(
         "current_user": current_user,
     })
 
-
-@router.get("/reports/problem-registrations")
-async def problem_registrations_page(
+@router.get("/reports/problem-registrations/admin_list")
+async def problem_registrations_admin_list_page(
     request: Request,
+    # 🔹 ProblemRegistration фильтры
     subject: str = "",
     detected_from: str = "",
     detected_to: str = "",
-    location_id: int = 0,
+    location_id: str = "",
     description: str = "",
     nomenclature: str = "",
+    approved_from: str = "",
+    approved_to: str = "",
+    action: str = "",
+    responsible_department_id: str = "",
+    comment: str = "",
+    # 🔹 Document фильтры
     track_id: str = "",
+    doc_created_from: str = "",
+    doc_created_to: str = "",
     doc_status: str = "",
-    doc_type_id: int = 0,
+    doc_type_id: str = "",
     doc_current_stage: str = "",
+    created_by: str = "",
+    assigned_to: str = "",
+    is_locked: str = "",  # 🔒 Новое поле
+    # 🔹 Сортировка и пагинация
     sort_by: str = "id",
     sort_order: str = "desc",
     page: int = 1,
     db=Depends(get_db),
+    
 ):
-    """Страница списка регистраций проблем с фильтрами и сортировкой."""
+    """Админ-страница списка регистраций проблем с ПОЛНОЙ фильтрацией."""
+    # 🔐 Авторизация
     auth_result = await require_auth(request, db)
     if isinstance(auth_result, RedirectResponse):
         return auth_result
@@ -116,33 +131,85 @@ async def problem_registrations_page(
     service = PublicProblemRegistrationService(db)
     skip = (page - 1) * 50
 
+    # 🔽 Хелперы для безопасной конвертации
+    def to_int_or_none(val: str) -> int | None:
+        if not val or not val.strip():
+            return None
+        try:
+            return int(val.strip())
+        except (ValueError, TypeError):
+            return None
+
+    def to_bool_or_none(val: str) -> bool | None:
+        if not val or not val.strip():
+            return None
+        return val.strip().lower() in ("true", "1", "yes", "on")
+    
+
+    def parse_date(val: str, end_of_day: bool = False) -> datetime | None:
+        if not val or not val.strip():
+            return None
+        try:
+            dt = datetime.fromisoformat(val)
+            if end_of_day:
+                return dt.replace(hour=23, minute=59, second=59)
+            return dt
+        except (ValueError, TypeError):
+            return None
+
+    # 📦 Сборка фильтров
     from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationFilter
+    from app.reports.problem_registrations.models import ProblemAction
+    from app.reports.documents.models import DocumentStatus
+
     filters = ProblemRegistrationFilter(
+        # ProblemRegistration поля
         subject=subject or None,
-        detected_from=datetime.fromisoformat(detected_from) if detected_from else None,
-        detected_to=datetime.fromisoformat(detected_to + "T23:59:59") if detected_to else None,
-        location_id=location_id or None,
+        detected_from=parse_date(detected_from),
+        detected_to=parse_date(detected_to, end_of_day=True),
+        location_id=to_int_or_none(location_id),
         description=description or None,
         nomenclature=nomenclature or None,
+        approved_from=parse_date(approved_from),
+        approved_to=parse_date(approved_to, end_of_day=True),
+        action=action or None,  # валидатор схемы обработает строку
+        responsible_department_id=to_int_or_none(responsible_department_id),
+        comment=comment or None,
+        
+        # Document поля
         track_id=track_id or None,
-        doc_status=doc_status or None,
-        doc_type_id=doc_type_id or None,
+        doc_created_from=parse_date(doc_created_from),
+        doc_created_to=parse_date(doc_created_to, end_of_day=True),
+        doc_status=doc_status or None,  # валидатор схемы обработает строку
+        doc_type_id=to_int_or_none(doc_type_id),
         doc_current_stage=doc_current_stage or None,
+        created_by=to_int_or_none(created_by),
+        assigned_to=to_int_or_none(assigned_to),
+        is_locked=to_bool_or_none(is_locked),  # 🔒 Конвертация строки в bool
+        
+        # Сортировка
         sort_by=sort_by,
         sort_order=sort_order,
     )
 
     result = await service.get_all(skip=skip, limit=50, filters=filters)
-
     total_pages = max(1, (result.total + 49) // 50)
+    from app.knowledge_base.public_services import PublicDepartmentService
+    PDS = PublicDepartmentService(db)
+    departments = await PDS.get_all()
+    print(list(departments.items))
 
-    return templates.TemplateResponse("problem_registrations.html", {
+    # 🎨 Подготовка контекста для шаблона
+    return templates.TemplateResponse("problem_registrations_admin.html", {
         "request": request,
         "items": result.items,
         "total": result.total,
         "page": page,
         "total_pages": total_pages,
         "current_user": current_user,
+        "departments": departments.items,
+        
+        # 🔁 Сохраняем ВСЕ фильтры для отображения в форме
         "filters": {
             "subject": subject,
             "detected_from": detected_from,
@@ -150,17 +217,29 @@ async def problem_registrations_page(
             "location_id": location_id,
             "description": description,
             "nomenclature": nomenclature,
+            "approved_from": approved_from,
+            "approved_to": approved_to,
+            "action": action,
+            "responsible_department_id": responsible_department_id,
+            "comment": comment,
             "track_id": track_id,
+            "doc_created_from": doc_created_from,
+            "doc_created_to": doc_created_to,
             "doc_status": doc_status,
             "doc_type_id": doc_type_id,
             "doc_current_stage": doc_current_stage,
+            "created_by": created_by,
+            "assigned_to": assigned_to,
+            "is_locked": is_locked,
             "sort_by": sort_by,
             "sort_order": sort_order,
         },
+        
+        # 📋 Списки для <select> в шаблоне
         "stages": [s.name for s in DocumentStage],
         "statuses": [s.value for s in DocumentStatus],
+        "actions": list(ProblemAction),  # 👈 Для выпадающего списка "Действие"
     })
-
 
 @router.get("/reports/problem-registrations/list")
 async def problem_registrations_list_page(
@@ -293,7 +372,7 @@ async def create_problem_registration_post(
     current_user = auth_result
 
     from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationCreate
-    from app.reports.problem_registrations.public_services.problem_registration import PublicProblemRegistrationService
+    from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
 
     service = PublicProblemRegistrationService(db)
 
@@ -375,6 +454,79 @@ async def create_problem_registration_post(
         })
 
 
+@router.get("/reports/problem-registrations/locked")
+async def problem_registrations_locked_list_page(
+    request: Request,
+    # 🔍 Фильтры (оставляем только релевантные для заблокированных)
+    subject: str = "",
+    track_id: str = "",
+    detected_from: str = "",
+    detected_to: str = "",
+    sort_by: str = "id",
+    sort_order: str = "desc",
+    page: int = 1,
+    db=Depends(get_db),
+):
+    """Страница списка ЗАБЛОКИРОВАННЫХ регистраций проблем."""
+    # 🔐 Авторизация
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+    skip = (page - 1) * 50
+
+    # 🔽 Хелпер для безопасной конвертации str → int | None
+    def to_int_or_none(val: str) -> int | None:
+        if not val or not val.strip():
+            return None
+        try:
+            return int(val.strip())
+        except (ValueError, TypeError):
+            return None
+
+    # 📦 Фильтры + принудительное is_locked=True
+    from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationFilter
+    filters = ProblemRegistrationFilter(
+        subject=subject or None,
+        track_id=track_id or None,
+        detected_from=datetime.fromisoformat(detected_from) if detected_from else None,
+        detected_to=datetime.fromisoformat(detected_to + "T23:59:59") if detected_to else None,
+        # 🔒 Жёсткий фильтр: только заблокированные
+        is_locked=True,
+        # Сортировка и пагинация
+        sort_by=sort_by,
+        sort_order=sort_order,
+    )
+
+    result = await service.get_all(skip=skip, limit=50, filters=filters)
+    total_pages = max(1, (result.total + 49) // 50)
+
+    return templates.TemplateResponse(
+        "problem_registrations_locked_list.html",  # 👈 Можно создать отдельный locked_list.html
+        {
+            "request": request,
+            "items": result.items,
+            "total": result.total,
+            "page": page,
+            "total_pages": total_pages,
+            "current_user": current_user,
+            "is_locked_view": True,  # 👈 Флаг для шаблона (например, скрыть кнопки редактирования)
+            "filters": {
+                "subject": subject,
+                "track_id": track_id,
+                "detected_from": detected_from,
+                "detected_to": detected_to,
+                "sort_by": sort_by,
+                "sort_order": sort_order,
+            },
+            "stages": [s.name for s in DocumentStage],
+            "statuses": [s.value for s in DocumentStatus],
+        }
+    )
+
+
 @router.get("/reports/problem-registrations/document/{document_id}")
 async def view_by_document_page(
     request: Request,
@@ -413,7 +565,7 @@ async def view_problem_registration_page(
         return RedirectResponse(url="/reports/problem-registrations", status_code=404)
 
     # Получаем вложения документа
-    from app.reports.documents.public_services.document import PublicDocumentService
+    from app.reports.documents.document_public_service import PublicDocumentService
     doc_service = PublicDocumentService(db)
     attachments = await doc_service.get_attachments(item.document_id)
 
@@ -422,12 +574,19 @@ async def view_problem_registration_page(
     chat_service = PublicChatService(db)
     chat_id = await chat_service.get_chat_id_by_document(item.document_id)
 
+    from app.knowledge_base.public_services import PublicDepartmentService
+    PDS = PublicDepartmentService(db)
+
+    responsible_department_name = await PDS.get_by_id(item.responsible_department_id)
+
+    
     return templates.TemplateResponse("view_problem_registration.html", {
         "request": request,
         "item": item,
         "current_user": current_user,
         "chat_id": chat_id,
         "attachments": attachments,
+        "responsible_department_name" : responsible_department_name.name if responsible_department_name else None,
     })
 
 
@@ -447,7 +606,6 @@ async def confirm_problem_registration(
     item = await service.get_by_id(registration_id)
     if not item:
         return RedirectResponse(url="/reports/problem-registrations", status_code=303)
-
     await service.confirm(registration_id, user_id=current_user.id)
     return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}", status_code=303)
 
@@ -497,7 +655,7 @@ async def edit_problem_registration_page(
     locations = await location_service.get_all(skip=0, limit=1000)
 
     # Получаем вложения документа
-    from app.reports.documents.public_services.document import PublicDocumentService
+    from app.reports.documents.document_public_service import PublicDocumentService
     doc_service = PublicDocumentService(db)
     attachments = await doc_service.get_attachments(item.document_id)
 
@@ -529,7 +687,7 @@ async def edit_problem_registration_post(
     current_user = auth_result
 
     from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationUpdate
-    from app.reports.problem_registrations.public_services.problem_registration import PublicProblemRegistrationService
+    from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
 
     service = PublicProblemRegistrationService(db)
     item = await service.get_by_id(registration_id)
@@ -583,7 +741,7 @@ async def edit_problem_registration_post(
 
         # Добавляем новые вложения к документу
         if attachment_files:
-            from app.reports.documents.public_services.document import PublicDocumentService
+            from app.reports.documents.document_public_service import PublicDocumentService
             doc_service = PublicDocumentService(db)
             for att_data in attachment_files:
                 await doc_service.add_attachment(item.document_id, att_data["file_path"], att_data["original_filename"], att_data["file_type"], current_user.id)
@@ -657,7 +815,7 @@ async def delete_document_attachment(
     if item.is_locked:
         return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}", status_code=303)
 
-    from app.reports.documents.public_services.document import PublicDocumentService
+    from app.reports.documents.document_public_service import PublicDocumentService
     doc_service = PublicDocumentService(db)
     await doc_service.delete_attachment(attachment_id, user_id=current_user.id)
 
@@ -718,7 +876,6 @@ async def assign_user_to_problem_registration(
     if isinstance(auth_result, RedirectResponse):
         return auth_result
     current_user = auth_result
-    print("routes_as")
     service = PublicProblemRegistrationService(db)
     item = await service.get_by_id(registration_id)
     if not item:
@@ -749,7 +906,6 @@ async def assign_self_to_problem_registration(
     if isinstance(auth_result, RedirectResponse):
         return auth_result
     current_user = auth_result
-    print("routes_as_self")
     service = PublicProblemRegistrationService(db)
     item = await service.get_by_id(registration_id)
     if not item:
@@ -837,7 +993,7 @@ async def edit_problem_registration_details_page(
 
     # Пробрасываем enum в шаблон для генерации <option>
     from app.reports.problem_registrations.schemas.problem_registration import ProblemAction
-    from app.reports.documents.public_services.document import PublicDocumentService
+    from app.reports.documents.document_public_service import PublicDocumentService
     # Получаем прикреплёные документы
     doc_service = PublicDocumentService(db)
     attachments = await doc_service.get_attachments(item.document_id)
@@ -849,6 +1005,7 @@ async def edit_problem_registration_details_page(
         "current_user": current_user,
         "departments": departments.items,
         "ProblemAction": ProblemAction,
+        "now": datetime.now,
     })
 
 
@@ -925,7 +1082,7 @@ async def edit_problem_registration_details_post(
     departments = await department_service.get_all(skip=0, limit=1000)
 
     # Получаем прикреплёные документы
-    from app.reports.documents.public_services.document import PublicDocumentService
+    from app.reports.documents.document_public_service import PublicDocumentService
     doc_service = PublicDocumentService(db)
     attachments = await doc_service.get_attachments(item.document_id)
 
@@ -945,4 +1102,7 @@ async def edit_problem_registration_details_post(
             "responsible_department_id": responsible_department_id,
             "comment": comment,
         },
+        "now": datetime.now,
     })
+
+

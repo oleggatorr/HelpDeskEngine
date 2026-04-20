@@ -11,7 +11,7 @@ class PublicProblemRegistrationService:
     """Публичный сервис для работы с назначениями проблем."""
 
     def __init__(self, db: AsyncSession):
-        from app.reports.problem_registrations.public_services.problem_registration import PublicProblemRegistrationService as PRService
+        from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService as PRService
         self._service = PRService(db)
 
     async def get_assigned(self, user_id: int, skip: int = 0, limit: int = 100):

@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, Text
-from app.core.database import Base
+from app.core.database import Base 
+from sqlalchemy.orm import relationship
 
 
 class Department(Base):
@@ -7,6 +8,11 @@ class Department(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), unique=True, nullable=False)  # Механический цех, Сборочный и т.д.
+    profiles = relationship("UserProfile", back_populates="department") # 👈 обратная связь
+
+    problem_registrations = relationship("ProblemRegistration", back_populates="responsible_department")
+
+
 
     def __repr__(self):
         return f"<Department {self.name}>"

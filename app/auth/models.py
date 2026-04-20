@@ -7,9 +7,11 @@ from app.core.database import Base
 
 
 class UserRole(str, PyEnum):
-    ADMIN = "admin"
-    USER = "user"
-    QE = "qe" 
+    ADMIN =     "admin"
+    USER =      "user"
+    QE =        "qe" 
+    OWNER =     "owner"
+    ASSIGNEE =  "assignee"
 
 
 class User(Base):
@@ -45,6 +47,11 @@ class UserProfile(Base):
 
     # Связь 1 к 1 с User
     user = relationship("User", back_populates="profile")
+
+    department_id = Column(Integer, ForeignKey("departments.id", ondelete="SET NULL"), nullable=True) # 👈 новое поле
+    department = relationship("Department", back_populates="profiles")  # ← имя должно совпадать!
+
+
 
     def __repr__(self):
         return f"<UserProfile {self.role} - {self.position}>"

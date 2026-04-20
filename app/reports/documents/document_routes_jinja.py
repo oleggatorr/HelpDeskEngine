@@ -10,7 +10,7 @@ from datetime import datetime
 
 from app.core.database import get_db
 from app.auth.routes_jinja import require_auth
-from app.reports.documents.public_services.document import PublicDocumentService
+from app.reports.documents.document_public_service import PublicDocumentService
 from app.reports.enums import DocumentStage
 
 router = APIRouter()

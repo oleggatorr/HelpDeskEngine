@@ -137,6 +137,12 @@ class ProblemRegistrationResponse(BaseModel):
     responsible_department_id: Optional[int] = None
     comment: Optional[str] = None
 
+    location_name: Optional[str] = None
+    department_name: Optional[str] = None
+    created_by: Optional[int] = None  # если ещё не объявлено
+
+    model_config = ConfigDict(from_attributes=True)  # убедитесь, что есть
+
     @field_validator("doc_status", "action", mode="before")
     @classmethod
     def parse_db_values(cls, v, info):
@@ -177,6 +183,7 @@ class ProblemRegistrationFilter(BaseModel):
     doc_current_stage: Optional[str] = None
     created_by: Optional[int] = None
     assigned_to: Optional[int] = None
+    is_locked: Optional[bool] = None
     
     # Пагинация и сортировка
     sort_by: Optional[str] = "id"
@@ -190,6 +197,17 @@ class ProblemRegistrationFilter(BaseModel):
         if hasattr(v, 'value'):
             return v.value
         return v
+    
+    @field_validator("is_locked", mode="before")
+    @classmethod
+    def parse_bool_filter(cls, v):
+        if v is None or v == "":
+            return None
+        if isinstance(v, bool):
+            return v
+        if isinstance(v, str):
+            return v.strip().lower() in ("true", "1", "yes", "on")
+        return bool(v)
 
 
 

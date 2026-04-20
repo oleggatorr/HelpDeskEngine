@@ -14,6 +14,15 @@
 </div>
 {% endif %}
 
+{# 🌐 Маппинг действий на русский #}
+{% set action_labels = {
+    "UNDEFINED" : "Не определено",
+    "REJECTED" : "Отклонено",
+    "CLOSED" : "Закрыто",
+    "ANALYSIS_REQUIRED" : "Нужен анализ",
+    "ASSIGN_EXEC" : "Нужно исправление"
+} %}
+
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="mb-0">{{ item.track_id or "—" }}</h1>
@@ -120,10 +129,26 @@
                     <label class="text-muted small">Назначен на</label>
                     <div>{{ item.assigned_to or "—" }}</div>
                 </div>
+                {# 🔹 Внутри карточки "Параметры документа", после блока "Назначен на" #}
+                <div class="col-md-4">
+                    <label class="text-muted small">Создатель</label>
+                    <div>
+                        {% if item.created_by_name %}
+                            {{ item.created_by_name }}
+                        {% elif item.created_by %}
+                            <span class="text-muted small">ID: {{ item.created_by }}</span>
+                        {% else %}
+                            —
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
+
+
     </div>
 
+    {% if not item.is_locked %}
     {# Назначение пользователя #}
     {% if not item.is_archived %}
     <div class="card mb-3">
@@ -163,6 +188,7 @@
         </div>
     </div>
     {% endif %}
+    {% endif %}
 
     {# Вложения #}
     {% if attachments %}
@@ -182,6 +208,37 @@
             </div>
         </div>
     </div>
+    {% endif %}
+    
+    {% if item.is_locked %}
+        {# ✅ Дополнительные параметры (только для просмотра) #}
+            <div class="card mb-3">
+                <div class="card-header"><h6 class="mb-0">Дополнительные параметры</h6></div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Дата согласования</label>
+                            <div>{{ item.approved_at.strftime("%d.%m.%Y %H:%M") if item.approved_at else "—" }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Действие (Action)</label>
+                            {% set act_val = item.action.value if item.action else item.action %}
+                            <div>{{ action_labels.get(act_val, act_val) or "—" }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Ответственный отдел</label>
+                            <div>
+                                
+                                {{ responsible_department_name if responsible_department_name else "—" }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Комментарий</label>
+                            <div class="bg-light p-2 rounded" style="white-space: pre-wrap; word-break: break-word;">{{ item.comment or "—" }}</div>
+                        </div>      
+                    </div>
+                </div>
+            </div>
     {% endif %}
 
     {# Действия с риском #}

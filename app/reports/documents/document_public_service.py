@@ -1,7 +1,7 @@
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.reports.documents.services.document_service import DocumentService
+from app.reports.documents.document_service import DocumentService
 
 
 class PublicDocumentService:
@@ -37,7 +37,6 @@ class PublicDocumentService:
 
         lock_result = await self._service.db.execute(select(Document.is_locked).where(Document.id == doc_id))
         is_locked = lock_result.scalar_one_or_none()
-        print(lock_result)
 
         if is_locked:
             raise HTTPException(
@@ -56,12 +55,12 @@ class PublicDocumentService:
 
     async def assign_to_me(self, doc_id: int, user_id: int):
         """Назначить документ на текущего пользователя."""
-        print("sdsdfsfwweqwwww")
+
         from app.reports.documents.schemas.document import DocumentUpdate
         return await self.update(doc_id, DocumentUpdate(assigned_to=user_id), user_id=user_id)
 
     async def assign_to_user(self, doc_id: int, assignee_id: int, current_user_id:int):
-        print("sdsdfsf")
+
         """Назначить документ на указанного пользователя."""
         from app.reports.documents.schemas.document import DocumentUpdate
         return await self.update(doc_id, DocumentUpdate(assigned_to=assignee_id), user_id=current_user_id)

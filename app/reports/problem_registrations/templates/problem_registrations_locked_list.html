@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% set title = "Регистрации проблем — Help Desk Engine" %}
+{% set title = "Список регистраций проблем — Help Desk Engine" %}
 
 {% block content %}
 {% include 'partials/left_side_menu.html' %}
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Регистрации проблем</h1>
+        <h1 class="mb-0">Список подтверждённых заявок</h1>
         <a href="/reports/problem-registrations/create" class="btn btn-primary">+ Создать</a>
     </div>
 
@@ -14,7 +14,7 @@
     <div class="card mb-4">
         <div class="card-header"><h6 class="mb-0">Фильтры</h6></div>
         <div class="card-body">
-            <form method="get" action="/reports/problem-registrations" class="row g-3">
+            <form method="get" action="/reports/problem-registrations/list" class="row g-3">
                 <div class="col-md-3">
                     <label class="form-label">Тема</label>
                     <input type="text" name="subject" class="form-control form-control-sm"
@@ -53,6 +53,21 @@
                     <input type="date" name="detected_to" class="form-control form-control-sm"
                            value="{{ filters.detected_to }}">
                 </div>
+                <div class="col-md-3">
+                    <label class="form-label">Номенклатура</label>
+                    <input type="text" name="nomenclature" class="form-control form-control-sm"
+                           value="{{ filters.nomenclature }}" placeholder="Номенклатура">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Описание</label>
+                    <input type="text" name="description" class="form-control form-control-sm"
+                           value="{{ filters.description }}" placeholder="Описание">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Назначен на (ID)</label>
+                    <input type="number" name="assigned_to" class="form-control form-control-sm"
+                        value="{{ filters.assigned_to }}" placeholder="ID пользователя" min="-1">
+                </div>
                 <div class="col-md-1 d-flex align-items-end">
                     <button type="submit" class="btn btn-sm btn-primary w-100">Найти</button>
                 </div>
@@ -64,7 +79,7 @@
     <div class="d-flex justify-content-between align-items-center mb-2">
         <span class="text-muted">Всего: {{ total }}</span>
         <div class="d-flex gap-2">
-            <form method="get" action="/reports/problem-registrations" class="d-flex gap-2 align-items-center">
+            <form method="get" action="/reports/problem-registrations/list" class="d-flex gap-2 align-items-center">
                 {% for k, v in filters.items() %}{% if k not in ['sort_by', 'sort_order'] %}
                 <input type="hidden" name="{{ k }}" value="{{ v }}">
                 {% endif %}{% endfor %}
@@ -93,6 +108,7 @@
                     <th>Статус</th>
                     <th>Этап</th>
                     <th>Обнаружено</th>
+                    <th>Номенклатура</th>
                     <th>Описание</th>
                     <th>Действия</th>
                 </tr>
@@ -107,6 +123,7 @@
                         <td><span class="badge bg-info">{{ item.doc_status or "—" }}</span></td>
                         <td><span class="badge bg-secondary">{{ item.doc_current_stage or "—" }}</span></td>
                         <td>{{ item.detected_at.strftime("%d.%m.%Y %H:%M") if item.detected_at else "—" }}</td>
+                        <td class="text-truncate" style="max-width: 150px;">{{ item.nomenclature or "—" }}</td>
                         <td class="text-truncate" style="max-width: 200px;">{{ item.description or "—" }}</td>
                         <td>
                             <div class="d-flex gap-1">
@@ -121,7 +138,7 @@
                     </tr>
                     {% endfor %}
                 {% else %}
-                    <tr><td colspan="8" class="text-center text-muted">Регистрации не найдены</td></tr>
+                    <tr><td colspan="9" class="text-center text-muted">Регистрации не найдены</td></tr>
                 {% endif %}
             </tbody>
         </table>

@@ -2,10 +2,10 @@ from fastapi import FastAPI
 from app.home.routes_jinja import router as home_router
 from app.auth.routes import router as auth_router
 from app.auth.routes_jinja import router as auth_jinja_router
-from app.reports.documents.routes.document import router as reports_router
-from app.reports.problem_registrations.routes.problem_registration import router as problem_registration_router
-from app.reports.documents.routes_jinja.document import router as reports_jinja_router
-from app.reports.problem_registrations.routes_jinja.problem_registration import router as problem_registration_jinja_router
+from app.reports.documents.document_routes import router as reports_router
+from app.reports.problem_registrations.pr_routes import router as problem_registration_router
+from app.reports.documents.document_routes_jinja import router as reports_jinja_router
+from app.reports.problem_registrations.pr_routes_jinja import router as problem_registration_jinja_router
 from app.messeges.routes import router as messeges_router
 from app.messeges.routes_jinja import router as messeges_jinja_router
 from app.tasks.routes import router as tasks_router

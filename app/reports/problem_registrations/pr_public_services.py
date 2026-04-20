@@ -1,8 +1,8 @@
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.reports.problem_registrations.services.problem_registration_service import ProblemRegistrationService
-from app.reports.documents.public_services.document import PublicDocumentService
+from app.reports.problem_registrations.pr_service import ProblemRegistrationService
+from app.reports.documents.document_public_service import PublicDocumentService
 from app.reports.problem_registrations.schemas.problem_registration import (
     ProblemRegistrationCreate,
     ProblemRegistrationUpdate,
@@ -93,16 +93,14 @@ class PublicProblemRegistrationService:
         item = await self.get_by_id(registration_id)
         if not item:
             return None
+
         if item.is_locked:
             return item  # Уже заблокирован
 
-        if user_id == item.assigned_to:
-            return item 
-
-        from app.reports.documents.public_services.document import PublicDocumentService
+        from app.reports.documents.document_public_service import PublicDocumentService
         doc_service = PublicDocumentService(self._service.db)
         await doc_service.lock(item.document_id, user_id=user_id)
-
+        
         await self._send_chat_notification(
             item.document_id,
             f"🔒 Регистрация проблемы {item.track_id} подтверждена и заблокирована",
@@ -119,7 +117,7 @@ class PublicProblemRegistrationService:
         if not item.is_locked:
             return item  # Уже разблокирован
 
-        from app.reports.documents.public_services.document import PublicDocumentService
+        from app.reports.documents.document_public_service import PublicDocumentService
         doc_service = PublicDocumentService(self._service.db)
         await doc_service.unlock(item.document_id, user_id=user_id)
 
@@ -235,7 +233,7 @@ class PublicProblemRegistrationService:
         if not item.assigned_to: 
             return item
         
-        from app.reports.documents.public_services.document import PublicDocumentService
+        from app.reports.documents.document_public_service import PublicDocumentService
         doc_service = PublicDocumentService(self._service.db)
         await doc_service.unassign(item.document_id, )
 

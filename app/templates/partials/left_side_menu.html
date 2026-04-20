@@ -35,7 +35,7 @@
                 <li><a href="/reports/problem-registrations/my" class="side-menu-link">Мои обращения</a></li>
             </ul>
         </li>
-        {# {% if user_has_role(current_user, 'qe') %} #}
+        {% if user_has_role(current_user, 'qe') %}
         <li class="side-menu-item has-submenu">
             <button class="side-menu-toggle" aria-expanded="false">
                 <span>Инженер по качеству</span>
@@ -48,7 +48,21 @@
                 <li><a href="/reports/problem-registrations/assigned" class="side-menu-link">Назначенные</a></li>
             </ul>
         </li>
-        {# {% endif %} #}
+        {% endif %}
+
+        {% if user_has_role(current_user, 'owner') %}
+        <li class="side-menu-item has-submenu">
+            <button class="side-menu-toggle" aria-expanded="false">
+                <span>Руководитель отделения</span>
+                <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <ul class="side-menu-submenu">
+                <li><a href="/reports/problem-registrations/locked" class="side-menu-link">Подтверждённые заявки</a></li>
+            </ul>
+        </li>
+        {% endif %}
         
         
 
@@ -56,7 +70,8 @@
         <li class="side-menu-item">
             <a href="/messeges" class="side-menu-link">Сообщения</a>
             {% if user_has_role(current_user, 'admin') %}
-            👑 Панель администратора
+            
+             <li><a href="/reports/problem-registrations/admin_list" class="side-menu-link">👑 Панель администратора</a></li>
         {% elif user_has_role(current_user, 'qe') %}
             🔍 Контроль качества
         {% else %}

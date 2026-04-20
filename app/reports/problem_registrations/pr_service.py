@@ -1,5 +1,5 @@
 from typing import Optional, List
-from sqlalchemy import select, func
+from sqlalchemy import select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.reports.models import ProblemRegistration, Document, DocumentType
@@ -8,11 +8,18 @@ from app.reports.problem_registrations.schemas.problem_registration import (
     ProblemRegistrationUpdate,
     ProblemRegistrationResponse,
     ProblemRegistration_DetaleUpdate,
+    ProblemRegistrationFilter,
 )
+
+
 from app.reports.documents.schemas.document import DocumentCreate, DocumentStage
-from app.reports.documents.public_services.document import PublicDocumentService
+from app.reports.documents.document_public_service import PublicDocumentService
 from app.messeges.models import Chat, Message, MessageAttachment, chat_participants
 from app.auth.models import User
+from app.knowledge_base.models import Department
+
+# В начале файла сервиса добавьте:
+from sqlalchemy.orm import joinedload, selectinload
 
 
 class ProblemRegistrationService:
@@ -113,17 +120,26 @@ class ProblemRegistrationService:
             select(ProblemRegistration, Document)
             .join(Document, ProblemRegistration.document_id == Document.id)
             .where(ProblemRegistration.id == registration_id)
+            .options(  # 🔥 ДОБАВЬТЕ ЭТО:
+                selectinload(ProblemRegistration.location),
+                selectinload(ProblemRegistration.responsible_department),
+            )
         )
         row = result.first()
         if not row:
             return None
         return self._row_to_response(row)
 
+
     async def get_by_document_id(self, doc_id: int) -> Optional[ProblemRegistrationResponse]:
         result = await self.db.execute(
             select(ProblemRegistration, Document)
             .join(Document, ProblemRegistration.document_id == Document.id)
             .where(ProblemRegistration.document_id == doc_id)
+            .options(  # 🔥 ТО ЖЕ САМОЕ:
+                selectinload(ProblemRegistration.location),
+                selectinload(ProblemRegistration.responsible_department),
+            )
         )
         row = result.first()
         if not row:
@@ -131,11 +147,14 @@ class ProblemRegistrationService:
         return self._row_to_response(row)
 
     async def get_by_track_id(self, track_id: str) -> Optional[ProblemRegistrationResponse]:
-        """Получить регистрацию проблемы по трек-номеру документа."""
         result = await self.db.execute(
             select(ProblemRegistration, Document)
             .join(Document, ProblemRegistration.document_id == Document.id)
             .where(Document.track_id == track_id)
+            .options(  # 🔥 И ЗДЕСЬ:
+                selectinload(ProblemRegistration.location),
+                selectinload(ProblemRegistration.responsible_department),
+            )
         )
         row = result.first()
         if not row:
@@ -203,80 +222,100 @@ class ProblemRegistrationService:
         self,
         skip: int = 0,
         limit: int = 100,
-        filters: Optional[object] = None,
+        filters: Optional[ProblemRegistrationFilter] = None,
     ) -> dict:
-        """Список регистраций с total-счётчиком и фильтрами."""
-        from app.reports.models import DocumentStage as DocumentStageEnum
-
+        """Список регистраций с total-счётчиком и полной фильтрацией."""
         conditions = []
-        print(filters.assigned_to)
+
         if filters:
-            # Фильтры по ProblemRegistration
+            # 🔹 ProblemRegistration фильтры
             if filters.subject:
                 conditions.append(ProblemRegistration.subject.ilike(f"%{filters.subject}%"))
             if filters.detected_from:
                 conditions.append(ProblemRegistration.detected_at >= filters.detected_from)
             if filters.detected_to:
                 conditions.append(ProblemRegistration.detected_at <= filters.detected_to)
-            if filters.location_id:
+            if filters.location_id is not None:
                 conditions.append(ProblemRegistration.location_id == filters.location_id)
             if filters.description:
                 conditions.append(ProblemRegistration.description.ilike(f"%{filters.description}%"))
             if filters.nomenclature:
                 conditions.append(ProblemRegistration.nomenclature.ilike(f"%{filters.nomenclature}%"))
-            # Фильтры по Document
+            if filters.approved_from:
+                conditions.append(ProblemRegistration.approved_at >= filters.approved_from)
+            if filters.approved_to:
+                conditions.append(ProblemRegistration.approved_at <= filters.approved_to)
+            if filters.action is not None:
+                act_val = getattr(filters.action, 'value', filters.action)
+                conditions.append(ProblemRegistration.action == act_val)
+            if filters.responsible_department_id is not None:
+                conditions.append(ProblemRegistration.responsible_department_id == filters.responsible_department_id)
+            if filters.comment:
+                conditions.append(ProblemRegistration.comment.ilike(f"%{filters.comment}%"))
+
+            # 🔹 Document фильтры
             if filters.track_id:
                 conditions.append(Document.track_id.ilike(f"%{filters.track_id}%"))
             if filters.doc_created_from:
                 conditions.append(Document.created_at >= filters.doc_created_from)
             if filters.doc_created_to:
                 conditions.append(Document.created_at <= filters.doc_created_to)
-            if filters.doc_status:
-                status_value = filters.doc_status.value if hasattr(filters.doc_status, 'value') else filters.doc_status
-                conditions.append(Document.status == status_value)
-            if filters.doc_type_id:
+            if filters.doc_status is not None:
+                status_val = getattr(filters.doc_status, 'value', filters.doc_status)
+                conditions.append(Document.status == status_val)
+            if filters.doc_type_id is not None:
                 conditions.append(Document.doc_type_id == filters.doc_type_id)
             if filters.doc_current_stage:
                 try:
-                    stage_enum = DocumentStageEnum[filters.doc_current_stage]
-                    conditions.append(Document.current_stage == stage_enum)
+                    stage_val = DocumentStage[filters.doc_current_stage]
+                    conditions.append(Document.current_stage == stage_val)
                 except KeyError:
-                    pass
+                    pass  # Игнорируем невалидные названия этапов
             if filters.created_by is not None:
                 conditions.append(Document.created_by == filters.created_by)
-                
             if filters.assigned_to is not None:
                 if filters.assigned_to == -1:
-                    # 🔹 Специальное значение -1 → ищем где assigned_to IS NULL
                     conditions.append(Document.assigned_to.is_(None))
                 elif filters.assigned_to > 0:
-                    # 🔹 Положительное число → ищем по точному ID
                     conditions.append(Document.assigned_to == filters.assigned_to)
-                # Если 0 или отрицательное (кроме -1) — игнорируем фильтр
+            if filters.is_locked is not None:
+                conditions.append(Document.is_locked == filters.is_locked)
 
-        # Базовый запрос с JOIN
-        query_base = select(ProblemRegistration, Document).join(
+        # 📦 Базовый запрос с JOIN
+        base_query = select(ProblemRegistration, Document).join(
             Document, ProblemRegistration.document_id == Document.id
+        ).options(
+            selectinload(ProblemRegistration.location),
+            selectinload(ProblemRegistration.responsible_department)
         )
-        if conditions:
-            from sqlalchemy import and_
-            query_base = query_base.where(and_(*conditions))
 
-        # Счётчик
-        count_query = select(func.count()).select_from(query_base.subquery())
+        if conditions:
+            base_query = base_query.where(and_(*conditions))
+
+        # 🔢 Подсчёт общего количества
+        count_subq = base_query.subquery()
+        count_query = select(func.count()).select_from(count_subq)
         count_result = await self.db.execute(count_query)
         total = count_result.scalar_one()
 
-        # Сортировка
-        sort_col = getattr(ProblemRegistration, filters.sort_by if filters else "id", ProblemRegistration.id)
-        order_fn = sort_col.asc if (filters and filters.sort_order == "asc") else sort_col.desc
-        query = query_base.order_by(order_fn()).offset(skip).limit(limit)
+        # ↕️ Сортировка (поддержка полей из обеих таблиц)
+        sort_by = filters.sort_by if filters and filters.sort_by else "id"
+        sort_order = (filters.sort_order if filters and filters.sort_order else "desc").lower()
 
-        result = await self.db.execute(query)
+        # Пробуем найти поле в ProblemRegistration, если нет — в Document
+        sort_col = getattr(ProblemRegistration, sort_by, None) or getattr(Document, sort_by, ProblemRegistration.id)
+        order_fn = sort_col.asc if sort_order == "asc" else sort_col.desc
+
+        final_query = base_query.order_by(order_fn()).offset(skip).limit(limit)
+
+        # 📤 Выполнение и маппинг
+        result = await self.db.execute(final_query)
         rows = result.all()
         items = [self._row_to_response(row) for row in rows]
 
         return {"items": items, "total": total}
+
+    # app/reports/problem_registrations/services/problem_registration.py
 
     def _row_to_response(self, row) -> ProblemRegistrationResponse:
         """Конвертация строки (registration, document) в Response."""
@@ -285,7 +324,7 @@ class ProblemRegistrationService:
         reg, doc = row
         stage = doc.current_stage
 
-        # Нормализуем stage в строку
+        # Нормализуем stage в строку (ваш код без изменений)
         if stage is None:
             stage_str = None
         elif hasattr(stage, 'name'):
@@ -315,7 +354,17 @@ class ProblemRegistrationService:
             location_id=reg.location_id,
             description=reg.description,
             nomenclature=reg.nomenclature,
+            approved_at=reg.approved_at,
+            action=reg.action.value if hasattr(reg.action, 'value') else reg.action,
+            responsible_department_id=reg.responsible_department_id,
+            comment=reg.comment,
+            
+            # 🔥 КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: явно передаём имена из загруженных отношений
+            location_name=reg.location.name if reg.location else None,
+            department_name=reg.responsible_department.name if reg.responsible_department else None,
+            created_by=doc.created_by,
         )
+
     
 
     async def update_response_details(
