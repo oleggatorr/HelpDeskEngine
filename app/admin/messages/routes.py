@@ -9,10 +9,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.dependencies import require_admin, get_current_user, oauth2_scheme
 from app.auth.models import User
-from app.messeges.schemas.chat import (
+from app.messages.schemas.chat import (
     ChatCreate, ChatUpdate, ChatResponse, ChatListResponse, ChatFilter,
 )
-from app.messeges.schemas.message import (
+from app.messages.schemas.message import (
     MessageCreate, MessageResponse, MessageListResponse,
     MessageReadResponse, MessageAttachmentCreate, MessageAttachmentResponse,
 )
@@ -137,7 +137,7 @@ async def create_message_with_files(
     svc: AdminMessageService = Depends(_get_service),
 ):
     """Создать сообщение с загрузкой файлов."""
-    from app.messeges.schemas.message import MessageCreate, MessageAttachmentCreate
+    from app.messages.schemas.message import MessageCreate, MessageAttachmentCreate
 
     attachments = []
     if files:

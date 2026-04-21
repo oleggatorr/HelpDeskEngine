@@ -7,7 +7,7 @@ import string
 
 from app.reports.enums import DocumentStage, DocumentLanguage, DocumentPriority, DocumentStatus
 
-# Формат трек-номера: XXX-XXXX-XXX (3-4-3 символа, цифры + заглавные буквы)
+# Формат трек-номера: XXX-XXX-XXXX (3-4-3 символа, цифры + заглавные буквы)
 TRACK_ID_PATTERN = re.compile(r"^[A-Z0-9]{3}-[A-Z0-9]{3}-[A-Z0-9]{4}$")
 
 

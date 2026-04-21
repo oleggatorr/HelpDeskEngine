@@ -27,7 +27,7 @@ from app.core.config import settings
 # Import all models here to ensure they are registered with Base.metadata
 from app.auth.models import User, UserProfile
 from app.reports.models import Base
-from app.messeges.models import Chat, Message, MessageAttachment
+from app.messages.models import Chat, Message, MessageAttachment
 from app.knowledge_base.models import Department, Location, CauseCode
 
 target_metadata = Base.metadata

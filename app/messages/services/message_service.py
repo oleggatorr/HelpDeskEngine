@@ -6,8 +6,8 @@ from sqlalchemy import select, func, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.messeges.models import Message, MessageAttachment, message_reads, Chat
-from app.messeges.schemas import (
+from app.messages.models import Message, MessageAttachment, message_reads, Chat
+from app.messages.schemas import (
     MessageCreate,
     MessageResponse,
     MessageListResponse,

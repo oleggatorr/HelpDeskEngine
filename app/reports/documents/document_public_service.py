@@ -91,7 +91,7 @@ class PublicDocumentService:
 
         chat_id = await self.get_chat_id(doc_id)
         if chat_id:
-            from app.messeges.public_services import PublicChatService
+            from app.messages.public_services import PublicChatService
             chat_service = PublicChatService(self._service.db)
             await chat_service.archive(chat_id, user_id)
         return result
@@ -103,7 +103,7 @@ class PublicDocumentService:
 
         chat_id = await self.get_chat_id(doc_id)
         if chat_id:
-            from app.messeges.public_services import PublicChatService
+            from app.messages.public_services import PublicChatService
             chat_service = PublicChatService(self._service.db)
             await chat_service.unarchive(chat_id, user_id)
         return result
@@ -139,7 +139,7 @@ class PublicDocumentService:
 
     async def get_chat_id(self, doc_id: int) -> Optional[int]:
         """Получить ID чата, привязанного к документу."""
-        from app.messeges.models import Chat
+        from app.messages.models import Chat
         from sqlalchemy import select
         result = await self._service.db.execute(
             select(Chat.id).where(Chat.document_id == doc_id)

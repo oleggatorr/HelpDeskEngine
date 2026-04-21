@@ -2,9 +2,9 @@ from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from app.messeges.services.chat_service import ChatService
-from app.messeges.services.message_service import MessageService
-from app.messeges.schemas import ChatResponse
+from app.messages.services.chat_service import ChatService
+from app.messages.services.message_service import MessageService
+from app.messages.schemas import ChatResponse
 
 
 class PublicProblemRegistrationService:
@@ -29,7 +29,7 @@ class PublicChatService:
 
     async def _send_system_message(self, chat_id: int, content: str):
         """Отправить системное сообщение в чат."""
-        from app.messeges.models import Message
+        from app.messages.models import Message
         msg = Message(
             chat_id=chat_id,
             sender_id=None,
@@ -66,7 +66,7 @@ class PublicChatService:
                 updated_at=chat.updated_at,
                 unread_count=unread,
             ))
-        from app.messeges.schemas import ChatListResponse
+        from app.messages.schemas import ChatListResponse
         return ChatListResponse(chats=chats_with_unread, total=chats_result.total)
 
     async def list_all(self, *args, **kwargs):
@@ -74,7 +74,7 @@ class PublicChatService:
 
     async def update(self, chat_id: int, request, **kwargs):
         """Обновить чат с отправкой системных сообщений о участниках."""
-        from app.messeges.schemas import ChatUpdate
+        from app.messages.schemas import ChatUpdate
 
         # Отправляем системные сообщения о добавлении участников ДО обновления
         if hasattr(request, 'add_participant_ids') and request.add_participant_ids:
@@ -97,14 +97,14 @@ class PublicChatService:
     # === Архив ===
     async def archive(self, chat_id: int, user_id: int):
         """Архивировать чат."""
-        from app.messeges.schemas import ChatUpdate
+        from app.messages.schemas import ChatUpdate
         result = await self.update(chat_id, ChatUpdate(is_archived=True))
         await self._send_system_message(chat_id, "📦 Чат архивирован")
         return result
 
     async def unarchive(self, chat_id: int, user_id: int):
         """Разархивировать чат."""
-        from app.messeges.schemas import ChatUpdate
+        from app.messages.schemas import ChatUpdate
         result = await self.update(chat_id, ChatUpdate(is_archived=False))
         await self._send_system_message(chat_id, "📦 Чат разархивирован")
         return result
@@ -112,14 +112,14 @@ class PublicChatService:
     # === Закрытие/Открытие ===
     async def close(self, chat_id: int, user_id: int):
         """Закрыть чат."""
-        from app.messeges.schemas import ChatUpdate
+        from app.messages.schemas import ChatUpdate
         result = await self.update(chat_id, ChatUpdate(is_closed=True))
         await self._send_system_message(chat_id, "🔒 Чат закрыт")
         return result
 
     async def open(self, chat_id: int, user_id: int):
         """Открыть чат."""
-        from app.messeges.schemas import ChatUpdate
+        from app.messages.schemas import ChatUpdate
         result = await self.update(chat_id, ChatUpdate(is_closed=False))
         await self._send_system_message(chat_id, "🔓 Чат открыт")
         return result
@@ -127,21 +127,21 @@ class PublicChatService:
     # === Анонимизация ===
     async def anonymize(self, chat_id: int, user_id: int):
         """Анонимизировать чат."""
-        from app.messeges.schemas import ChatUpdate
+        from app.messages.schemas import ChatUpdate
         result = await self.update(chat_id, ChatUpdate(is_anonymized=True))
         await self._send_system_message(chat_id, "👤 Чат анонимизирован")
         return result
 
     async def deanonymize(self, chat_id: int, user_id: int):
         """Деанонимизировать чат."""
-        from app.messeges.schemas import ChatUpdate
+        from app.messages.schemas import ChatUpdate
         result = await self.update(chat_id, ChatUpdate(is_anonymized=False))
         await self._send_system_message(chat_id, "👤 Чат деанонимизирован")
         return result
 
     async def get_document_id(self, chat_id: int) -> Optional[int]:
         """Получить ID документа, привязанного к чату."""
-        from app.messeges.models import Chat
+        from app.messages.models import Chat
         result = await self.db.execute(
             select(Chat.document_id).where(Chat.id == chat_id)
         )
@@ -149,7 +149,7 @@ class PublicChatService:
 
     async def get_chat_id_by_document(self, document_id: int) -> Optional[int]:
         """Получить ID чата, привязанного к документу."""
-        from app.messeges.models import Chat
+        from app.messages.models import Chat
         result = await self.db.execute(
             select(Chat.id).where(Chat.document_id == document_id)
         )
@@ -165,7 +165,7 @@ class PublicChatService:
             return False
 
         # Проверяем, является ли пользователь уже участником (напрямую через БД)
-        from app.messeges.models import chat_participants
+        from app.messages.models import chat_participants
         result = await self.db.execute(
             select(chat_participants.c.user_id).where(
                 chat_participants.c.chat_id == chat_id,
@@ -175,7 +175,7 @@ class PublicChatService:
         if result.scalar_one_or_none() is not None:
             raise ValueError(f"Пользователь ID {user_id} уже является участником чата")
 
-        from app.messeges.schemas import ChatUpdate
+        from app.messages.schemas import ChatUpdate
         await self.update(chat_id, ChatUpdate(add_participant_ids=[user_id]))
         return True
 
@@ -218,7 +218,7 @@ class PublicMessageService:
 
     async def send_system_message(self, chat_id: int, content: str) -> Optional[int]:
         """Отправить системное сообщение в чат. Возвращает ID сообщения."""
-        from app.messeges.models import Message
+        from app.messages.models import Message
         msg = Message(
             chat_id=chat_id,
             sender_id=None,

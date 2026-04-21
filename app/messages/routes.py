@@ -11,8 +11,8 @@ import uuid
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
 from app.auth.models import User
-from app.messeges.public_services import PublicChatService, PublicMessageService
-from app.messeges.schemas import (
+from app.messages.public_services import PublicChatService, PublicMessageService
+from app.messages.schemas import (
     ChatCreate,
     ChatResponse,
     ChatListResponse,
@@ -461,7 +461,7 @@ async def deanonymize_chat(chat_id: int, current_user: User = Depends(get_curren
 @router.post("/chats/{chat_id}/add-participant", response_model=ChatResponse, summary="Добавить участника")
 async def add_participant(chat_id: int, request: dict, current_user: User = Depends(get_current_user), service: PublicChatService = Depends(_get_public_chat_service)):
     """Добавить пользователя в чат по user_id."""
-    from app.messeges.schemas import ChatUpdate
+    from app.messages.schemas import ChatUpdate
     user_id = request.get("user_id")
     if not user_id:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="user_id обязателен")
@@ -472,7 +472,7 @@ async def add_participant(chat_id: int, request: dict, current_user: User = Depe
 @router.post("/chats/{chat_id}/leave", response_model=ChatResponse, summary="Покинуть чат")
 async def leave_chat(chat_id: int, current_user: User = Depends(get_current_user), service: PublicChatService = Depends(_get_public_chat_service)):
     """Покинуть чат (удалить себя из участников)."""
-    from app.messeges.schemas import ChatUpdate
+    from app.messages.schemas import ChatUpdate
     try: return await service.update(chat_id, ChatUpdate(remove_participant_ids=[current_user.id]))
     except ValueError as e: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
@@ -480,8 +480,8 @@ async def leave_chat(chat_id: int, current_user: User = Depends(get_current_user
 @router.post("/chats/mark-all-read", summary="Отметить все чаты прочитанными")
 async def mark_all_chats_read(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
     """Отметить все сообщения во всех чатах пользователя как прочитанные."""
-    from app.messeges.public_services import PublicMessageService
-    from app.messeges.public_services import PublicChatService
+    from app.messages.public_services import PublicMessageService
+    from app.messages.public_services import PublicChatService
     chat_service = PublicChatService(db)
     message_service = PublicMessageService(db)
     chats_result = await chat_service.get_user_chats(user_id=current_user.id, skip=0, limit=1000)

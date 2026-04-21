@@ -306,7 +306,7 @@ class DocumentService:
         await self.db.flush()
 
         # Анонимизируем все чаты, связанные с документом
-        from app.messeges.models import Chat
+        from app.messages.models import Chat
         chats_result = await self.db.execute(
             select(Chat).where(Chat.document_id == doc_id)
         )

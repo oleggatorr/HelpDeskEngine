@@ -82,7 +82,6 @@ class AuthService:
         result = await self.db.execute(
             select(User).where(User.login == request.login)
         )
-        print(222222222222222222222222222222)
         user = result.scalar_one_or_none()
         
         if not user or not _verify_password(request.password, user.password_hash):
@@ -161,10 +160,23 @@ class UserService:
         self.db = db
 
     async def get_by_id(self, user_id: int) -> Optional[UserResponse]:
-        res = await self.db.execute(
-            select(User).options(selectinload(User.profile)).where(User.id == user_id)
+        stmt = (
+            select(User)
+            .where(User.id == user_id)
+            .options(
+                # 🔥 Правильная цепочка: User → UserProfile → Department
+                selectinload(User.profile)
+                .selectinload(UserProfile.department)  # ← UserProfile, не Profile!
+            )
         )
-        return _user_to_response(res.scalar_one_or_none())
+        
+        res = await self.db.execute(stmt)
+        user = res.scalar_one_or_none()
+        
+        if not user:
+            return None
+            
+        return _user_to_response(user)
 
     async def list_filtered(
         self, filters: Optional[UserFilter] = None, skip: int = 0, limit: int = 100

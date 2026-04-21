@@ -6,8 +6,8 @@ from sqlalchemy import select, func, delete, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.messeges.models import Chat, Message, MessageAttachment, chat_participants, message_reads
-from app.messeges.schemas import (
+from app.messages.models import Chat, Message, MessageAttachment, chat_participants, message_reads
+from app.messages.schemas import (
     ChatCreate,
     ChatUpdate,
     ChatResponse,
@@ -212,7 +212,7 @@ class ChatService:
 
     async def _delete_chat_with_soft_attachments(self, chat_id: int):
         """Мягкое удаление вложений сообщений + каскадное удаление чата."""
-        from app.messeges.models import MessageAttachment, Message
+        from app.messages.models import MessageAttachment, Message
         from sqlalchemy import select
 
         # Получаем все сообщения чата

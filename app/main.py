@@ -6,8 +6,9 @@ from app.reports.documents.document_routes import router as reports_router
 from app.reports.problem_registrations.pr_routes import router as problem_registration_router
 from app.reports.documents.document_routes_jinja import router as reports_jinja_router
 from app.reports.problem_registrations.pr_routes_jinja import router as problem_registration_jinja_router
-from app.messeges.routes import router as messeges_router
-from app.messeges.routes_jinja import router as messeges_jinja_router
+from app.reports.correction.routes import router as correction_router
+from app.messages.routes import router as messeges_router
+from app.messages.routes_jinja import router as messeges_jinja_router
 from app.tasks.routes import router as tasks_router
 from app.admin.users.routes import router as admin_users_router
 from app.admin.messages.routes import router as admin_messages_router
@@ -37,6 +38,7 @@ app.include_router(reports_router, prefix="/api/reports", tags=["Documents"])
 app.include_router(problem_registration_router, prefix="/api/reports", tags=["Problem Registrations"])
 app.include_router(reports_jinja_router, tags=["Reports — Pages"])
 app.include_router(problem_registration_jinja_router, tags=["Problem Registrations — Pages"])
+app.include_router(correction_router, prefix="/api/reports", tags=["Corrections"]) 
 app.include_router(messeges_router, prefix="/api/messeges", tags=["Messages"])
 app.include_router(tasks_router, prefix="/api/tasks", tags=["Tasks"])
 app.include_router(admin_users_router, prefix="/api/admin", tags=["Admin — Users"])

@@ -13,8 +13,8 @@ import uuid
 from app.core.database import get_db
 from app.auth.routes_jinja import get_current_user_from_cookie, require_auth
 from app.auth.models import User
-from app.messeges.public_services import PublicChatService, PublicMessageService
-from app.messeges.schemas import MessageCreate, MessageAttachmentCreate
+from app.messages.public_services import PublicChatService, PublicMessageService
+from app.messages.schemas import MessageCreate, MessageAttachmentCreate
 
 router = APIRouter()
 
@@ -169,7 +169,7 @@ async def download_attachment(
     if isinstance(auth_result, RedirectResponse):
         return auth_result
 
-    from app.messeges.models import MessageAttachment
+    from app.messages.models import MessageAttachment
     from sqlalchemy import select
 
     result = await db.execute(

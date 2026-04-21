@@ -453,11 +453,10 @@ async def create_problem_registration_post(
             "now": datetime.now,
         })
 
-
 @router.get("/reports/problem-registrations/locked")
 async def problem_registrations_locked_list_page(
     request: Request,
-    # 🔍 Фильтры (оставляем только релевантные для заблокированных)
+    # 🔍 Фильтры
     subject: str = "",
     track_id: str = "",
     detected_from: str = "",
@@ -467,7 +466,7 @@ async def problem_registrations_locked_list_page(
     page: int = 1,
     db=Depends(get_db),
 ):
-    """Страница списка ЗАБЛОКИРОВАННЫХ регистраций проблем."""
+    """Страница списка ЗАБЛОКИРОВАННЫХ регистраций проблем с автофильтром по департаменту."""
     # 🔐 Авторизация
     auth_result = await require_auth(request, db)
     if isinstance(auth_result, RedirectResponse):
@@ -486,6 +485,25 @@ async def problem_registrations_locked_list_page(
         except (ValueError, TypeError):
             return None
 
+    # 🏢 Автофильтр по департаменту пользователя
+    user_department_id = None
+    is_admin = getattr(current_user, "is_admin", False) or getattr(current_user, "role", "") == "admin"
+
+    if not is_admin:
+        # 🔥 Правильно: department_id хранится в UserProfile, а не в User
+        profile = getattr(current_user, "profile", None)
+        if profile:
+            user_department_id = getattr(profile, "department_id", None)
+            # Если department_id может быть вложенным объектом (Pydantic), берём .id:
+            # if hasattr(user_department_id, "id"):
+            #     user_department_id = user_department_id.id
+    from app.knowledge_base.public_services import PublicDepartmentService
+    pds = PublicDepartmentService(db)
+    _pds = await pds.get_by_id(user_department_id)
+    # print(f"🔍 DEBUG: is_admin={is_admin}, user_department_id={user_department_id}, {_pds.name}")  # Для отладки
+    department_name = _pds.name
+
+    
     # 📦 Фильтры + принудительное is_locked=True
     from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationFilter
     filters = ProblemRegistrationFilter(
@@ -495,6 +513,8 @@ async def problem_registrations_locked_list_page(
         detected_to=datetime.fromisoformat(detected_to + "T23:59:59") if detected_to else None,
         # 🔒 Жёсткий фильтр: только заблокированные
         is_locked=True,
+        # 🏢 Автофильтр по департаменту (только для не-админов)
+        responsible_department_id=user_department_id,
         # Сортировка и пагинация
         sort_by=sort_by,
         sort_order=sort_order,
@@ -503,16 +523,23 @@ async def problem_registrations_locked_list_page(
     result = await service.get_all(skip=skip, limit=50, filters=filters)
     total_pages = max(1, (result.total + 49) // 50)
 
+    # 🏢 Получаем список департаментов для отображения в шаблоне (опционально)
+    from app.knowledge_base.public_services import PublicDepartmentService
+    PDS = PublicDepartmentService(db)
+    departments = await PDS.get_all()
+
     return templates.TemplateResponse(
-        "problem_registrations_locked_list.html",  # 👈 Можно создать отдельный locked_list.html
+        "problem_registrations_locked_list.html",
         {
             "request": request,
             "items": result.items,
             "total": result.total,
             "page": page,
+            "department_name": department_name,
             "total_pages": total_pages,
             "current_user": current_user,
-            "is_locked_view": True,  # 👈 Флаг для шаблона (например, скрыть кнопки редактирования)
+            "is_locked_view": True,
+            "user_department_id": user_department_id,  # 👈 Для отображения в шаблоне
             "filters": {
                 "subject": subject,
                 "track_id": track_id,
@@ -523,6 +550,7 @@ async def problem_registrations_locked_list_page(
             },
             "stages": [s.name for s in DocumentStage],
             "statuses": [s.value for s in DocumentStatus],
+            "departments": departments.items,  # 👈 Если нужно показать в фильтре
         }
     )
 
@@ -570,7 +598,7 @@ async def view_problem_registration_page(
     attachments = await doc_service.get_attachments(item.document_id)
 
     # Получаем ID чата по документу
-    from app.messeges.public_services import PublicChatService
+    from app.messages.public_services import PublicChatService
     chat_service = PublicChatService(db)
     chat_id = await chat_service.get_chat_id_by_document(item.document_id)
 
@@ -589,6 +617,49 @@ async def view_problem_registration_page(
         "responsible_department_name" : responsible_department_name.name if responsible_department_name else None,
     })
 
+
+
+@router.get("/reports/problem-registrations/owner/{registration_id}")
+async def view_problem_registration_page(
+    request: Request,
+    registration_id: int,
+    db=Depends(get_db),
+):
+    """Страница просмотра регистрации проблемы."""
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+    item = await service.get_by_id(registration_id)
+    if not item:
+        return RedirectResponse(url="/reports/problem-registrations", status_code=404)
+
+    # Получаем вложения документа
+    from app.reports.documents.document_public_service import PublicDocumentService
+    doc_service = PublicDocumentService(db)
+    attachments = await doc_service.get_attachments(item.document_id)
+
+    # Получаем ID чата по документу
+    from app.messages.public_services import PublicChatService
+    chat_service = PublicChatService(db)
+    chat_id = await chat_service.get_chat_id_by_document(item.document_id)
+
+    from app.knowledge_base.public_services import PublicDepartmentService
+    PDS = PublicDepartmentService(db)
+
+    responsible_department_name = await PDS.get_by_id(item.responsible_department_id)
+
+    
+    return templates.TemplateResponse("owner_problem_registration.html", {
+        "request": request,
+        "item": item,
+        "current_user": current_user,
+        "chat_id": chat_id,
+        "attachments": attachments,
+        "responsible_department_name" : responsible_department_name.name if responsible_department_name else None,
+    })
 
 @router.get("/reports/problem-registrations/{registration_id}/confirm")
 async def confirm_problem_registration(

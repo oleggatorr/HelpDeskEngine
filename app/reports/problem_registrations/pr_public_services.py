@@ -1,3 +1,4 @@
+# app\reports\problem_registrations\pr_public_services.py
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,7 +22,7 @@ class PublicProblemRegistrationService:
 
     async def _send_chat_notification(self, document_id: int, message: str):
         """Отправить уведомление в чат, привязанный к документу."""
-        from app.messeges.public_services import PublicChatService, PublicMessageService
+        from app.messages.public_services import PublicChatService, PublicMessageService
         chat_service = PublicChatService(self._service.db)
         chat_id = await chat_service.get_chat_id_by_document(document_id)
         if chat_id:
@@ -210,7 +211,7 @@ class PublicProblemRegistrationService:
         )
 
         # Добавляем пользователя в чат, привязанный к документу
-        from app.messeges.public_services import PublicChatService
+        from app.messages.public_services import PublicChatService
         chat_service = PublicChatService(self._service.db)
         try:
             await chat_service.add_participant_by_document(item.document_id, user_id_to_assign)
@@ -275,3 +276,11 @@ class PublicProblemRegistrationService:
                 f"✏️ Регистрация проблемы {result.track_id} обновлена: {'; '.join(changes)}",
             )
         return result
+    
+    async def close():
+        """Метод для закрытия заявки"""
+        """Будкт реализован через абдейт сервиса"""
+        pass
+
+    async def change_status():
+        pass

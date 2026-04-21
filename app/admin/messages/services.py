@@ -1,12 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 
-from app.messeges.services.chat_service import ChatService
-from app.messeges.services.message_service import MessageService
-from app.messeges.schemas.chat import (
+from app.messages.services.chat_service import ChatService
+from app.messages.services.message_service import MessageService
+from app.messages.schemas.chat import (
     ChatCreate, ChatUpdate, ChatResponse, ChatListResponse, ChatFilter,
 )
-from app.messeges.schemas.message import (
+from app.messages.schemas.message import (
     MessageCreate, MessageResponse, MessageListResponse,
     MessageReadResponse, MessageAttachmentResponse,
 )
