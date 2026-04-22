@@ -1,5 +1,3 @@
-from sqlalchemy import Enum as SAEnum
-from app.core.database import Base
 import enum
 
 # Импортируем справочники для корректного разрешения relationship

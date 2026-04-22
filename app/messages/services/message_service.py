@@ -2,7 +2,7 @@ from typing import Optional, List
 from datetime import datetime
 
 from fastapi import HTTPException, status
-from sqlalchemy import select, func, delete
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 

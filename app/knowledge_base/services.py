@@ -1,13 +1,12 @@
-from typing import Optional, List, Generic, TypeVar
-from fastapi import HTTPException, status
+from typing import Optional, TypeVar
 from sqlalchemy import select, func, update as sa_update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.knowledge_base.models import Department, Location, CauseCode
 from app.knowledge_base.schemas import (
-    DepartmentCreate, DepartmentResponse, DepartmentListResponse,
-    LocationCreate, LocationResponse, LocationListResponse,
-    CauseCodeCreate, CauseCodeResponse, CauseCodeListResponse,
+    DepartmentResponse, DepartmentListResponse,
+    LocationResponse, LocationListResponse,
+    CauseCodeResponse, CauseCodeListResponse,
 )
 
 

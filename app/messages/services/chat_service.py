@@ -1,8 +1,8 @@
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
 
 from fastapi import HTTPException, status
-from sqlalchemy import select, func, delete, and_, or_
+from sqlalchemy import select, func, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -15,7 +15,6 @@ from app.messages.schemas import (
     ChatFilter,
 )
 from app.auth.models import User
-from app.reports.documents.models import Document
 
 
 # ==========================================
@@ -212,7 +211,7 @@ class ChatService:
 
     async def _delete_chat_with_soft_attachments(self, chat_id: int):
         """Мягкое удаление вложений сообщений + каскадное удаление чата."""
-        from app.messages.models import MessageAttachment, Message
+        from app.messages.models import Message
         from sqlalchemy import select
 
         # Получаем все сообщения чата

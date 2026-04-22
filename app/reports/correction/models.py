@@ -26,7 +26,9 @@ class Correction(Base):
     title = Column(String(200), nullable=False, comment="Краткое название корректирующего действия")
     description = Column(Text, nullable=True, comment="Описание отклонения/проблемы")
     corrective_action = Column(Text, nullable=False, comment="Фактически выполненные действия")
-    status = Column(SAEnum(CorrectionStatus), default=CorrectionStatus.PLANNED, nullable=False)
+    status = Column(SAEnum(CorrectionStatus, name="correctionstatus",
+            create_type=False,
+            values_callable=lambda enum_cls: [e.value for e in enum_cls]), default=CorrectionStatus.PLANNED, nullable=False)
 
     # 📅 Сроки
     planned_date = Column(DateTime(timezone=True), nullable=True, comment="Плановый срок выполнения")

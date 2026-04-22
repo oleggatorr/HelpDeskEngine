@@ -157,7 +157,6 @@ class AdminDocumentService:
         return await self.get_document(doc_id)
 
     async def delete_document(self, doc_id: int) -> bool:
-        from sqlalchemy import delete
 
         result = await self.db.execute(
             select(Document).where(Document.id == doc_id)

@@ -1,6 +1,5 @@
 from fastapi import HTTPException, status
 from app.auth.models import User, UserRole
-from app.auth.services import UserService
 
 
 class PermissionDeniedException(HTTPException):

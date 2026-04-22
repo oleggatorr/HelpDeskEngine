@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional
 from sqlalchemy import select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,12 +14,11 @@ from app.reports.problem_registrations.schemas.problem_registration import (
 
 from app.reports.documents.schemas.document import DocumentCreate, DocumentStage
 from app.reports.documents.document_public_service import PublicDocumentService
-from app.messages.models import Chat, Message, MessageAttachment, chat_participants
+from app.messages.models import Chat, Message, MessageAttachment
 from app.auth.models import User
-from app.knowledge_base.models import Department
 
 # В начале файла сервиса добавьте:
-from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.orm import selectinload
 
 
 class ProblemRegistrationService:

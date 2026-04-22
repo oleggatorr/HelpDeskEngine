@@ -1,8 +1,8 @@
 # app/auth/dependencies.py
-from functools import wraps
 from fastapi import Depends, HTTPException, status
 from app.auth.models import User, UserRole
 from app.auth.services import PermissionService
+from app.core.dependencies import get_current_user
 
 def require_roles(*allowed_roles: UserRole):
     """

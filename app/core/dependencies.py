@@ -1,4 +1,3 @@
-from typing import Any
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
@@ -11,9 +10,6 @@ from app.auth.models import User, UserProfile, UserRole
 
 
 # app/auth/dependencies.py
-from functools import wraps
-from fastapi import Depends, HTTPException, status
-from app.auth.models import User, UserRole
 from app.auth.permission_service import PermissionService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -61,11 +57,8 @@ async def require_admin(
     return current_user
 
 def require_roles(*allowed_roles: UserRole):
-    """
-    Декоратор для защиты роутов: разрешает доступ только указанным ролям.
-    Использование: @router.get("/admin", dependencies=[Depends(require_roles(UserRole.ADMIN, UserRole.QE))])
-    """
     async def checker(current_user: User = Depends(get_current_user)):
+
         if not PermissionService.has_any_role(current_user, list(allowed_roles)):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

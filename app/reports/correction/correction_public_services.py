@@ -1,9 +1,27 @@
 # app/reports/correction/correction_public_services.py
-from typing import Optional, List
+# from typing import Optional, List
+# from sqlalchemy.ext.asyncio import AsyncSession
+# from sqlalchemy import select  # 🔹 Добавлено
+# from datetime import datetime, timezone
+# from fastapi import HTTPException, status  # 🔹 Добавлено
+
+# from app.reports.correction.correction_service import CorrectionService
+# from app.reports.documents.document_public_service import PublicDocumentService
+# from app.reports.correction.schemas.correction import (
+#     CorrectionCreate,
+#     CorrectionUpdate,
+#     CorrectionResponse,
+#     CorrectionListResponse,
+#     CorrectionFilter,
+# )
+# from app.reports.correction.models import CorrectionStatus
+# from app.auth.models import User  # 🔹 Добавлено
+
+
+# app/reports/correction/correction_public_service.py
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select  # 🔹 Добавлено
 from datetime import datetime, timezone
-from fastapi import HTTPException, status  # 🔹 Добавлено
 
 from app.reports.correction.correction_service import CorrectionService
 from app.reports.documents.document_public_service import PublicDocumentService
@@ -11,99 +29,81 @@ from app.reports.correction.schemas.correction import (
     CorrectionCreate,
     CorrectionUpdate,
     CorrectionResponse,
-    CorrectionListResponse,
+    CorrectionListResponse,  # ✅ Исправлено: Responce -> Response
     CorrectionFilter,
+    CorrectionStatus,
 )
-from app.reports.correction.models import CorrectionStatus
-from app.auth.models import User  # 🔹 Добавлено
-
 
 class PublicCorrectionService:
-    """
-    Публичный фасад для работы с корректирующими действиями.
-    Координирует статусы, уведомления, блокировки документа и аудит.
-    """
+    """Публичный слой корректирующих действий."""
 
     def __init__(self, db: AsyncSession):
         doc_service = PublicDocumentService(db)
         self._service = CorrectionService(db, doc_service)
-        self.db = db
 
-    # ------------------------------------------------------------------
-    # 🔔 Нотификации
-    # ------------------------------------------------------------------
     async def _send_chat_notification(self, document_id: int, message: str):
-        """Отправить уведомление в чат, привязанный к документу."""
+        """Отправить системное уведомление в чат документа."""
         from app.messages.public_services import PublicChatService, PublicMessageService
-        
-        chat_service = PublicChatService(self.db)
+        chat_service = PublicChatService(self._service.db)
         chat_id = await chat_service.get_chat_id_by_document(document_id)
         if chat_id:
-            message_service = PublicMessageService(self.db)
+            message_service = PublicMessageService(self._service.db)
             await message_service.send_system_message(chat_id, message)
 
-    # ------------------------------------------------------------------
-    # 🔹 Вспомогательный метод: загрузка пользователя
-    # ------------------------------------------------------------------
-    async def _get_user_or_404(self, user_id: int) -> User:
-        """Загружает объект User или выбрасывает 404."""
-        res = await self.db.execute(select(User).where(User.id == user_id))
-        user = res.scalar_one_or_none()
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        return user
-
-    # ------------------------------------------------------------------
-    # 🔹 CRUD
-    # ------------------------------------------------------------------
+    # ==========================================
+    # 🆕 CREATE & READ
+    # ==========================================
     async def create(self, request: CorrectionCreate, created_by: int) -> CorrectionResponse:
-        """Создать корректирующее действие. Документ должен существовать."""
-        current_user = await self._get_user_or_404(created_by)
-        result = await self._service.create(request, current_user=current_user)
+        """Создать корректирующее действие. Документ и чат создаются автоматически."""
+        result = await self._service.create(request, created_by=created_by)
         await self._send_chat_notification(
             result.document_id,
-            f"🛠️ Создано корректирующее действие: {result.title}",
+            f"🛠 Создано корректирующее действие: {result.track_id} — {result.title or 'Без названия'}",
         )
         return result
 
     async def get_by_id(self, correction_id: int) -> Optional[CorrectionResponse]:
         return await self._service.get_by_id(correction_id)
 
-    async def get_by_document_id(self, doc_id: int) -> List[CorrectionResponse]:
-        """Все активные коррекции по документу."""
+    async def get_by_document_id(self, doc_id: int) -> Optional[CorrectionResponse]:
         return await self._service.get_by_document_id(doc_id)
+
+    async def get_by_track_id(self, track_id: str) -> Optional[CorrectionResponse]:
+        return await self._service.get_by_track_id(track_id)
+
+    async def get_by_problem_registration_id(self, pr_id: int) -> Optional[CorrectionResponse]:
+        return await self._service.get_by_problem_registration_id(pr_id)
 
     async def get_all(
         self,
         skip: int = 0,
-        limit: int = 100,
+        limit: int = 20,
         filters: Optional[CorrectionFilter] = None,
     ) -> CorrectionListResponse:
         result = await self._service.get_all(skip=skip, limit=limit, filters=filters)
         return CorrectionListResponse(items=result["items"], total=result["total"])
 
-    async def update(self, correction_id: int, request: CorrectionUpdate, current_user_id: int) -> Optional[CorrectionResponse]:
-        """Частичное обновление. Блокирует редактирование, если документ залочен."""
+    # ==========================================
+    # ✏️ UPDATE & DELETE
+    # ==========================================
+    async def update(self, correction_id: int, request: CorrectionUpdate) -> Optional[CorrectionResponse]:
         item = await self.get_by_id(correction_id)
-        if not item:
-            return None
-        if item.is_locked:
-            raise ValueError("Редактирование заблокированной коррекции невозможно")
+        if item and item.is_locked:
+            raise ValueError("Редактирование заблокированного документа невозможно")
 
-        current_user = await self._get_user_or_404(current_user_id)
-        result = await self._service.update(correction_id, request, current_user=current_user)
+        result = await self._service.update(correction_id, request)
         if not result:
             return None
 
         # Формируем лог изменений для чата
         changes = []
         update_data = request.model_dump(exclude_unset=True)
-        if update_data.get("title"):
-            changes.append(f"Название: {update_data['title']}")
-        if update_data.get("corrective_action"):
-            changes.append("Действия изменены")
-        if update_data.get("planned_date"):
-            changes.append("Плановый срок изменён")
+        if update_data.get("title"): changes.append(f"Название: {update_data['title']}")
+        if update_data.get("description"): changes.append("Описание изменено")
+        if update_data.get("corrective_action"): changes.append("Выполненные действия изменены")
+        if update_data.get("status"): changes.append(f"Статус: {update_data['status']}")
+        if update_data.get("planned_date"): changes.append("Плановый срок изменён")
+        if update_data.get("completed_date"): changes.append("Фактическая дата выполнения указана")
 
         if changes:
             await self._send_chat_notification(
@@ -113,7 +113,6 @@ class PublicCorrectionService:
         return result
 
     async def delete(self, correction_id: int) -> bool:
-        """Soft-delete коррекции."""
         item = await self.get_by_id(correction_id)
         if item:
             await self._send_chat_notification(
@@ -122,62 +121,16 @@ class PublicCorrectionService:
             )
         return await self._service.delete(correction_id)
 
-    # ------------------------------------------------------------------
-    # 🔄 Статусные переходы (публичные методы-обёртки)
-    # ------------------------------------------------------------------
-    async def start_execution(self, correction_id: int, user_id: int) -> Optional[CorrectionResponse]:
-        """PLANNED → IN_PROGRESS"""
-        item = await self.get_by_id(correction_id)
-        if not item or item.is_locked:
-            raise ValueError("Нельзя начать выполнение: коррекция не найдена или заблокирована")
-        return await self._change_status(correction_id, CorrectionStatus.IN_PROGRESS, user_id)
-
-    async def complete_execution(self, correction_id: int, user_id: int) -> Optional[CorrectionResponse]:
-        """IN_PROGRESS → COMPLETED (авто-фиксация даты и исполнителя)"""
-        item = await self.get_by_id(correction_id)
-        if not item or item.is_locked:
-            raise ValueError("Нельзя завершить: коррекция не найдена или заблокирована")
-        return await self._change_status(correction_id, CorrectionStatus.COMPLETED, user_id)
-
-    async def verify(self, correction_id: int, verifier_id: int) -> Optional[CorrectionResponse]:
-        """COMPLETED → VERIFIED"""
-        item = await self.get_by_id(correction_id)
-        if not item:
-            raise ValueError("Коррекция не найдена")
-        return await self._change_status(correction_id, CorrectionStatus.VERIFIED, verifier_id)
-
-    async def reject(self, correction_id: int, user_id: int) -> Optional[CorrectionResponse]:
-        """Сброс статуса: IN_PROGRESS/COMPLETED → REJECTED или PLANNED"""
-        item = await self.get_by_id(correction_id)
-        if not item:
-            raise ValueError("Коррекция не найдена")
-        return await self._change_status(correction_id, CorrectionStatus.REJECTED, user_id)
-
-    async def _change_status(self, correction_id: int, target_status: CorrectionStatus, user_id: int) -> Optional[CorrectionResponse]:
-        """Внутренний метод смены статуса с валидацией и нотификацией."""
-        current_user = await self._get_user_or_404(user_id)
-        update_req = CorrectionUpdate(status=target_status)
-        result = await self._service.update(correction_id, update_req, current_user=current_user)
-        if result:
-            await self._send_chat_notification(
-                result.document_id,
-                f"📊 Статус коррекции {result.track_id} изменён на: {result.status.upper()}",
-            )
-        return result
-
-    # ------------------------------------------------------------------
-    # 🔒 Блокировка / Подтверждение / Архив
-    # ------------------------------------------------------------------
+    # ==========================================
+    # 🔒 LOCK / UNLOCK (CONFIRM)
+    # ==========================================
     async def confirm(self, correction_id: int, user_id: int) -> Optional[CorrectionResponse]:
-        """Заблокировать коррекцию и родительский документ."""
+        """Подтвердить коррекцию (заблокировать документ)."""
         item = await self.get_by_id(correction_id)
-        if not item:
-            return None
-        if item.is_locked:
+        if not item or item.is_locked:
             return item
 
-        current_user = await self._get_user_or_404(user_id)
-        await self._service.doc_service.lock(item.document_id, user_id=current_user.id)
+        await self._service.doc_service.lock(item.document_id, user_id=user_id)
         await self._send_chat_notification(
             item.document_id,
             f"🔒 Коррекция {item.track_id} подтверждена и заблокирована",
@@ -185,105 +138,121 @@ class PublicCorrectionService:
         return await self.get_by_id(correction_id)
 
     async def unconfirm(self, correction_id: int, user_id: int) -> Optional[CorrectionResponse]:
-        """Разблокировать для редактирования."""
+        """Снять блокировку коррекции."""
         item = await self.get_by_id(correction_id)
         if not item or not item.is_locked:
             return item
 
-        current_user = await self._get_user_or_404(user_id)
-        await self._service.doc_service.unlock(item.document_id, user_id=current_user.id)
+        await self._service.doc_service.unlock(item.document_id, user_id=user_id)
         await self._send_chat_notification(
             item.document_id,
-            f"🔓 Коррекция {item.track_id} разблокирована для редактирования",
+            f"🔓 Коррекция {item.track_id} передана на редактирование",
         )
         return await self.get_by_id(correction_id)
 
+    # ==========================================
+    # 📦 ARCHIVE / UNARCHIVE
+    # ==========================================
     async def archive(self, correction_id: int, user_id: int) -> Optional[CorrectionResponse]:
-        """Архивировать вместе с документом."""
         item = await self.get_by_id(correction_id)
-        if not item:
-            return None
-        current_user = await self._get_user_or_404(user_id)
-        await self._service.doc_service.archive(item.document_id, user_id=current_user.id)
+        if not item: return None
+        await self._service.archive_document(item.document_id, user_id=user_id)
         await self._send_chat_notification(item.document_id, f"📦 Коррекция {item.track_id} архивирована")
         return await self.get_by_id(correction_id)
 
     async def unarchive(self, correction_id: int, user_id: int) -> Optional[CorrectionResponse]:
-        """Восстановить из архива."""
         item = await self.get_by_id(correction_id)
-        if not item:
-            return None
-        current_user = await self._get_user_or_404(user_id)
-        await self._service.doc_service.unarchive(item.document_id, user_id=current_user.id)
-        await self._send_chat_notification(item.document_id, f"📦 Коррекция {item.track_id} восстановлена из архива")
+        if not item: return None
+        await self._service.unarchive_document(item.document_id, user_id=user_id)
+        await self._send_chat_notification(item.document_id, f"♻️ Коррекция {item.track_id} восстановлена из архива")
         return await self.get_by_id(correction_id)
 
-    # ------------------------------------------------------------------
-    # 👤 Назначения (делегирование на уровень документа)
-    # ------------------------------------------------------------------
+    # ==========================================
+    # 👤 ASSIGN / UNASSIGN
+    # ==========================================
     async def assign_user(self, correction_id: int, user_id_to_assign: int, current_user_id: int) -> Optional[CorrectionResponse]:
-        """Назначить исполнителя на документ/коррекцию."""
         item = await self.get_by_id(correction_id)
-        if not item:
-            return None
+        if not item: return None
 
-        current_user = await self._get_user_or_404(current_user_id)
-        await self._service.doc_service.assign_to_user(item.document_id, user_id_to_assign, current_user_id=current_user.id)
+        await self._service.assign_user_to_document(item.document_id, user_id_to_assign, current_user_id)
         await self._send_chat_notification(
             item.document_id,
             f"👤 Пользователь ID {user_id_to_assign} назначен на коррекцию {item.track_id}",
         )
 
-        # Добавляем в чат документа
+        # Добавляем в чат
         from app.messages.public_services import PublicChatService
-        chat_service = PublicChatService(self.db)
+        chat_service = PublicChatService(self._service.db)
         try:
             await chat_service.add_participant_by_document(item.document_id, user_id_to_assign)
         except ValueError:
-            pass
+            pass  # Уже участник
 
         return await self.get_by_id(correction_id)
 
     async def assign_self(self, correction_id: int, user_id: int) -> Optional[CorrectionResponse]:
-        """Назначить себя."""
         return await self.assign_user(correction_id, user_id, user_id)
 
     async def unassign(self, correction_id: int, current_user_id: int) -> Optional[CorrectionResponse]:
-        """Снять назначение."""
         item = await self.get_by_id(correction_id)
         if not item or not item.assigned_to:
             return item
 
-        current_user = await self._get_user_or_404(current_user_id)
-        await self._service.doc_service.unassign(item.document_id, current_user_id=current_user.id)
+        await self._service.doc_service.unassign(item.document_id)
         await self._send_chat_notification(
             item.document_id,
-            f"👤 Исполнитель снят с коррекции {item.track_id}",
+            f"👤 Пользователь снят с коррекции {item.track_id}",
         )
         return await self.get_by_id(correction_id)
 
-    # ------------------------------------------------------------------
-    # 📋 Персональные списки
-    # ------------------------------------------------------------------
-    async def get_my(
-        self,
-        user_id: int,
-        skip: int = 0,
-        limit: int = 100,
-    ) -> CorrectionListResponse:
-        """Коррекции, созданные пользователем."""
-        filters = CorrectionFilter(created_by=user_id, sort_by="created_at", sort_order="desc")
+    # ==========================================
+    # 📋 MY / ASSIGNED LISTS
+    # ==========================================
+    async def get_my(self, user_id: int, skip: int = 0, limit: int = 20) -> CorrectionListResponse:
+        filters = CorrectionFilter(created_by=user_id, sort_by="id", sort_order="desc")
         result = await self._service.get_all(skip=skip, limit=limit, filters=filters)
         return CorrectionListResponse(items=result["items"], total=result["total"])
 
-    async def get_assigned(
-        self,
-        user_id: int,
-        skip: int = 0,
-        limit: int = 100,
-    ) -> CorrectionListResponse:
-        """Коррекции, назначенные на пользователя (через документ)."""
-        # В фильтрах используем assigned_to документа
-        filters = CorrectionFilter(doc_assigned_to=user_id, sort_by="created_at", sort_order="desc")
+    async def get_assigned(self, user_id: int, skip: int = 0, limit: int = 20) -> CorrectionListResponse:
+        filters = CorrectionFilter(assigned_to=user_id, sort_by="id", sort_order="desc")
         result = await self._service.get_all(skip=skip, limit=limit, filters=filters)
         return CorrectionListResponse(items=result["items"], total=result["total"])
+
+    # ==========================================
+    # 🔄 STATUS WORKFLOW (ЗАГЛУШКИ ИЗ ОБРАЗЦА → РЕАЛИЗАЦИЯ)
+    # ==========================================
+    async def change_status(self, correction_id: int, new_status: CorrectionStatus, user_id: int) -> Optional[CorrectionResponse]:
+        """Автоматически проставляет даты и исполнителей при смене статуса."""
+        item = await self.get_by_id(correction_id)
+        if not item or item.is_locked:
+            raise ValueError("Изменение статуса заблокированного документа невозможно")
+
+        # Готовим payload для update
+        update_data = {
+            "status": new_status,
+            "completed_by": user_id,
+            "completed_date": None,
+        }
+
+        # Бизнес-правила статусов
+        if new_status == CorrectionStatus.COMPLETED:
+            update_data["completed_date"] = datetime.now(timezone.utc)
+        elif new_status == CorrectionStatus.REJECTED:
+            update_data["completed_date"] = None  # Сброс при отказе
+
+        from pydantic import TypeAdapter
+        # Преобразуем dict в схему Update для валидации
+        adapter = TypeAdapter(CorrectionUpdate)
+        validated_update = adapter.validate_python(update_data)
+        
+        result = await self._service.update(correction_id, validated_update)
+        
+        await self._send_chat_notification(
+            result.document_id,
+            f"🔄 Статус коррекции {item.track_id} изменён на: {new_status.value}",
+        )
+        return result
+
+    async def close(self, correction_id: int, user_id: int) -> Optional[CorrectionResponse]:
+        """Завершить и верифицировать коррекцию."""
+        return await self.change_status(correction_id, CorrectionStatus.VERIFIED, user_id)

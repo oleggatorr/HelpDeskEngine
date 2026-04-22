@@ -2,7 +2,7 @@ from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, field_validator, ConfigDict
 
-from app.reports.enums import DocumentStage, DocumentStatus, DocumentLanguage, DocumentPriority
+from app.reports.enums import DocumentStatus, DocumentLanguage, DocumentPriority
 
 from app.reports.models import ProblemAction
 

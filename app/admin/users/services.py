@@ -3,7 +3,6 @@ from typing import Optional
 
 from app.auth.services import AuthService, UserService
 from app.auth.schemas import (
-    LoginRequest,
     LoginResponse,
     RegisterRequest,
     PasswordChangeRequest,

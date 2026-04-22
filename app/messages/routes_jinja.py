@@ -11,8 +11,7 @@ import os
 import uuid
 
 from app.core.database import get_db
-from app.auth.routes_jinja import get_current_user_from_cookie, require_auth
-from app.auth.models import User
+from app.auth.routes_jinja import require_auth
 from app.messages.public_services import PublicChatService, PublicMessageService
 from app.messages.schemas import MessageCreate, MessageAttachmentCreate
 

@@ -1,7 +1,6 @@
 from typing import Optional, List
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, ConfigDict
-from app.knowledge_base.models import Department
+from pydantic import BaseModel, EmailStr
 from app.auth.models import UserRole
 from app.knowledge_base.schemas import DepartmentResponse
 

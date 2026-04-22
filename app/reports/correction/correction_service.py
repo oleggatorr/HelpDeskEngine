@@ -298,10 +298,46 @@ class CorrectionService:
     # 🔄 HELPER: Row → Response
     # ==========================================
     def _row_to_response(self, row) -> CorrectionResponse:
-        corr, doc = row
+        """Конвертация строки (correction, document) в Response."""
+        from app.reports.documents.schemas.document import DocumentStage as DocumentStageEnum
 
-        def _get_enum_val(obj):
-            return obj.value if hasattr(obj, "value") else obj
+        corr = row.Correction
+        doc = row.Document
+        
+        # 🔥 НОРМАЛИЗАЦИЯ current_stage в строку (как в ProblemRegistrationService)
+        stage = doc.current_stage
+        if stage is None:
+            stage_str = None
+        elif hasattr(stage, 'name'):
+            # Для Enum: берём имя и приводим к нижнему регистру
+            stage_str = stage.name.lower()
+        elif hasattr(stage, 'value'):
+            # Если value — строка, используем её; если int — конвертируем через Enum
+            if isinstance(stage.value, str):
+                stage_str = stage.value
+            else:
+                try:
+                    stage_str = DocumentStageEnum(stage.value).name.lower()
+                except (ValueError, KeyError):
+                    stage_str = str(stage.value)
+        elif isinstance(stage, int):
+            # Прямое числовое значение из БД
+            try:
+                stage_str = DocumentStageEnum(stage).name.lower()
+            except (ValueError, KeyError):
+                stage_str = str(stage)
+        else:
+            stage_str = str(stage).lower() if stage else None
+
+        # 🔥 Универсальный хелпер для остальных Enum-полей
+        def _enum_to_str(value):
+            if value is None:
+                return None
+            if hasattr(value, 'value') and isinstance(value.value, str):
+                return value.value
+            if hasattr(value, 'name'):
+                return value.name.lower()
+            return str(value)
 
         return CorrectionResponse(
             id=corr.id,
@@ -310,22 +346,32 @@ class CorrectionService:
             title=corr.title,
             description=corr.description,
             corrective_action=corr.corrective_action,
-            status=_get_enum_val(corr.status),
+            
+            # ✅ Статус коррекции (CorrectionStatus — str, Enum)
+            status=_enum_to_str(corr.status),
+            
             planned_date=corr.planned_date,
             completed_date=corr.completed_date,
             created_at=corr.created_at,
             updated_at=corr.updated_at,
             is_deleted=corr.is_deleted,
-            created_by=corr.created_by,
-            completed_by=corr.completed_by,
-            verified_by=corr.verified_by,
-            track_id=doc.track_id,
+            
+            # 📄 Поля документа
+            doc_track_id=doc.track_id,
             doc_created_at=doc.created_at,
-            doc_current_stage=_get_enum_val(doc.current_stage),
-            doc_status=_get_enum_val(doc.status),
+            
+            # ✅ Все Enum-поля документа конвертируем в строки
+            doc_status=_enum_to_str(doc.status),
+            doc_language=_enum_to_str(doc.language),
+            doc_priority=_enum_to_str(doc.priority),
+            
+            # 🔥 ГЛАВНОЕ ИСПРАВЛЕНИЕ: doc_current_stage как строка
+            doc_current_stage=stage_str,
+            
+            doc_assigned_to=doc.assigned_to,
             is_locked=doc.is_locked,
             is_archived=doc.is_archived,
-            assigned_to=doc.assigned_to,
+            created_by=doc.created_by,
         )
 
     # ==========================================

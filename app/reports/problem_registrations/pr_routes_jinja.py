@@ -1,7 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Request, Depends, Form, UploadFile, File
 from fastapi.responses import RedirectResponse, FileResponse
-from app.knowledge_base.models import Department
 
 # from fastapi.templating import Jinja2Templates
 # from jinja2 import ChoiceLoader, FileSystemLoader, Environment
@@ -11,12 +10,9 @@ from pathlib import Path
 from datetime import datetime
 import os
 import uuid
-from fastapi import Query
-from typing import Optional
 
 from app.core.database import get_db
 from app.auth.routes_jinja import require_auth
-from app.auth.permission_service import PermissionService
 from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
 from app.reports.enums import DocumentStage, DocumentStatus
 

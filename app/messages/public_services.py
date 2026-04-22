@@ -74,7 +74,6 @@ class PublicChatService:
 
     async def update(self, chat_id: int, request, **kwargs):
         """Обновить чат с отправкой системных сообщений о участниках."""
-        from app.messages.schemas import ChatUpdate
 
         # Отправляем системные сообщения о добавлении участников ДО обновления
         if hasattr(request, 'add_participant_ids') and request.add_participant_ids:
