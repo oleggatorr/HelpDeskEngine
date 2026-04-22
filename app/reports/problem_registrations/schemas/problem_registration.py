@@ -14,10 +14,10 @@ class ProblemRegistrationCreate(BaseModel):
     location_id: Optional[int] = None
     description: Optional[str] = None
     nomenclature: Optional[str] = None
-    # approved_at: Optional[datetime] = None
-    # action: Optional[ProblemAction] = None
-    # responsible_department_id: Optional[int] = None
-    # comment: Optional[str] = None
+    approved_at: Optional[datetime] = None
+    action: Optional[ProblemAction] = None
+    responsible_department_id: Optional[int] = None
+    comment: Optional[str] = None
     
     # Поля Document (создаётся автоматически)
     doc_status: Optional[DocumentStatus] = DocumentStatus.OPEN
@@ -132,6 +132,7 @@ class ProblemRegistrationResponse(BaseModel):
     location_id: Optional[int] = None
     description: Optional[str] = None
     nomenclature: Optional[str] = None
+    
     approved_at: Optional[datetime] = None
     action: Optional[ProblemAction] = None
     responsible_department_id: Optional[int] = None

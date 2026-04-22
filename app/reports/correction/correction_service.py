@@ -19,16 +19,7 @@ from app.reports.problem_registrations.models import ProblemRegistration
 from app.auth.models import User
 # Замените на актуальный путь к вашему сервису документов
 from app.reports.documents.document_public_service import PublicDocumentService  
-
-
-# 🔄 Машина состояний (вынесена на уровень модуля для переиспользования)
-ALLOWED_TRANSITIONS: Dict[CorrectionStatus, List[CorrectionStatus]] = {
-    CorrectionStatus.PLANNED: [CorrectionStatus.IN_PROGRESS, CorrectionStatus.REJECTED],
-    CorrectionStatus.IN_PROGRESS: [CorrectionStatus.COMPLETED, CorrectionStatus.REJECTED],
-    CorrectionStatus.COMPLETED: [CorrectionStatus.VERIFIED, CorrectionStatus.IN_PROGRESS],
-    CorrectionStatus.VERIFIED: [],  # Терминальный статус
-    CorrectionStatus.REJECTED: [CorrectionStatus.PLANNED],
-}
+from app.reports.correction.models import CorrectionStatus
 
 
 class CorrectionService:

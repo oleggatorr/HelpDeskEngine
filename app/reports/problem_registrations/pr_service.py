@@ -14,7 +14,7 @@ from app.reports.problem_registrations.schemas.problem_registration import (
 
 from app.reports.documents.schemas.document import DocumentCreate, DocumentStage
 from app.reports.documents.document_public_service import PublicDocumentService
-from app.messages.models import Chat, Message, MessageAttachment, chat_participants
+from app.messeges.models import Chat, Message, MessageAttachment, chat_participants
 from app.auth.models import User
 from app.knowledge_base.models import Department
 
@@ -32,90 +32,88 @@ class ProblemRegistrationService:
         self.db = db
         self.doc_service = doc_service
 
-    async def create(self, request: CorrectionCreate, current_user: User) -> CorrectionResponse:
-        created_by = current_user.id
+    async def create(self, request: ProblemRegistrationCreate, created_by: int) -> ProblemRegistrationResponse:
+        # Нормализуем FK-поля: 0 → None
+        location_id = request.location_id or None
 
-        # 1. Нормализуем FK-поля: 0 / пустое значение → None
-        problem_id = request.problem_registration_id or None
-
-        # 2. Получаем doc_type_id из справочника по коду "Correction"
+        # Получаем doc_type_id из справочника по коду "ProblemRegistration"
         doc_type_result = await self.db.execute(
-            select(DocumentType.id).where(DocumentType.code == "Correction")
+            select(DocumentType.id).where(DocumentType.code == "ProblemRegistration")
         )
         doc_type_id = doc_type_result.scalar_one_or_none()
 
-        # 3. Проверяем существование ProblemRegistration (если передан)
-        if problem_id:
-            prob_check = await self.db.execute(
-                select(func.count()).select_from(ProblemRegistration).where(ProblemRegistration.id == problem_id)
+        # Проверяем существование FK
+        if location_id:
+            from app.knowledge_base.models import Location
+            result = await self.db.execute(
+                select(func.count()).select_from(Location).where(Location.id == location_id)
             )
-            if prob_check.scalar_one() == 0:
-                problem_id = None
+            if result.scalar_one() == 0:
+                location_id = None
 
-        # 4. Создаём документ автоматически (по паттерну примера)
-        # ⚠️ Если коррекция должна привязываться к УЖЕ СУЩЕСТВУЮЩему документу, 
-        # замените этот блок на проверку doc = await self.get_document_or_raise(request.document_id)
+        # 1. Создаём документ автоматически
         doc = await self.doc_service.create(DocumentCreate(
             created_by=created_by,
-            status=getattr(request, 'doc_status', DocumentStatus.PLANNED),
+            status=request.doc_status,
             doc_type_id=doc_type_id,
             current_stage=DocumentStage.NEW,
-            language=getattr(request, 'doc_language', 'ru'),
-            priority=getattr(request, 'doc_priority', 'medium'),
-            assigned_to=created_by,
-            attachment_files=getattr(request, 'attachment_files', []),
+            language=request.doc_language,
+            priority=request.doc_priority,
+            assigned_to=request.doc_assigned_to,
+            attachment_files=request.attachment_files,
         ))
 
-        # 5. Создаём запись коррекции
-        correction = Correction(
+        # 2. Создаём регистрацию проблемы, привязанную к документу
+        registration = ProblemRegistration(
             document_id=doc.id,
-            problem_registration_id=problem_id,
-            title=request.title,
+            subject=request.subject,
+            detected_at=request.detected_at,
+            location_id=location_id,
             description=request.description,
-            corrective_action=request.corrective_action,
-            status=request.status or CorrectionStatus.PLANNED,
-            planned_date=request.planned_date,
-            created_by=created_by
+            nomenclature=request.nomenclature,
         )
-        self.db.add(correction)
+        self.db.add(registration)
 
-        # 6. Создаём чат обсуждения, привязанный к документу
+        # 3. Создаём чат, привязанный к документу
         chat = Chat(
-            name=f"Коррекция #{doc.track_id} - {request.title or 'Без темы'}",
+            name=f"Обращение #{doc.track_id} - {request.subject}" ,
             document_id=doc.id,
         )
-        creator_result = await self.db.execute(select(User).where(User.id == created_by))
-        creator_user = creator_result.scalar_one_or_none()
+        # Добавляем создателя как участника
+        creator = await self.db.execute(select(User).where(User.id == created_by))
+        creator_user = creator.scalar_one_or_none()
         if creator_user:
             chat.participants = [creator_user]
         self.db.add(chat)
 
-        # 7. Формируем первое сообщение с темой и описанием
-        if request.title or request.description:
-            await self.db.flush()  # Получаем chat.id и correction.id без коммита
+        # 4. Отправляем первое сообщение с темой и описанием проблемы
+        if request.subject or request.description:
+            # Используем flush чтобы получить chat.id до commit
+            await self.db.flush()
             first_message = Message(
                 chat_id=chat.id,
                 sender_id=created_by,
-                content=f"<p>{request.title or '—'}</p>{request.description or '—'}",
+                content=f"<p>{request.subject or '—'}</p>{request.description or '—'}",
             )
             self.db.add(first_message)
 
-            # 8. Копируем вложения документа в сообщение чата
+            # 5. Копируем вложения документа в сообщение чата
             if getattr(request, 'attachment_files', None):
-                await self.db.flush()  # Получаем first_message.id
+                await self.db.flush()  # чтобы получить first_message.id
                 for att_data in request.attachment_files:
-                    msg_att = MessageAttachment(
+                    message_attachment = MessageAttachment(
                         message_id=first_message.id,
                         file_path=att_data["file_path"],
                         original_filename=att_data.get("original_filename"),
                         file_type=att_data.get("file_type", "application/octet-stream"),
                     )
-                    self.db.add(msg_att)
+                    self.db.add(message_attachment)
 
         await self.db.commit()
-        await self.db.refresh(correction)
+        await self.db.refresh(registration)
 
-        return await self.get_by_id(correction.id)
+        # Возвращаем с полями документа (JOIN)
+        return await self.get_by_id(registration.id)
 
     async def get_by_id(self, registration_id: int) -> Optional[ProblemRegistrationResponse]:
         result = await self.db.execute(
