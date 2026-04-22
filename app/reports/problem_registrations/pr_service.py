@@ -14,7 +14,7 @@ from app.reports.problem_registrations.schemas.problem_registration import (
 
 from app.reports.documents.schemas.document import DocumentCreate, DocumentStage
 from app.reports.documents.document_public_service import PublicDocumentService
-from app.messeges.models import Chat, Message, MessageAttachment, chat_participants
+from app.messages.models import Chat, Message, MessageAttachment, chat_participants
 from app.auth.models import User
 from app.knowledge_base.models import Department
 
