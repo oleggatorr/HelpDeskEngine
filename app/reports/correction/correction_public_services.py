@@ -25,7 +25,7 @@ from datetime import datetime, timezone
 
 from app.reports.correction.correction_service import CorrectionService
 from app.reports.documents.document_public_service import PublicDocumentService
-from app.reports.correction.schemas.correction import (
+from app.reports.correction.correction_schemas import (
     CorrectionCreate,
     CorrectionUpdate,
     CorrectionResponse,

@@ -129,7 +129,7 @@
             chatNameBtn.addEventListener('click', function () {
                 var name = chatNameInput.value.trim();
                 if (!name || !chatId) return;
-                fetch('/api/messeges/chats/' + chatId, {
+                fetch('/api/messages/chats/' + chatId, {
                     method: 'PUT',
                     headers: authHeaders(),
                     body: JSON.stringify({ name: name }),
@@ -146,7 +146,7 @@
             addParticipantBtn.addEventListener('click', function () {
                 const userId = addParticipantInput ? addParticipantInput.value.trim() : '';
                 if (!userId || !chatId) return;
-                fetch('/api/messeges/chats/' + chatId + '/add-participant', {
+                fetch('/api/messages/chats/' + chatId + '/add-participant', {
                     method: 'POST',
                     headers: authHeaders(),
                     body: JSON.stringify({ user_id: parseInt(userId) }),
@@ -166,7 +166,7 @@
                 var uid = parseInt(btn.getAttribute('data-user-id'));
                 if (!uid) return;
                 if (!confirm('Удалить участника ID ' + uid + ' из чата?')) return;
-                fetch('/api/messeges/chats/' + chatId, {
+                fetch('/api/messages/chats/' + chatId, {
                     method: 'PUT',
                     headers: authHeaders(),
                     body: JSON.stringify({ remove_participant_ids: [uid] }),
@@ -176,7 +176,7 @@
                         if (res.ok) {
                             // Если участников больше нет — чат удалён
                             if (!data.participant_ids || data.participant_ids.length === 0) {
-                                window.location.href = '/messeges';
+                                window.location.href = '/messages';
                             } else {
                                 location.reload();
                             }
@@ -191,7 +191,7 @@
         if (archiveBtn) {
             archiveBtn.addEventListener('click', function () {
                 if (!chatId) return;
-                fetch('/api/messeges/chats/' + chatId + '/archive', { method: 'POST', headers: authHeaders() })
+                fetch('/api/messages/chats/' + chatId + '/archive', { method: 'POST', headers: authHeaders() })
                     .then(function (res) { if (res.ok) location.reload(); })
                     .catch(function () {});
             });
@@ -201,7 +201,7 @@
         if (closeChatBtn) {
             closeChatBtn.addEventListener('click', function () {
                 if (!chatId) return;
-                fetch('/api/messeges/chats/' + chatId + '/close', { method: 'POST', headers: authHeaders() })
+                fetch('/api/messages/chats/' + chatId + '/close', { method: 'POST', headers: authHeaders() })
                     .then(function (res) { if (res.ok) location.reload(); })
                     .catch(function () {});
             });
@@ -218,9 +218,9 @@
                 } else {
                     if (!confirm('Вы уверены, что хотите покинуть этот чат?')) return;
                 }
-                fetch('/api/messeges/chats/' + chatId + '/leave', { method: 'POST', headers: authHeaders() })
+                fetch('/api/messages/chats/' + chatId + '/leave', { method: 'POST', headers: authHeaders() })
                     .then(function (res) {
-                        if (res.ok) window.location.href = '/messeges';
+                        if (res.ok) window.location.href = '/messages';
                     })
                     .catch(function () {});
             });

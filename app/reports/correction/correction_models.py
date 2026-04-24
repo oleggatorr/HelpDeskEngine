@@ -20,7 +20,7 @@ class Correction(Base):
 
     # 🔗 Связи с документами и заявками
     document_id = Column(Integer, ForeignKey("documents.id", ondelete="CASCADE"), nullable=False, index=True)
-    problem_registration_id = Column(Integer, ForeignKey("problem_registrations.id", ondelete="CASCADE"), nullable=False, unique=True, index=True)
+    problem_registration_id = Column(Integer, ForeignKey("problem_registrations.id", ondelete="CASCADE"), nullable=False, unique=False, index=True)
 
     # 📝 Содержимое
     title = Column(String(200), nullable=False, comment="Краткое название корректирующего действия")
@@ -37,7 +37,7 @@ class Correction(Base):
     # ⏱️ Аудит — временные метки
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
-    is_deleted = Column(Boolean, default=False, nullable=False)
+
 
     # 👥 Аудит — пользователи
     created_by = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True, comment="Создатель коррекции")

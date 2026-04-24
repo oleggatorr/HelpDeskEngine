@@ -15,7 +15,7 @@
     </div>
     <div class="chat-sidebar-list">
         {% if chats %}
-            {% from "messeges/chat_item.html" import render_chat_card %}
+            {% from "messages/chat_item.html" import render_chat_card %}
             {% for chat in chats %}
                 {{ render_chat_card(chat, current_chat_id) }}
             {% endfor %}

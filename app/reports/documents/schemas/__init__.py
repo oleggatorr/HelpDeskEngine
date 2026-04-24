@@ -1,5 +1,4 @@
 from .document import (
-    DocumentBase,
     DocumentCreate,
     DocumentUpdate,
     DocumentResponse,
@@ -11,7 +10,6 @@ from .document_attachment import DocumentAttachmentCreate, DocumentAttachmentRes
 from .document_type import DocumentTypeBase, DocumentTypeResponse
 
 __all__ = [
-    "DocumentBase",
     "DocumentCreate",
     "DocumentUpdate",
     "DocumentResponse",

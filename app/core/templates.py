@@ -13,7 +13,7 @@ TEMPLATE_PATHS = [
     BASE_DIR / "templates",                          # Глобальные (partials, base.html)
     BASE_DIR / "auth" / "templates",                 # Auth
     BASE_DIR / "home" / "templates",                 # Home
-    BASE_DIR / "messeges" / "templates",             # Messages
+    BASE_DIR / "messages" / "templates",             # Messages
     BASE_DIR / "reports" / "documents" / "templates",# Documents
     BASE_DIR / "reports" / "problem_registrations" / "templates", # Problems
     # Добавьте сюда другие, если появятся:

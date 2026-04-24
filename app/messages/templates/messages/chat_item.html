@@ -1,6 +1,6 @@
 {# Макрос: карточка чата в сайдбаре #}
 {% macro render_chat_card(chat, current_chat_id=None) %}
-<a href="/messeges/{{ chat.id }}"
+<a href="/messages/{{ chat.id }}"
    class="chat-card list-group-item list-group-item-action {% if chat.id == current_chat_id %}active{% endif %}"
    data-archived="{{ chat.is_archived|lower }}"
    data-closed="{{ chat.is_closed|lower }}">

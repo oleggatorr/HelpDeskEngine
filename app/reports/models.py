@@ -4,10 +4,13 @@ import enum
 from app.knowledge_base.models import Department, Location, CauseCode  # noqa: F401
 
 # Импортируем модели из доменов
-from app.reports.documents.models import (  # noqa: F401
+from app.reports.documents.document_models import (  # noqa: F401
     Document, DocumentType, DocumentAttachment, DocumentLog,
 )
-from app.reports.problem_registrations.models import ProblemRegistration  # noqa: F401
+from app.reports.problem_registrations.pr_models import ProblemRegistration  # noqa: F401
+
+from app.reports.correction.correction_models import Correction
+from app.reports.correction_action.ca_models import CorrectionAction
 
 
 

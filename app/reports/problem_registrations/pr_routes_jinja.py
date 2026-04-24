@@ -154,9 +154,9 @@ async def problem_registrations_admin_list_page(
             return None
 
     # 📦 Сборка фильтров
-    from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationFilter
-    from app.reports.problem_registrations.models import ProblemAction
-    from app.reports.documents.models import DocumentStatus
+    from app.reports.problem_registrations.pr_schemas import ProblemRegistrationFilter
+    from app.reports.problem_registrations.pr_models import ProblemAction
+    from app.reports.documents.document_models import DocumentStatus
 
     filters = ProblemRegistrationFilter(
         # ProblemRegistration поля
@@ -273,7 +273,7 @@ async def problem_registrations_list_page(
             return int(val.strip())
         except (ValueError, TypeError):
             return None
-    from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationFilter
+    from app.reports.problem_registrations.pr_schemas import ProblemRegistrationFilter
     filters = ProblemRegistrationFilter(
         subject=subject or None,
         detected_from=datetime.fromisoformat(detected_from) if detected_from else None,
@@ -363,11 +363,12 @@ async def create_problem_registration_post(
 ):
     """Обработка формы создания регистрации проблемы."""
     auth_result = await require_auth(request, db)
+    
     if isinstance(auth_result, RedirectResponse):
         return auth_result
     current_user = auth_result
 
-    from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationCreate
+    from app.reports.problem_registrations.pr_schemas import ProblemRegistrationCreate
     from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
 
     service = PublicProblemRegistrationService(db)
@@ -408,7 +409,6 @@ async def create_problem_registration_post(
     # Безопасная очистка строк
     def clean_str(v):
         return v.strip() if v and v.strip() else None
-
     try:
         create_data = ProblemRegistrationCreate(
             subject=clean_str(subject),
@@ -501,7 +501,7 @@ async def problem_registrations_locked_list_page(
 
     
     # 📦 Фильтры + принудительное is_locked=True
-    from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationFilter
+    from app.reports.problem_registrations.pr_schemas import ProblemRegistrationFilter
     filters = ProblemRegistrationFilter(
         subject=subject or None,
         track_id=track_id or None,
@@ -753,7 +753,7 @@ async def edit_problem_registration_post(
         return auth_result
     current_user = auth_result
 
-    from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationUpdate
+    from app.reports.problem_registrations.pr_schemas import ProblemRegistrationUpdate
     from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
 
     service = PublicProblemRegistrationService(db)
@@ -1059,7 +1059,7 @@ async def edit_problem_registration_details_page(
     departments = await department_service.get_all(skip=0, limit=1000)
 
     # Пробрасываем enum в шаблон для генерации <option>
-    from app.reports.problem_registrations.schemas.problem_registration import ProblemAction
+    from app.reports.problem_registrations.pr_schemas import ProblemAction
     from app.reports.documents.document_public_service import PublicDocumentService
     # Получаем прикреплёные документы
     doc_service = PublicDocumentService(db)
@@ -1117,7 +1117,7 @@ async def edit_problem_registration_details_post(
     parsed_comment = comment.strip() if comment else None
 
     try:
-        from app.reports.problem_registrations.schemas.problem_registration import (
+        from app.reports.problem_registrations.pr_schemas import (
             ProblemRegistration_DetaleUpdate,
             ProblemRegistrationUpdate,
         )
@@ -1153,7 +1153,7 @@ async def edit_problem_registration_details_post(
     doc_service = PublicDocumentService(db)
     attachments = await doc_service.get_attachments(item.document_id)
 
-    from app.reports.problem_registrations.schemas.problem_registration import ProblemAction
+    from app.reports.problem_registrations.pr_schemas import ProblemAction
 
     return templates.TemplateResponse("edit_problem_registration_details.html", {
         "request": request,

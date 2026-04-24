@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.reports.problem_registrations.pr_service import ProblemRegistrationService
 from app.reports.documents.document_public_service import PublicDocumentService
-from app.reports.problem_registrations.schemas.problem_registration import (
+from app.reports.problem_registrations.pr_schemas import (
     ProblemRegistrationCreate,
     ProblemRegistrationUpdate,
     ProblemRegistrationResponse,
@@ -147,7 +147,7 @@ class PublicProblemRegistrationService:
         limit: int = 100,
     ) -> ProblemRegistrationListResponse:
         """Получить список регистраций, созданных пользователем."""
-        from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationFilter
+        from app.reports.problem_registrations.pr_schemas import ProblemRegistrationFilter
         filters = ProblemRegistrationFilter(
             created_by=user_id,
             sort_by="id",
@@ -163,7 +163,7 @@ class PublicProblemRegistrationService:
         limit: int = 100,
     ) -> ProblemRegistrationListResponse:
         """Получить список регистраций, назначенных на пользователя."""
-        from app.reports.problem_registrations.schemas.problem_registration import ProblemRegistrationFilter
+        from app.reports.problem_registrations.pr_schemas import ProblemRegistrationFilter
         filters = ProblemRegistrationFilter(
             assigned_to=user_id,
             sort_by="id",

@@ -21,7 +21,7 @@ router = APIRouter()
 
 
 def _get_doc_service(db: AsyncSession = Depends(get_db)) -> PublicDocumentService:
-    return PublicDocumentService(db)
+    return PublicDocumentService(db = db)
 
 
 @router.get(
@@ -30,27 +30,16 @@ def _get_doc_service(db: AsyncSession = Depends(get_db)) -> PublicDocumentServic
     summary="Список документов",
 )
 async def list_documents(
+    filters: DocumentFilter = Depends(),
     skip: int = 0,
     limit: int = 100,
-    filters: DocumentFilter = Depends(),
     service: PublicDocumentService = Depends(_get_doc_service),
     current_user: User = Depends(get_current_user),
 ):
     """Пагинированный список документов с фильтрами и сортировкой."""
-    return await service.list_filtered(
-        skip=skip,
-        limit=limit,
-        track_id=filters.track_id,
-        status=filters.status,
-        doc_type_id=filters.doc_type_id,
-        current_stage=filters.current_stage,
-        created_by=filters.created_by,
-        assigned_to=filters.assigned_to,
-        created_from=filters.created_from,
-        created_to=filters.created_to,
-        sort_by=filters.sort_by,
-        sort_order=filters.sort_order,
-    )
+
+    result = await service.list_filtered(filters, skip, limit)
+    return result
 
 
 @router.get(
@@ -132,7 +121,7 @@ async def delete_document(
     service: PublicDocumentService = Depends(_get_doc_service),
 ):
     """Удалить документ."""
-    result = await service.delete(doc_id)
+    result = await service.delete(doc_id, current_user.id)
     if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Документ не найден")
     return {"success": result}

@@ -3,13 +3,13 @@
 
 {% block content %}
 {% include 'partials/left_side_menu.html' %}
-{% include 'messeges/chat_styles.html' %}
+{% include 'messages/chat_styles.html' %}
 
 <div class="chat-page">
     <div class="chat-layout">
         {# Сайдбар — список чатов #}
         <aside class="chat-sidebar-col">
-            {% from "messeges/chat_list.html" import render_chat_sidebar %}
+            {% from "messages/chat_list.html" import render_chat_sidebar %}
             {{ render_chat_sidebar(chats, total, current_chat_id=chat.id) }}
         </aside>
 
@@ -17,19 +17,19 @@
         <main class="chat-main-col">
             <div class="chat-view">
                 {# Шапка чата с настройками #}
-                {% from "messeges/chat_header.html" import render_chat_header %}
+                {% from "messages/chat_header.html" import render_chat_header %}
                 {{ render_chat_header(chat.name) }}
 
                 {# Баннер документа #}
-                {% from "messeges/chat_document_banner.html" import render_chat_document_banner %}
+                {% from "messages/chat_document_banner.html" import render_chat_document_banner %}
                 {{ render_chat_document_banner(chat.document_id) }}
 
                 {# Сообщения #}
-                {% from "messeges/chat_messages.html" import render_messages %}
+                {% from "messages/chat_messages.html" import render_messages %}
                 {{ render_messages(messages, current_user, error) }}
 
                 {# Форма отправки #}
-                {% from "messeges/chat_input.html" import render_message_input %}
+                {% from "messages/chat_input.html" import render_message_input %}
                 {{ render_message_input(chat.id) }}
             </div>
         </main>
@@ -37,11 +37,11 @@
 </div>
 
 {# Модальное окно настроек #}
-{% from "messeges/chat_settings_modal.html" import render_chat_settings_modal %}
+{% from "messages/chat_settings_modal.html" import render_chat_settings_modal %}
 {{ render_chat_settings_modal(chat_id=chat.id, chat_name=chat.name, participant_ids=chat.participant_ids, current_user_id=current_user.id, access_token=access_token) }}
 
 {# Модальное окно настроек списка чатов #}
-{% from "messeges/chat_list_settings_modal.html" import render_chat_list_settings_modal %}
+{% from "messages/chat_list_settings_modal.html" import render_chat_list_settings_modal %}
 {{ render_chat_list_settings_modal(access_token=access_token) }}
 
 {# Автоскролл вниз #}
@@ -61,7 +61,7 @@
     var accessToken = "{{ access_token }}";
 
     function fetchMessages() {
-        fetch("/api/messeges/chats/" + chatId + "/messages/fragment?skip=0&limit=200", {
+        fetch("/api/messages/chats/" + chatId + "/messages/fragment?skip=0&limit=200", {
             headers: {
                 "Authorization": "Bearer " + accessToken
             }
@@ -119,7 +119,7 @@
     }
 
     function fetchSidebar() {
-        fetch("/api/messeges/chats/sidebar/fragment", {
+        fetch("/api/messages/chats/sidebar/fragment", {
             headers: {
                 "Authorization": "Bearer " + accessToken
             }

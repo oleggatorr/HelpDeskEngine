@@ -3,13 +3,13 @@
 
 {% block content %}
 {% include 'partials/left_side_menu.html' %}
-{% include 'messeges/chat_styles.html' %}
+{% include 'messages/chat_styles.html' %}
 
 <div class="chat-page">
     <div class="chat-layout">
         {# Сайдбар — список чатов #}
         <aside class="chat-sidebar-col">
-            {% from "messeges/chat_list.html" import render_chat_sidebar %}
+            {% from "messages/chat_list.html" import render_chat_sidebar %}
             {{ render_chat_sidebar(chats, total) }}
         </aside>
 
@@ -28,6 +28,6 @@
 </div>
 
 {# Модальное окно настроек списка чатов #}
-{% from "messeges/chat_list_settings_modal.html" import render_chat_list_settings_modal %}
+{% from "messages/chat_list_settings_modal.html" import render_chat_list_settings_modal %}
 {{ render_chat_list_settings_modal() }}
 {% endblock %}

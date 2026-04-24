@@ -1,10 +1,11 @@
 # app/reports/correction/routes.py
+log_file_name = "app-reports-correction-routes"
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.reports.correction.correction_public_services import PublicCorrectionService
-from app.reports.correction.schemas.correction import (
+from app.reports.correction.correction_schemas import (
     CorrectionCreate,
     CorrectionUpdate,
     CorrectionResponse,
@@ -12,12 +13,27 @@ from app.reports.correction.schemas.correction import (
     CorrectionFilter,
     CorrectionStatus,
 )
-
+from loguru import logger
 router = APIRouter()
 
 
 def _get_service(db: AsyncSession = Depends(get_db)) -> PublicCorrectionService:
     return PublicCorrectionService(db)
+
+
+@router.get(
+    "/my",
+    response_model=CorrectionListResponse,
+    summary="Мои коррекции",
+)
+async def get_my_corrections(
+    user_id: int = Query(..., description="ID пользователя"),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
+    service: PublicCorrectionService = Depends(_get_service),
+):
+    logger.debug(f"/my : user_id={user_id}, skip={skip}, limit={limit}")
+    return await service.get_my(user_id=user_id, skip=skip, limit=limit)
 
 
 # ==========================================
@@ -99,6 +115,7 @@ async def get_by_problem_registration(
     return result
 
 
+
 # ==========================================
 # 📊 LIST & FILTER
 # ==========================================
@@ -117,18 +134,6 @@ async def list_corrections(
     return await service.get_all(skip=skip, limit=limit, filters=filters)
 
 
-@router.get(
-    "/my",
-    response_model=CorrectionListResponse,
-    summary="Мои коррекции",
-)
-async def get_my_corrections(
-    user_id: int = Query(..., description="ID пользователя"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(20, ge=1, le=100),
-    service: PublicCorrectionService = Depends(_get_service),
-):
-    return await service.get_my(user_id=user_id, skip=skip, limit=limit)
 
 
 @router.get(

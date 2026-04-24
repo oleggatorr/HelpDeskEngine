@@ -164,7 +164,7 @@
             markAllReadBtn.addEventListener('click', function () {
                 var token = "{{ access_token }}";
                 var headers = token ? { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
-                fetch('/api/messeges/chats/mark-all-read', {
+                fetch('/api/messages/chats/mark-all-read', {
                     method: 'POST',
                     headers: headers,
                 })

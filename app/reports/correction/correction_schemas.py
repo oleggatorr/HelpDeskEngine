@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, List
 
 from app.reports.enums import DocumentStatus, DocumentLanguage, DocumentPriority
-from app.reports.correction.models import CorrectionStatus
+from app.reports.correction.correction_models import CorrectionStatus
 
 
 # 📎 Вспомогательная схема для вложений (вместо List[dict])
@@ -77,11 +77,6 @@ class CorrectionCreate(BaseModel):
         default=DocumentPriority.MEDIUM, 
         description="Приоритет документа",
         examples=["medium"]
-    )
-    doc_assigned_to: Optional[int] = Field(
-        None, 
-        description="ID пользователя, которому назначается документ",
-        examples=[42]
     )
 
     # 📎 Вложения — теперь с типизированной схемой
@@ -166,7 +161,6 @@ class CorrectionResponse(BaseModel):
 
     created_at: datetime
     updated_at: datetime
-    is_deleted: bool = Field(default=False)
     created_by: Optional[int] = Field(None, examples=[1])
     completed_by: Optional[int] = Field(None, examples=[5])
     verified_by: Optional[int] = Field(None, examples=[3])

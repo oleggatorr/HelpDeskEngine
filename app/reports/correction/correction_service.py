@@ -5,9 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from fastapi import HTTPException
 
-from app.reports.correction.models import Correction, CorrectionStatus
+from app.reports.correction.correction_models import Correction, CorrectionStatus
 from app.reports.models import ProblemRegistration, Document, DocumentType
-from app.reports.correction.schemas.correction import (
+from app.reports.correction.correction_schemas import (
     CorrectionCreate,
     CorrectionUpdate,
     CorrectionResponse,
@@ -69,7 +69,6 @@ class CorrectionService:
             current_stage=DocumentStage.NEW,
             language=request.doc_language,
             priority=request.doc_priority,
-            assigned_to=request.doc_assigned_to,
             attachment_files=request.attachment_files,
         ))
 
@@ -207,10 +206,14 @@ class CorrectionService:
     async def delete(self, correction_id: int) -> bool:
         result = await self.db.execute(select(Correction).where(Correction.id == correction_id))
         correction = result.scalar_one_or_none()
-        if not correction or correction.is_deleted:
+        if not correction:
             return False
+        
+        document_id = correction.document_id
+        await self.doc_service.delete(document_id)
 
-        correction.is_deleted = True
+
+        # await self.db.delete(correction)
         await self.db.commit()
         return True
 
@@ -354,7 +357,6 @@ class CorrectionService:
             completed_date=corr.completed_date,
             created_at=corr.created_at,
             updated_at=corr.updated_at,
-            is_deleted=corr.is_deleted,
             
             # 📄 Поля документа
             doc_track_id=doc.track_id,

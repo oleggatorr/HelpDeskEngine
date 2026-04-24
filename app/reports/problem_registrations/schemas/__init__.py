@@ -1,4 +1,4 @@
-from .problem_registration import (
+from ..pr_schemas import (
     ProblemRegistrationCreate,
     ProblemRegistrationUpdate,
     ProblemRegistrationResponse,

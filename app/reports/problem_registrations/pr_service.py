@@ -3,7 +3,7 @@ from sqlalchemy import select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.reports.models import ProblemRegistration, Document, DocumentType
-from app.reports.problem_registrations.schemas.problem_registration import (
+from app.reports.problem_registrations.pr_schemas import (
     ProblemRegistrationCreate,
     ProblemRegistrationUpdate,
     ProblemRegistrationResponse,
@@ -49,7 +49,6 @@ class ProblemRegistrationService:
             )
             if result.scalar_one() == 0:
                 location_id = None
-
         # 1. Создаём документ автоматически
         doc = await self.doc_service.create(DocumentCreate(
             created_by=created_by,
@@ -61,7 +60,7 @@ class ProblemRegistrationService:
             assigned_to=request.doc_assigned_to,
             attachment_files=request.attachment_files,
         ))
-
+        print(123)
         # 2. Создаём регистрацию проблемы, привязанную к документу
         registration = ProblemRegistration(
             document_id=doc.id,

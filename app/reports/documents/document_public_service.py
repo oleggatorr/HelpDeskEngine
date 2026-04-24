@@ -1,165 +1,283 @@
-from typing import Optional
+from typing import Optional, List
+
+from fastapi import HTTPException, status
+from sqlalchemy import select, asc, desc, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.reports.documents.document_service import DocumentService
+from app.reports.documents.document_models import Document
+from app.reports.documents.schemas.document import (
+    DocumentFilter, 
+    DocumentResponse, 
+    DocumentListResponse,
+    DocumentUpdate,
+)
+from app.reports.models import DocumentAttachment, DocumentLog
+from app.messages.models import Chat
+from app.messages.public_services import PublicChatService
 
 
 class PublicDocumentService:
-    """Публичный слой документов."""
+    """Публичный слой документов (facade + orchestration)."""
 
     def __init__(self, db: AsyncSession):
+        self.db = db
         self._service = DocumentService(db)
 
-    async def create(self, *args, **kwargs):
-        return await self._service.create(*args, **kwargs)
+    # ========================
+    # Базовые методы (проксирование)
+    # ========================
 
-    async def get_by_id(self, *args, **kwargs):
-        return await self._service.get_by_id(*args, **kwargs)
+    async def create(self, request):
+        return await self._service.create(request)
 
-    async def get_by_track_id(self, *args, **kwargs):
-        return await self._service.get_by_track_id(*args, **kwargs)
+    async def get_by_id(self, doc_id: int):
+        return await self._service.get_by_id(doc_id)
 
-    async def get_all(self, *args, **kwargs):
-        return await self._service.get_all(*args, **kwargs)
+    async def get_by_track_id(self, track_id: str):
+        return await self._service.get_by_track_id(track_id)
 
-    async def list_filtered(self, *args, **kwargs):
-        return await self._service.list_filtered(*args, **kwargs)
+    async def get_all(self):
+        return await self._service.get_all()
 
-    async def update_stage(self, *args, **kwargs):
-        return await self._service.update_stage(*args, **kwargs)
+    async def list_filtered(
+        self,
+        filters: DocumentFilter,
+        skip: int = 0,
+        limit: int = 100,
+    ) -> DocumentListResponse:
+        """
+        Получение списка документов с фильтрацией, сортировкой и пагинацией.
+        """
+        query = select(Document)
+        count_query = select(func.count(Document.id))
 
-    async def update(self, doc_id: int, request, user_id: int = None, **kwargs):
-        """Обновить документ с жёсткой проверкой блокировки."""
-        from fastapi import HTTPException, status
-        from app.reports.documents.models import Document
-        from sqlalchemy import select
-        # 🔒 Проверяем блокировку, если явно не разрешено её обходить
+        # === ФИЛЬТРАЦИЯ ===
+        if filters.track_id:
+            query = query.where(Document.track_id == filters.track_id)
+            count_query = count_query.where(Document.track_id == filters.track_id)
+        
+        if filters.created_by is not None:
+            query = query.where(Document.created_by == filters.created_by)
+            count_query = count_query.where(Document.created_by == filters.created_by)
+        
+        if filters.assigned_to is not None:
+            query = query.where(Document.assigned_to == filters.assigned_to)
+            count_query = count_query.where(Document.assigned_to == filters.assigned_to)
+        
+        if filters.doc_type_id is not None:
+            query = query.where(Document.doc_type_id == filters.doc_type_id)
+            count_query = count_query.where(Document.doc_type_id == filters.doc_type_id)
 
-        lock_result = await self._service.db.execute(select(Document.is_locked).where(Document.id == doc_id))
-        is_locked = lock_result.scalar_one_or_none()
+        # Enum-поля: валидатор Pydantic уже привёл значения к Enum, берём .value напрямую
+        if filters.status is not None:
+            query = query.where(Document.status == filters.status.value)
+            count_query = count_query.where(Document.status == filters.status.value)
+        
+        if filters.current_stage is not None:
+            query = query.where(Document.current_stage == filters.current_stage.value)
+            count_query = count_query.where(Document.current_stage == filters.current_stage.value)
+        
+        if filters.language is not None:
+            query = query.where(Document.language == filters.language.value)
+            count_query = count_query.where(Document.language == filters.language.value)
+        
+        if filters.priority is not None:
+            query = query.where(Document.priority == filters.priority.value)
+            count_query = count_query.where(Document.priority == filters.priority.value)
+
+        # Boolean-поля
+        if filters.is_locked is not None:
+            query = query.where(Document.is_locked == filters.is_locked)
+            count_query = count_query.where(Document.is_locked == filters.is_locked)
+        
+        if filters.is_archived is not None:
+            query = query.where(Document.is_archived == filters.is_archived)
+            count_query = count_query.where(Document.is_archived == filters.is_archived)
+        
+        if filters.is_anonymized is not None:
+            query = query.where(Document.is_anonymized == filters.is_anonymized)
+            count_query = count_query.where(Document.is_anonymized == filters.is_anonymized)
+
+        # Диапазон дат
+        if filters.created_from is not None:
+            query = query.where(Document.created_at >= filters.created_from)
+            count_query = count_query.where(Document.created_at >= filters.created_from)
+        
+        if filters.created_to is not None:
+            query = query.where(Document.created_at <= filters.created_to)
+            count_query = count_query.where(Document.created_at <= filters.created_to)
+
+        # === СОРТИРОВКА ===
+        sort_column = getattr(Document, filters.sort_by, Document.id)
+        # Валидатор DocumentFilter уже приводит sort_order к нижнему регистру
+        if filters.sort_order == "desc":
+            query = query.order_by(desc(sort_column))
+        else:
+            query = query.order_by(asc(sort_column))
+
+        # === ПАГИНАЦИЯ ===
+        query = query.offset(skip).limit(limit)
+
+        # === ВЫПОЛНЕНИЕ ЗАПРОСОВ ===
+        result = await self.db.execute(query)
+        documents = result.scalars().all()
+        
+        total_result = await self.db.execute(count_query)
+        total = total_result.scalar_one()
+
+        # === КОНВЕРТАЦИЯ В PYDANTIC ===
+        response_items = [
+            DocumentResponse.model_validate(doc, from_attributes=True) 
+            for doc in documents
+        ]
+
+        # ✅ Возвращаем готовую модель вместо кортежа
+        return DocumentListResponse(documents=response_items, total=total)
+
+    async def delete(self, doc_id: int, user_id: int):
+        return await self._service.delete(doc_id)
+
+    async def get_logs(self, doc_id: int):
+        return await self._service.get_logs(doc_id)
+
+    # ========================
+    # Внутренние утилиты
+    # ========================
+
+    async def _ensure_not_locked(self, doc_id: int):
+        result = await self.db.execute(
+            select(Document.is_locked).where(Document.id == doc_id)
+        )
+        is_locked = result.scalar_one_or_none()
 
         if is_locked:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Документ заблокирован. Редактирование, назначение и снятие назначения невозможны."
+                detail="Документ заблокирован"
             )
 
-        # ✅ Делегируем обновление нижнему слою
-        return await self._service.update(doc_id, request, user_id=user_id, **kwargs)
+    def _update_payload(self, **kwargs) -> DocumentUpdate:
+        """Единая точка создания DTO"""
+        return DocumentUpdate(**kwargs)
 
-    async def delete(self, *args, **kwargs):
-        return await self._service.delete(*args, **kwargs)
+    # ========================
+    # UPDATE (центральный метод)
+    # ========================
 
-    async def get_logs(self, *args, **kwargs):
-        return await self._service.get_logs(*args, **kwargs)
+    async def update(self, doc_id: int, request: DocumentUpdate, user_id: Optional[int] = None):
+        await self._ensure_not_locked(doc_id)
+        return await self._service.update(doc_id, request, user_id=user_id)
+
+    # ========================
+    # Назначения
+    # ========================
 
     async def assign_to_me(self, doc_id: int, user_id: int):
-        """Назначить документ на текущего пользователя."""
+        return await self.update(doc_id, self._update_payload(assigned_to=user_id), user_id)
 
-        from app.reports.documents.schemas.document import DocumentUpdate
-        return await self.update(doc_id, DocumentUpdate(assigned_to=user_id), user_id=user_id)
+    async def assign_to_user(self, doc_id: int, assignee_id: int, current_user_id: int):
+        return await self.update(doc_id, self._update_payload(assigned_to=assignee_id), current_user_id)
 
-    async def assign_to_user(self, doc_id: int, assignee_id: int, current_user_id:int):
+    async def unassign(self, doc_id: int, user_id: int):
+        return await self.update(doc_id, self._update_payload(assigned_to=None), user_id)
 
-        """Назначить документ на указанного пользователя."""
-        from app.reports.documents.schemas.document import DocumentUpdate
-        return await self.update(doc_id, DocumentUpdate(assigned_to=assignee_id), user_id=current_user_id)
+    # ========================
+    # Блокировка (обходит lock-check)
+    # ========================
 
-    async def unassign(self, doc_id: int):
-        """Снять назначение с документа."""
-        from app.reports.documents.schemas.document import DocumentUpdate
-        return await self.update(doc_id, DocumentUpdate(assigned_to=None), user_id=None)
-
-
-    # === Блокировка ===
     async def lock(self, doc_id: int, user_id: int):
-        """Заблокировать документ."""
-        from app.reports.documents.schemas.document import DocumentUpdate
-        return await self._service.update(doc_id, DocumentUpdate(is_locked=True), user_id=user_id )
+        return await self._service.update(doc_id, self._update_payload(is_locked=True), user_id)
 
     async def unlock(self, doc_id: int, user_id: int):
-        """Разблокировать документ."""
-        from app.reports.documents.schemas.document import DocumentUpdate
-        return await self._service.update(doc_id, DocumentUpdate(is_locked=False), user_id=user_id)
+        return await self._service.update(doc_id, self._update_payload(is_locked=False), user_id)
 
-    # === Архив ===
+    # ========================
+    # Архив
+    # ========================
 
     async def archive(self, doc_id: int, user_id: int):
-        """Архивировать документ."""
-        from app.reports.documents.schemas.document import DocumentUpdate
-        result = await self._service.update(doc_id, DocumentUpdate(is_archived=True), user_id=user_id)
-
-        chat_id = await self.get_chat_id(doc_id)
-        if chat_id:
-            from app.messages.public_services import PublicChatService
-            chat_service = PublicChatService(self._service.db)
-            await chat_service.archive(chat_id, user_id)
+        result = await self._service.update(
+            doc_id, self._update_payload(is_archived=True), user_id
+        )
+        await self._sync_chat_archive(doc_id, user_id, archived=True)
         return result
-    
+
     async def unarchive(self, doc_id: int, user_id: int):
-        """Разархивировать документ."""
-        from app.reports.documents.schemas.document import DocumentUpdate
-        result = await self._service.update(doc_id, DocumentUpdate(is_archived=False), user_id=user_id)
-
-        chat_id = await self.get_chat_id(doc_id)
-        if chat_id:
-            from app.messages.public_services import PublicChatService
-            chat_service = PublicChatService(self._service.db)
-            await chat_service.unarchive(chat_id, user_id)
+        result = await self._service.update(
+            doc_id, self._update_payload(is_archived=False), user_id
+        )
+        await self._sync_chat_archive(doc_id, user_id, archived=False)
         return result
 
-    # === Анонимизация ===
+    async def _sync_chat_archive(self, doc_id: int, user_id: int, archived: bool):
+        chat_id = await self.get_chat_id(doc_id)
+        if not chat_id:
+            return
+
+        chat_service = PublicChatService(self.db)
+        if archived:
+            await chat_service.archive(chat_id, user_id)
+        else:
+            await chat_service.unarchive(chat_id, user_id)
+
+    # ========================
+    # Прочие изменения
+    # ========================
+
     async def anonymize(self, doc_id: int, user_id: int):
-        """Анонимизировать документ."""
         return await self._service.anonymize(doc_id, user_id)
 
-    # === Статус ===
     async def change_status(self, doc_id: int, status, user_id: int):
-        """Изменить статус документа."""
-        from app.reports.documents.schemas.document import DocumentUpdate
-        return await self.update(doc_id, DocumentUpdate(status=status), user_id=user_id)
+        return await self.update(doc_id, self._update_payload(status=status), user_id)
 
-    # === Приоритет ===
     async def change_priority(self, doc_id: int, priority, user_id: int):
-        """Изменить приоритет документа."""
-        from app.reports.documents.schemas.document import DocumentUpdate
-        return await self.update(doc_id, DocumentUpdate(priority=priority), user_id=user_id)
+        return await self.update(doc_id, self._update_payload(priority=priority), user_id)
 
-    # === Этап ===
     async def change_stage(self, doc_id: int, stage, user_id: int):
-        """Изменить текущий этап документа."""
-        from app.reports.documents.schemas.document import DocumentUpdate
-        return await self.update(doc_id, DocumentUpdate(current_stage=stage), user_id=user_id)
+        return await self.update(doc_id, self._update_payload(current_stage=stage), user_id)
 
-    # === Язык ===
     async def change_language(self, doc_id: int, language, user_id: int):
-        """Изменить язык документа."""
-        from app.reports.documents.schemas.document import DocumentUpdate
-        return await self.update(doc_id, DocumentUpdate(language=language), user_id=user_id)
+        return await self.update(doc_id, self._update_payload(language=language), user_id)
+
+    async def change_type(self, doc_id: int, doc_type_id: int, user_id: int):
+        """Для консистентности с остальными change_* методами"""
+        return await self.update(doc_id, self._update_payload(doc_type_id=doc_type_id), user_id)
+
+    # ========================
+    # Chat
+    # ========================
 
     async def get_chat_id(self, doc_id: int) -> Optional[int]:
-        """Получить ID чата, привязанного к документу."""
-        from app.messages.models import Chat
-        from sqlalchemy import select
-        result = await self._service.db.execute(
+        result = await self.db.execute(
             select(Chat.id).where(Chat.document_id == doc_id)
         )
         return result.scalar_one_or_none()
 
-    async def get_attachments(self, doc_id: int):
-        """Получить вложения документа (без удалённых)."""
-        from app.reports.models import DocumentAttachment
-        from sqlalchemy import select
-        result = await self._service.db.execute(
+    # ========================
+    # Attachments
+    # ========================
+
+    async def get_attachments(self, doc_id: int) -> List[DocumentAttachment]:
+        result = await self.db.execute(
             select(DocumentAttachment)
-            .where(DocumentAttachment.document_id == doc_id, DocumentAttachment.is_deleted == False)
+            .where(
+                DocumentAttachment.document_id == doc_id,
+                DocumentAttachment.is_deleted.is_(False)
+            )
             .order_by(DocumentAttachment.uploaded_at.asc())
         )
         return result.scalars().all()
 
-    async def add_attachment(self, doc_id: int, file_path: str, original_filename: str, file_type: str, uploaded_by: int):
-        """Добавить вложение к документу."""
-        from app.reports.models import DocumentAttachment
+    async def add_attachment(
+        self,
+        doc_id: int,
+        file_path: str,
+        original_filename: str,
+        file_type: str,
+        uploaded_by: int
+    ) -> DocumentAttachment:
+
         attachment = DocumentAttachment(
             document_id=doc_id,
             file_path=file_path,
@@ -167,24 +285,24 @@ class PublicDocumentService:
             file_type=file_type,
             uploaded_by=uploaded_by,
         )
-        self._service.db.add(attachment)
-        await self._service.db.commit()
-        await self._service.db.refresh(attachment)
+
+        self.db.add(attachment)
+        await self.db.commit()
+        await self.db.refresh(attachment)
+
         return attachment
 
     async def delete_attachment(self, attachment_id: int, user_id: int) -> bool:
-        """Мягкое удаление вложения документа (is_deleted = True)."""
-        from app.reports.models import DocumentAttachment, DocumentLog
-        from sqlalchemy import select
-        result = await self._service.db.execute(
+        result = await self.db.execute(
             select(DocumentAttachment).where(DocumentAttachment.id == attachment_id)
         )
         attachment = result.scalar_one_or_none()
+
         if not attachment or attachment.is_deleted:
             return False
 
         attachment.is_deleted = True
-        await self._service.db.flush()
+        await self.db.flush()
 
         log = DocumentLog(
             document_id=attachment.document_id,
@@ -192,7 +310,8 @@ class PublicDocumentService:
             action="ATTACHMENT_DELETED",
             new_value=f"Attachment {attachment_id} soft deleted",
         )
-        self._service.db.add(log)
-        await self._service.db.commit()
+
+        self.db.add(log)
+        await self.db.commit()
 
         return True

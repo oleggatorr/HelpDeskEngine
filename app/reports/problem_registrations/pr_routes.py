@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
-from app.reports.problem_registrations.schemas.problem_registration import (
+from app.reports.problem_registrations.pr_schemas import (
     ProblemRegistrationCreate,
     ProblemRegistrationUpdate,
     ProblemRegistrationResponse,

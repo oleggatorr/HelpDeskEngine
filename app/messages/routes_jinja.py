@@ -31,8 +31,8 @@ global_templates = Path(__file__).parent.parent / "templates"
 # templates = Jinja2Templates(env=env)
 
 
-@router.get("/messeges")
-async def messeges_page(
+@router.get("/messages")
+async def messages_page(
     request: Request,
     db=Depends(get_db),
 ):
@@ -45,7 +45,7 @@ async def messeges_page(
     service = PublicChatService(db)
     chats_result = await service.get_user_chats_with_unread(user_id=current_user.id, skip=0, limit=100)
 
-    return templates.TemplateResponse("messeges/index.html", {
+    return templates.TemplateResponse("messages/index.html", {
         "request": request,
         "chats": chats_result.chats,
         "total": chats_result.total,
@@ -53,7 +53,7 @@ async def messeges_page(
     })
 
 
-@router.get("/messeges/{chat_id}")
+@router.get("/messages/{chat_id}")
 async def chat_page(
     request: Request,
     chat_id: int,
@@ -69,7 +69,7 @@ async def chat_page(
     chat_service = PublicChatService(db)
     chat = await chat_service.get_by_id(chat_id, user_id=current_user.id)
     if not chat:
-        return RedirectResponse(url="/messeges", status_code=303)
+        return RedirectResponse(url="/messages", status_code=303)
 
     message_service = PublicMessageService(db)
 
@@ -83,7 +83,7 @@ async def chat_page(
     # Загружаем список всех чатов для сайдбара с непрочитанными
     chats_result = await chat_service.get_user_chats_with_unread(user_id=current_user.id, skip=0, limit=100)
 
-    return templates.TemplateResponse("messeges/chat.html", {
+    return templates.TemplateResponse("messages/chat.html", {
         "request": request,
         "chat": chat,
         "messages": messages_result.messages,
@@ -96,7 +96,7 @@ async def chat_page(
     })
 
 
-@router.post("/messeges/{chat_id}/send")
+@router.post("/messages/{chat_id}/send")
 async def chat_send(
     request: Request,
     chat_id: int,
@@ -112,7 +112,7 @@ async def chat_send(
 
     if not content.strip() and not files:
         return RedirectResponse(
-            url=f"/messeges/{chat_id}?error=Сообщение не может быть пустым",
+            url=f"/messages/{chat_id}?error=Сообщение не может быть пустым",
             status_code=303,
         )
 
@@ -150,14 +150,14 @@ async def chat_send(
         import logging
         logging.error(f"Ошибка отправки сообщения в чат {chat_id}: {e}", exc_info=True)
         return RedirectResponse(
-            url=f"/messeges/{chat_id}?error=Ошибка отправки сообщения: {str(e)}",
+            url=f"/messages/{chat_id}?error=Ошибка отправки сообщения: {str(e)}",
             status_code=303,
         )
 
-    return RedirectResponse(url=f"/messeges/{chat_id}", status_code=303)
+    return RedirectResponse(url=f"/messages/{chat_id}", status_code=303)
 
 
-@router.get("/messeges/attachments/{attachment_id}/download")
+@router.get("/messages/attachments/{attachment_id}/download")
 async def download_attachment(
     request: Request,
     attachment_id: int,
@@ -176,11 +176,11 @@ async def download_attachment(
     )
     attachment = result.scalar_one_or_none()
     if not attachment or attachment.is_deleted:
-        return RedirectResponse(url="/messeges", status_code=303)
+        return RedirectResponse(url="/messages", status_code=303)
 
     file_path = attachment.file_path
     if not file_path or not os.path.exists(file_path):
-        return RedirectResponse(url="/messeges", status_code=303)
+        return RedirectResponse(url="/messages", status_code=303)
 
     return FileResponse(
         path=file_path,
