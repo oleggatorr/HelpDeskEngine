@@ -10176,3 +10176,7 @@ total
 2026-04-24 16:26:42 | INFO     | logging:callHandlers:1737 | Started server process [22892]
 2026-04-24 16:26:42 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
 2026-04-24 16:26:42 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-24 16:34:02 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-24 16:34:02 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-24 16:34:02 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-24 16:34:02 | INFO     | logging:callHandlers:1737 | Finished server process [22892]
