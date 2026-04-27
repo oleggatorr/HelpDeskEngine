@@ -15,21 +15,27 @@ from app.reports.correction_action.ca_models import CorrectionAction
 
 
 # 📊 Этап
-class DocumentStage(enum.Enum):
+class DocumentStage(enum.IntEnum):  # ✅ IntEnum для чисел
     NEW = 1
     IN_PROGRESS = 2
     WAITING = 3
     CLOSED = 4
+    
+    @classmethod
+    def from_str(cls, value: str):
+        """Конвертирует строку 'NEW' → DocumentStage.NEW"""
+        mapping = {name: member for name, member in cls.__members__.items()}
+        return mapping.get(value.upper())
 
 
-# 🌐 Язык
+# 🌐 DocumentLanguage — храним как String(2) в БД
 class DocumentLanguage(str, enum.Enum):
     RU = "ru"
     EN = "en"
     CH = "ch"
 
 
-# 🔥 Приоритет
+# 🔥 DocumentPriority — храним как String(10) в БД
 class DocumentPriority(str, enum.Enum):
     LOW = "low"
     MEDIUM = "medium"
@@ -37,7 +43,7 @@ class DocumentPriority(str, enum.Enum):
     URGENT = "urgent"
 
 
-# 📋 Статус
+# 📋 DocumentStatus — храним как String(20) в БД
 class DocumentStatus(str, enum.Enum):
     OPEN = "open"
     IN_PROGRESS = "in_progress"
@@ -46,10 +52,23 @@ class DocumentStatus(str, enum.Enum):
     REJECTED = "rejected"
 
 
-class ProblemAction(enum.Enum):
-    """Статусы обработки проблемы (значения должны точно совпадать с БД)"""
-    UNDEFINED = "UNDEFINED"               
-    REJECTED = "REJECTED"                 
-    CLOSED = "CLOSED"                     
-    ANALYSIS_REQUIRED = "ANALYSIS_REQUIRED"  
-    ASSIGN_EXECUTOR = "ASSIGN_EXEC"    
+# 🎯 ProblemAction — храним как String в БД (верхний регистр!)
+class ProblemAction(str, enum.Enum):
+    UNDEFINED = "UNDEFINED"
+    REJECTED = "REJECTED"
+    CLOSED = "CLOSED"
+    ANALYSIS_REQUIRED = "ANALYSIS_REQUIRED"
+    ASSIGN_EXECUTOR = "ASSIGN_EXEC"
+
+
+# 🔧 DecisionType — для коррекции
+class DecisionType(str, enum.Enum):
+    ANALYSIS = "ANALYSIS"
+    ASSIGN = "ASSIGN"
+
+
+# ✅ CorrectiveActionStatus — для действий по коррекции
+class CorrectiveActionStatus(str, enum.Enum):
+    NEW = "NEW"
+    IN_PROGRESS = "IN_PROGRESS"
+    DONE = "DONE"

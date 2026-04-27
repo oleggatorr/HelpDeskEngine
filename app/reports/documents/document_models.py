@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum as SAEnum, Boolean, Text
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -8,8 +8,8 @@ import enum
 from app.knowledge_base.models import Department, Location, CauseCode  # noqa: F401
 
 
-# 📊 Этап
-class DocumentStage(enum.Enum):
+# 📊 Этап (оставляем enum для типизации, но не используем в БД)
+class DocumentStage(enum.IntEnum):  # ✅ IntEnum для чисел
     NEW = 1
     IN_PROGRESS = 2
     WAITING = 3
@@ -62,14 +62,17 @@ class Document(Base):
     track_id = Column(String(12), unique=True, nullable=False, index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     created_by = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-    status = Column(SAEnum(DocumentStatus), default=DocumentStatus.OPEN)
+    
+    # 🔥 ENUM → String/Integer
+    status = Column(String(20), default=DocumentStatus.OPEN.value)  # "open", "closed"...
     doc_type_id = Column(Integer, ForeignKey("document_types.id", ondelete="SET NULL"), nullable=True)
-    current_stage = Column(SAEnum(DocumentStage), nullable=False, default=DocumentStage.NEW)
+    current_stage = Column(Integer, nullable=False, default=DocumentStage.NEW.value)  # 1, 2, 3...
     is_locked = Column(Boolean, default=False, nullable=False)
     is_archived = Column(Boolean, default=False, nullable=False)
     is_anonymized = Column(Boolean, default=False, nullable=False)
-    language = Column(SAEnum(DocumentLanguage), default=DocumentLanguage.RU)
-    priority = Column(SAEnum(DocumentPriority), default=DocumentPriority.MEDIUM)
+    language = Column(String(2), default=DocumentLanguage.RU.value)  # "ru", "en"...
+    priority = Column(String(10), default=DocumentPriority.MEDIUM.value)  # "low", "high"...
+    
     assigned_to = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
 
     creator = relationship("User", foreign_keys=[created_by], backref="created_documents")

@@ -14,7 +14,7 @@ import uuid
 from app.core.database import get_db
 from app.auth.routes_jinja import require_auth
 from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
-from app.reports.enums import DocumentStage, DocumentStatus
+from app.reports.documents.document_models import DocumentStage, DocumentLanguage, DocumentPriority, DocumentStatus
 
 router = APIRouter()
 

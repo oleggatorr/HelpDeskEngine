@@ -1,34 +1,69 @@
 services:
   db:
     image: postgres:16-alpine
+    container_name: helpdesk_db
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"  # ← Хост:Контейнер (чтобы не конфликтовать с 8432)
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
       interval: 5s
       timeout: 5s
       retries: 5
     networks:
-      - app_net
+      - helpdesk_net
+    restart: unless-stopped
 
   web:
     build: .
+    container_name: helpdesk_app
     environment:
-      DATABASE_URL: postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
+      # Подключение к БД внутри docker network (по имени сервиса)
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      SECRET_KEY: ${SECRET_KEY:-changeme_in_production_32chars_min}
+      # Для отображения в логах/документации
+      APP_HOST: 0.0.0.0
+      APP_PORT: 8000
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "8000:8000"
+      - "8002:8000"  # ← Доступ к приложению: http://node-6:8002
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
     networks:
-      - app_net
+      - helpdesk_net
+    restart: unless-stopped
+
+  # Опционально: веб-интерфейс для управления БД
+  adminer:
+    image: adminer:latest
+    container_name: helpdesk_adminer
+    ports:
+      - "7081:8080"  # ← http://node-6:7081
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    depends_on:
+      - db
+    networks:
+      - helpdesk_net
+    restart: unless-stopped
+    profiles:
+      - tools  # Запускается только с: docker compose --profile tools up -d
 
 volumes:
   postgres_data:
 
 networks:
-  app_net:
+  helpdesk_net:
+    driver: bridge

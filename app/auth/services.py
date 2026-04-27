@@ -140,9 +140,9 @@ class AuthService:
     async def change_password(self, user_id: int, request: PasswordChangeRequest) -> bool:
         user = (await self.db.execute(select(User).where(User.id == user_id))).scalar_one_or_none()
         if not user:
-            raise HTTPException(status_code=404, detail="Пользователь не найден")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден")
         if not _verify_password(request.old_password, user.password_hash):
-            raise HTTPException(status_code=400, detail="Неверный старый пароль")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Неверный старый пароль")
 
         await self.db.execute(
             sa_update(User).where(User.id == user_id).values(password_hash=_hash_password(request.new_password))
@@ -178,6 +178,7 @@ class UserService:
             
         return _user_to_response(user)
 
+    
     async def list_filtered(
         self, filters: Optional[UserFilter] = None, skip: int = 0, limit: int = 100
     ) -> UserListResponse:
@@ -195,7 +196,7 @@ class UserService:
                 conditions.append(UserProfile.department_id == filters.department_id)
             if filters.role:
                 needs_profile_join = True
-                conditions.append(UserProfile.role == filters.role)
+                conditions.append(UserProfile.role == filters.role.value)
             if filters.position:
                 needs_profile_join = True
                 conditions.append(UserProfile.position.ilike(f"%{filters.position}%"))
@@ -203,14 +204,12 @@ class UserService:
                 needs_profile_join = True
                 conditions.append(UserProfile.permissions.ilike(f"%{filters.permissions}%"))
 
-        # 🔹 Формируем базовый запрос
         base_query = select(User)
         if needs_profile_join:
             base_query = base_query.outerjoin(UserProfile, User.id == UserProfile.user_id)
         if conditions:
             base_query = base_query.where(and_(*conditions))
 
-        # 🔹 Корректный подсчёт total (без subquery и с учётом distinct)
         count_query = select(func.count(User.id.distinct())).select_from(User)
         if needs_profile_join:
             count_query = count_query.outerjoin(UserProfile, User.id == UserProfile.user_id)
@@ -219,12 +218,23 @@ class UserService:
             
         total = (await self.db.execute(count_query)).scalar_one()
 
-        # 🔹 Пагинация + загрузка профиля
-        query = base_query.order_by(User.id).distinct().offset(skip).limit(limit)
-        query = query.options(selectinload(User.profile))
+        # 🔥 ИСПРАВЛЕНИЕ: добавляем цепочку selectinload для department
+        query = (
+            base_query
+            .order_by(User.id)
+            .distinct()
+            .offset(skip)
+            .limit(limit)
+            .options(
+                selectinload(User.profile)
+                .selectinload(UserProfile.department)  # ← ✅ Загружаем department заранее
+            )
+        )
+        
         users = (await self.db.execute(query)).scalars().all()
 
         return UserListResponse(users=[_user_to_response(u) for u in users], total=total)
+    
 
     async def get_profile(self, user_id: int) -> Optional[UserProfileDTO]:
         res = await self.db.execute(select(UserProfile).where(UserProfile.user_id == user_id))
@@ -233,7 +243,9 @@ class UserService:
     async def update_profile(self, user_id: int, request: ProfileUpdateRequest) -> UserProfileDTO:
         profile = (await self.db.execute(select(UserProfile).where(UserProfile.user_id == user_id))).scalar_one_or_none()
         
-        update_data = request.model_dump(exclude_unset=True)
+        # ✅ mode='json' гарантирует, что все энумы станут строками перед записью в БД
+        update_data = request.model_dump(exclude_unset=True, mode='json')
+        
         if not profile:
             profile = UserProfile(user_id=user_id, **update_data)
             self.db.add(profile)

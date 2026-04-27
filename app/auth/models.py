@@ -1,6 +1,6 @@
 from enum import Enum as PyEnum
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Enum
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Enum, CheckConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -39,9 +39,10 @@ class UserProfile(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True, nullable=False)
     role = Column(
-        Enum(UserRole, values_callable=lambda e: [m.value for m in e]),
-        default=UserRole.USER,
-    )  # роль
+        String(20),
+        nullable=False,
+        default=UserRole.USER.value,
+    )
     position = Column(String(100))  # должность
     permissions = Column(String(255))  # допуски (текстовое поле)
 
@@ -51,6 +52,13 @@ class UserProfile(Base):
     department_id = Column(Integer, ForeignKey("departments.id", ondelete="SET NULL"), nullable=True) # 👈 новое поле
     department = relationship("Department", back_populates="profiles")  # ← имя должно совпадать!
 
+    # 🔹 Страховка на уровне БД (рекомендуется)
+    __table_args__ = (
+        CheckConstraint(
+            "role IN ('admin', 'user', 'qe', 'owner', 'assignee')",
+            name="chk_user_profile_role"
+        ),
+    )
 
 
     def __repr__(self):

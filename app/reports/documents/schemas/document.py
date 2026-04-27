@@ -1,17 +1,18 @@
-from typing import Optional, List
+from typing import Optional, List, Union, Any
 from datetime import datetime
 import re
 import random
 import string
 
-from pydantic import BaseModel, field_validator, ConfigDict
-
-from app.reports.enums import (
-    DocumentStage,
-    DocumentLanguage,
-    DocumentPriority,
-    DocumentStatus,
-)
+from pydantic import BaseModel, field_validator, ConfigDict, BeforeValidator
+from typing_extensions import Annotated
+from app.reports.documents.document_models import DocumentStage, DocumentLanguage, DocumentPriority, DocumentStatus
+# from app.reports.enums import (
+#     DocumentStage,      # IntEnum: NEW=1, IN_PROGRESS=2...
+#     DocumentLanguage,   # str-enum: RU="ru", EN="en"
+#     DocumentPriority,   # str-enum: LOW="low", HIGH="high"
+#     DocumentStatus,     # str-enum: OPEN="open", CLOSED="closed"
+# )
 
 # ========================
 # TRACK ID
@@ -30,20 +31,41 @@ def _rand(n: int) -> str:
 
 
 # ========================
-# ENUM PARSER (DRY)
+# ENUM PARSER (универсальный, работает со str и int)
 # ========================
 
-def parse_enum(enum_cls, value):
-    if value is None or isinstance(value, enum_cls):
+def parse_enum_safe(enum_cls, value: Any):
+    """
+    Парсит значение в enum, поддерживая:
+    - уже готовый экземпляр enum
+    - строку/число, совпадающее с .value энума
+    - строку, совпадающую с .name энума (для обратной совместимости)
+    """
+    if value is None:
+        return None
+    if isinstance(value, enum_cls):
         return value
+    
+    # Пробуем найти по значению (основной случай для БД)
+    for member in enum_cls:
+        if member.value == value or str(member.value) == str(value):
+            return member
+    
+    # Пробуем найти по имени (для обратной совместимости с старым API)
+    try:
+        return enum_cls[value.upper()]
+    except (KeyError, AttributeError):
+        pass
+    
+    raise ValueError(f"Invalid value '{value}' for {enum_cls.__name__}. "
+                     f"Valid values: {[m.value for m in enum_cls]}")
 
-    if isinstance(value, str):
-        try:
-            return enum_cls[value.upper()]
-        except KeyError:
-            raise ValueError(f"Invalid value '{value}' for {enum_cls.__name__}")
 
-    return value
+# Создаём переиспользуемые валидаторы
+StageValidator = Annotated[Optional[DocumentStage], BeforeValidator(lambda v: parse_enum_safe(DocumentStage, v))]
+StatusValidator = Annotated[Optional[DocumentStatus], BeforeValidator(lambda v: parse_enum_safe(DocumentStatus, v))]
+LanguageValidator = Annotated[Optional[DocumentLanguage], BeforeValidator(lambda v: parse_enum_safe(DocumentLanguage, v))]
+PriorityValidator = Annotated[Optional[DocumentPriority], BeforeValidator(lambda v: parse_enum_safe(DocumentPriority, v))]
 
 
 # ========================
@@ -51,6 +73,8 @@ def parse_enum(enum_cls, value):
 # ========================
 
 class DocumentCreate(BaseModel):
+    model_config = ConfigDict(use_enum_values=True)  # ✅ В JSON уйдут .value, а не объекты
+
     track_id: Optional[str] = None
     status: DocumentStatus = DocumentStatus.OPEN
     doc_type_id: Optional[int] = None
@@ -62,7 +86,7 @@ class DocumentCreate(BaseModel):
     priority: DocumentPriority = DocumentPriority.MEDIUM
     assigned_to: Optional[int] = None
     created_by: Optional[int] = 0
-    attachment_files: Optional[List[dict]] = None  # ⚠ можно улучшить отдельной схемой
+    attachment_files: Optional[List[dict]] = None
 
     @field_validator("track_id")
     @classmethod
@@ -71,11 +95,11 @@ class DocumentCreate(BaseModel):
             raise ValueError("track_id должен быть в формате XXX-XXX-XXXX")
         return v
 
-    # универсальный парсинг
-    _parse_stage = field_validator("current_stage", mode="before")(lambda cls, v: parse_enum(DocumentStage, v))
-    _parse_status = field_validator("status", mode="before")(lambda cls, v: parse_enum(DocumentStatus, v))
-    _parse_language = field_validator("language", mode="before")(lambda cls, v: parse_enum(DocumentLanguage, v))
-    _parse_priority = field_validator("priority", mode="before")(lambda cls, v: parse_enum(DocumentPriority, v))
+    # Применяем универсальные валидаторы
+    current_stage: StageValidator
+    status: StatusValidator
+    language: LanguageValidator
+    priority: PriorityValidator
 
 
 # ========================
@@ -83,6 +107,8 @@ class DocumentCreate(BaseModel):
 # ========================
 
 class DocumentUpdate(BaseModel):
+    model_config = ConfigDict(use_enum_values=True)
+
     status: Optional[DocumentStatus] = None
     doc_type_id: Optional[int] = None
     current_stage: Optional[DocumentStage] = None
@@ -93,10 +119,10 @@ class DocumentUpdate(BaseModel):
     priority: Optional[DocumentPriority] = None
     assigned_to: Optional[int] = None
 
-    _parse_stage = field_validator("current_stage", mode="before")(lambda cls, v: parse_enum(DocumentStage, v))
-    _parse_status = field_validator("status", mode="before")(lambda cls, v: parse_enum(DocumentStatus, v))
-    _parse_language = field_validator("language", mode="before")(lambda cls, v: parse_enum(DocumentLanguage, v))
-    _parse_priority = field_validator("priority", mode="before")(lambda cls, v: parse_enum(DocumentPriority, v))
+    current_stage: StageValidator
+    status: StatusValidator
+    language: LanguageValidator
+    priority: PriorityValidator
 
 
 # ========================
@@ -104,28 +130,24 @@ class DocumentUpdate(BaseModel):
 # ========================
 
 class DocumentResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)  # ✅ Автоматическая сериализация .value
 
     id: int
     track_id: str
     created_at: datetime
     created_by: Optional[int] = None
-    status: str
+    status: DocumentStatus          # ✅ Pydantic сам превратит в "open"/"closed"
     doc_type_id: Optional[int] = None
-    current_stage: str
+    current_stage: DocumentStage    # ✅ Pydantic сам превратит в 1/2/3/4
     is_locked: bool
     is_archived: bool
     is_anonymized: bool
-    language: str
-    priority: str
+    language: DocumentLanguage      # ✅ "ru"/"en"
+    priority: DocumentPriority      # ✅ "low"/"high"
     assigned_to: Optional[int] = None
 
-    @field_validator("status", "current_stage", "language", "priority", mode="before")
-    @classmethod
-    def enum_to_str(cls, v):
-        if hasattr(v, "name"):
-            return v.name.lower()
-        return v
+    # ❌ УДАЛИТЬ старый валидатор enum_to_str — он больше не нужен!
+    # Благодаря use_enum_values=True Pydantic сам вернёт .value
 
 
 # ========================
@@ -142,6 +164,8 @@ class DocumentListResponse(BaseModel):
 # ========================
 
 class DocumentFilter(BaseModel):
+    model_config = ConfigDict(use_enum_values=True)
+
     track_id: Optional[str] = None
     created_by: Optional[int] = None
     assigned_to: Optional[int] = None
@@ -158,10 +182,10 @@ class DocumentFilter(BaseModel):
     sort_by: Optional[str] = "id"
     sort_order: Optional[str] = "desc"
 
-    _parse_stage = field_validator("current_stage", mode="before")(lambda cls, v: parse_enum(DocumentStage, v))
-    _parse_status = field_validator("status", mode="before")(lambda cls, v: parse_enum(DocumentStatus, v))
-    _parse_language = field_validator("language", mode="before")(lambda cls, v: parse_enum(DocumentLanguage, v))
-    _parse_priority = field_validator("priority", mode="before")(lambda cls, v: parse_enum(DocumentPriority, v))
+    current_stage: StageValidator
+    status: StatusValidator
+    language: LanguageValidator
+    priority: PriorityValidator
 
     @field_validator("sort_by")
     @classmethod
@@ -174,6 +198,6 @@ class DocumentFilter(BaseModel):
     @field_validator("sort_order")
     @classmethod
     def validate_sort_order(cls, v):
-        if v.lower() not in ("asc", "desc"):
+        if v and v.lower() not in ("asc", "desc"):
             raise ValueError("sort_order должен быть 'asc' или 'desc'")
-        return v.lower()
+        return v.lower() if v else v

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, ForeignKey, Enum as SAEnum, Text
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, String, Text  # ❌ Убрали Enum as SAEnum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -6,6 +6,7 @@ import enum
 
 
 class CorrectionActionStatus(str, enum.Enum):
+    """Статусы действия — значения .value хранятся в БД"""
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -22,16 +23,21 @@ class CorrectionAction(Base):
     document_id = Column(Integer, ForeignKey("documents.id", ondelete="CASCADE"), nullable=False, index=True)
     
     # 👥 Назначение
-    assigned_user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True, 
-                            comment="ID назначенного исполнителя")
+    assigned_user_id = Column(
+        Integer, 
+        ForeignKey("users.id", ondelete="SET NULL"), 
+        nullable=True, 
+        index=True, 
+        comment="ID назначенного исполнителя"
+    )
 
     # 📝 Содержимое
     description = Column(Text, nullable=False, comment="Описание конкретного действия")
+    
+    # 🔥 БЫЛО: SAEnum(...) → СТАЛО: String с дефолтом .value
     status = Column(
-        SAEnum(CorrectionActionStatus, name="correctionactionstatus",
-            create_type=False,
-            values_callable=lambda enum_cls: [e.value for e in enum_cls]),
-        default=CorrectionActionStatus.PENDING,
+        String(15),  # ✅ Достаточно для "in_progress"
+        default=CorrectionActionStatus.PENDING.value,  # ✅ "pending", а не объект
         nullable=False
     )
 
@@ -49,4 +55,4 @@ class CorrectionAction(Base):
     assignee = relationship("User", foreign_keys=[assigned_user_id], lazy="selectin")
 
     def __repr__(self):
-        return f"<CorrectionAction {self.id} - {self.status.value}>"
+        return f"<CorrectionAction {self.id} - {self.status}>"  # ✅ status уже строка

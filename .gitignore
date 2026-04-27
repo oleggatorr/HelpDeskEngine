@@ -1,19 +1,34 @@
-venv/
+# Python
 __pycache__/
-*.pyc
-.env
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
 *.egg-info/
 dist/
 build/
-uploads/
 
-
-*.pyo
-.venv/
-venv/
+# Environment
 .env
+!.env.example
+
+# Alembic
 alembic/__pycache__/
 alembic/versions/*.pyc
-*.egg-info/
+
+# Logs & uploads (если не нужны в репо)
+logs/*.log
+uploads/*
+!uploads/.gitkeep
+
+# IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+
+# Docker (опционально, если не коммитите образы)
+*.dockerignore

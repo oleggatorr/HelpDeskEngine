@@ -11,7 +11,7 @@ from datetime import datetime
 from app.core.database import get_db
 from app.auth.routes_jinja import require_auth
 from app.reports.documents.document_public_service import PublicDocumentService
-from app.reports.enums import DocumentStage
+from app.reports.documents.document_models import DocumentStage, DocumentLanguage, DocumentPriority, DocumentStatus
 
 router = APIRouter()
 

@@ -18,11 +18,7 @@ from app.reports.documents.schemas.document import (
     generate_track_id,
 )
 
-from app.reports.enums import (
-    DocumentStatus,
-    DocumentLanguage,
-    DocumentPriority
-)
+from app.reports.documents.document_models import DocumentStage, DocumentLanguage, DocumentPriority, DocumentStatus
 
 
 class DocumentService:
@@ -38,11 +34,16 @@ class DocumentService:
         return result.scalar_one() > 0
 
     def _normalize_enum(self, value, enum_class):
+        """
+        Возвращает .value энума для записи в БД.
+        Поддерживает: enum-объект, строку, число.
+        """
         if value is None:
             return None
         if isinstance(value, enum_class):
-            return value
-        return enum_class(value)
+            return value.value  # ← ✅ Возвращаем примитив: "open" или 1
+        # Если уже примитив (строка/число) — возвращаем как есть
+        return value
 
     async def _get_or_fail(self, doc_id: int) -> Document:
         result = await self.db.execute(

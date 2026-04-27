@@ -10180,3 +10180,879 @@ total
 2026-04-24 16:34:02 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
 2026-04-24 16:34:02 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
 2026-04-24 16:34:02 | INFO     | logging:callHandlers:1737 | Finished server process [22892]
+2026-04-27 09:15:06 | INFO     | logging:callHandlers:1737 | Started server process [8924]
+2026-04-27 09:15:06 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 09:15:06 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 09:15:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58518 - "GET / HTTP/1.1" 303
+2026-04-27 09:15:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58518 - "GET /auth/login-page HTTP/1.1" 200
+2026-04-27 09:15:15 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58518 - "GET /docs HTTP/1.1" 200
+2026-04-27 09:15:16 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58518 - "GET /openapi.json HTTP/1.1" 200
+2026-04-27 09:15:22 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64715 - "POST /api/auth/login HTTP/1.1" 200
+2026-04-27 09:15:33 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59971 - "GET /api/auth/users/me/profile HTTP/1.1" 200
+2026-04-27 09:15:48 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2026-04-27 09:15:48 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65157 - "GET /api/auth/users?skip=0&limit=100 HTTP/1.1" 500
+2026-04-27 09:15:48 | ERROR    | logging:callHandlers:1737 | Exception in ASGI application
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 316
+               │     └ 3
+               └ <function _main at 0x00000139162C09E0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 316
+           │    └ <function BaseProcess._bootstrap at 0x000001391618AAE0>
+           └ <SpawnProcess name='SpawnProcess-1' parent=6688 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 320, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x0000013916189E80>
+    └ <SpawnProcess name='SpawnProcess-1' parent=6688 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x0000013918685BE0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-1' parent=6688 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-1' parent=6688 started>
+    │    └ <function subprocess_started at 0x00000139185CB7F0>
+    └ <SpawnProcess name='SpawnProcess-1' parent=6688 started>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=568, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x0000013918685D30>>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\server.py", line 75, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+           │           │    │             │                      │    │      └ <function Config.get_loop_factory at 0x0000013918553740>
+           │           │    │             │                      │    └ <uvicorn.config.Config object at 0x0000013918685BE0>
+           │           │    │             │                      └ <uvicorn.server.Server object at 0x0000013918685D30>
+           │           │    │             └ [<socket.socket fd=568, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+           │           │    └ <function Server.serve at 0x00000139185BACF0>
+           │           └ <uvicorn.server.Server object at 0x0000013918685D30>
+           └ <function run at 0x000001391816FB60>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 204, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x0000013918745030>
+           │      └ <function Runner.run at 0x000001391818C040>
+           └ <asyncio.runners.Runner object at 0x0000013918686BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packa...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x000001391816C510>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x0000013918686BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 706, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x000001391816C460>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 677, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x000001391816E560>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 2046, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x0000013916902B90>
+    └ <Handle Task.task_wakeup()>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+> File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001391E1A2660>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001391E...
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000013...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x000001391CD20050>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001391E1A2660>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\applications.py", line 1160, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001391E...
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000013...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001391E...
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000013...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001391E1A3230>
+          └ <fastapi.applications.FastAPI object at 0x000001391CD20050>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001391E268880>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000013...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001391E1A30E0>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001391E1A3230>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001391E268880>
+          │                            │    │    │     │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000013...
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x000001391E272190>
+          │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001391E1A2F90>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001391E1A30E0>
+          └ <function wrap_app_handling_exceptions at 0x00000139198B1C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001391E268E00>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000013...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001391E1A2F90>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001391E268E00>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000013...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <fastapi.routing.APIRouter object at 0x000001391C917200>
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001391E1A2F90>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001391E268E00>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000013...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x000001391C917200>>
+          └ <fastapi.routing.APIRouter object at 0x000001391C917200>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001391E268E00>
+          │     │      │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000013...
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │     └ <function Route.handle at 0x00000139198DC930>
+          └ APIRoute(path='/api/auth/users', name='list_users', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001391E268E00>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000013...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <function request_response.<locals>.app at 0x000001391CD690C0>
+          └ APIRoute(path='/api/auth/users', name='list_users', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 130, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001391E268E00>
+          │                            │    │        │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000013...
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x000001391E2735B0>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x000001391E268250>
+          └ <function wrap_app_handling_exceptions at 0x00000139198B1C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001391E2681A0>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000013...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x000001391E268250>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 116, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x000001391E2735B0>
+                     └ <function get_request_handler.<locals>.app at 0x000001391CD68F60>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 670, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x00000139198E5BC0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 324, in run_endpoint_function
+    return await dependant.call(**values)
+                 │         │      └ <unprintable dict object>
+                 │         └ <function list_users at 0x000001391C4A97A0>
+                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(0), name='skip', mode='validation', config=None), ModelFi...
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\auth\routes.py", line 209, in list_users
+    return await service.list_filtered(filters, skip=skip, limit=limit)
+                 │       │             │             │           └ 100
+                 │       │             │             └ 0
+                 │       │             └ UserFilter(login=None, full_name=None, email=None, is_active=None, role=None, position=None, permissions=None, department_id=...
+                 │       └ <function PublicUserService.list_filtered at 0x000001391C309B10>
+                 └ <app.auth.public_services.PublicUserService object at 0x000001391E1FC910>
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\auth\public_services.py", line 44, in list_filtered
+    return await self._service.list_filtered(*args, **kwargs)
+                 │    │        │              │       └ {'skip': 0, 'limit': 100}
+                 │    │        │              └ (UserFilter(login=None, full_name=None, email=None, is_active=None, role=None, position=None, permissions=None, department_id...
+                 │    │        └ <function UserService.list_filtered at 0x000001391C308EB0>
+                 │    └ <app.auth.services.UserService object at 0x000001391E644410>
+                 └ <app.auth.public_services.PublicUserService object at 0x000001391E1FC910>
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\auth\services.py", line 225, in list_filtered
+    return UserListResponse(users=[_user_to_response(u) for u in users], total=total)
+           │                       │                             │             └ 3
+           │                       │                             └ <unprintable list object>
+           │                       └ <function _user_to_response at 0x000001391C3081A0>
+           └ <class 'app.auth.schemas.UserListResponse'>
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\auth\services.py", line 69, in _user_to_response
+    profile=_profile_to_dto(user.profile) if user.profile else None,
+            │               │    │           │    └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x000001391BF53880>
+            │               │    │           └ <unprintable User object>
+            │               │    └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x000001391BF53880>
+            │               └ <unprintable User object>
+            └ <function _profile_to_dto at 0x000001391C308040>
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\auth\services.py", line 58, in _profile_to_dto
+    department=profile.department,  # ✅ Pydantic распарсит благодаря from_attributes=True
+               │       └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x000001391BFCD1C0>
+               └ <unprintable UserProfile object>
+
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\orm\attributes.py", line 569, in __get__
+    return self.impl.get(state, dict_)  # type: ignore[no-any-return]
+           │    │        │      └ {'_sa_instance_state': <sqlalchemy.orm.state.InstanceState object at 0x000001391E426190>}
+           │    │        └ <sqlalchemy.orm.state.InstanceState object at 0x000001391E426190>
+           │    └ <member 'impl' of 'QueryableAttribute' objects>
+           └ <sqlalchemy.orm.attributes.InstrumentedAttribute object at 0x000001391BFCD1C0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\orm\attributes.py", line 1096, in get
+    value = self._fire_loader_callables(state, key, passive)
+            │    │                      │      │    └ symbol('PASSIVE_OFF')
+            │    │                      │      └ 'department'
+            │    │                      └ <sqlalchemy.orm.state.InstanceState object at 0x000001391E426190>
+            │    └ <function AttributeImpl._fire_loader_callables at 0x000001391B5B92D0>
+            └ <sqlalchemy.orm.attributes.ScalarObjectAttributeImpl object at 0x000001391E5156C0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\orm\attributes.py", line 1131, in _fire_loader_callables
+    return self.callable_(state, passive)
+           │    │         │      └ symbol('PASSIVE_OFF')
+           │    │         └ <sqlalchemy.orm.state.InstanceState object at 0x000001391E426190>
+           │    └ <member 'callable_' of 'AttributeImpl' objects>
+           └ <sqlalchemy.orm.attributes.ScalarObjectAttributeImpl object at 0x000001391E5156C0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\orm\strategies.py", line 978, in _load_for_state
+    return self._emit_lazyload(
+           │    └ <function LazyLoader._emit_lazyload at 0x000001391BA22C40>
+           └ <sqlalchemy.orm.strategies.LazyLoader object at 0x000001391E508F20>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\orm\strategies.py", line 1079, in _emit_lazyload
+    return loading.load_on_pk_identity(
+           │       └ <function load_on_pk_identity at 0x000001391BA29900>
+           └ <module 'sqlalchemy.orm.loading' from 'c:\\Users\\gw07014942\\Projects\\help_desk_engine\\venv\\Lib\\site-packages\\sqlalchem...
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\orm\loading.py", line 695, in load_on_pk_identity
+    session.execute(
+    │       └ <function Session.execute at 0x000001391BA19010>
+    └ <sqlalchemy.orm.session.Session object at 0x000001391E4242B0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2351, in execute
+    return self._execute_internal(
+           │    └ <function Session._execute_internal at 0x000001391BA18BF0>
+           └ <sqlalchemy.orm.session.Session object at 0x000001391E4242B0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                   │      │                 └ <classmethod(<function AbstractORMCompileState.orm_execute_statement at 0x000001391B622980>)>
+                   │      └ <class 'sqlalchemy.orm.context.ORMSelectCompileState'>
+                   └ typing.Any
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\orm\context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             │    └ <function Connection.execute at 0x000001391B316770>
+             └ <sqlalchemy.engine.base.Connection object at 0x000001391E425220>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           └ <bound method ClauseElement._execute_on_connection of <sqlalchemy.sql.selectable.Select object at 0x000001391E2769C0>>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           │          └ <function Connection._execute_clauseelement at 0x000001391B316E50>
+           └ <sqlalchemy.engine.base.Connection object at 0x000001391E425220>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+          │    └ <function Connection._execute_context at 0x000001391B317270>
+          └ <sqlalchemy.engine.base.Connection object at 0x000001391E425220>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           │    └ <function Connection._exec_single_context at 0x000001391B3173D0>
+           └ <sqlalchemy.engine.base.Connection object at 0x000001391E425220>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    │    └ <function Connection._handle_dbapi_exception at 0x000001391B317950>
+    └ <sqlalchemy.engine.base.Connection object at 0x000001391E425220>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2366, in _handle_dbapi_exception
+    raise exc_info[1].with_traceback(exc_info[2])
+          │                          └ (<class 'sqlalchemy.exc.MissingGreenlet'>, MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here....
+          └ (<class 'sqlalchemy.exc.MissingGreenlet'>, MissingGreenlet("greenlet_spawn has not been called; can't call await_only() here....
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    │    │       └ <function DefaultDialect.do_execute at 0x000001391B41A770>
+    │    └ <sqlalchemy.dialects.postgresql.asyncpg.PGDialect_asyncpg object at 0x000001391BBD7CB0>
+    └ <sqlalchemy.engine.base.Connection object at 0x000001391E425220>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    │      │       │          └ (3,)
+    │      │       └ 'SELECT departments.id AS departments_id, departments.name AS departments_name \nFROM departments \nWHERE departments.id = $1...
+    │      └ <function AsyncAdapt_asyncpg_cursor.execute at 0x000001391BC8EA30>
+    └ <sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_cursor object at 0x000001391E65B8E0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\dialects\postgresql\asyncpg.py", line 585, in execute
+    self._adapt_connection.await_(
+    │    └ <member '_adapt_connection' of 'AsyncAdapt_asyncpg_cursor' objects>
+    └ <sqlalchemy.dialects.postgresql.asyncpg.AsyncAdapt_asyncpg_cursor object at 0x000001391E65B8E0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 123, in await_only
+    raise exc.MissingGreenlet(
+          │   └ <class 'sqlalchemy.exc.MissingGreenlet'>
+          └ <module 'sqlalchemy.exc' from 'c:\\Users\\gw07014942\\Projects\\help_desk_engine\\venv\\Lib\\site-packages\\sqlalchemy\\exc.py'>
+
+sqlalchemy.exc.MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2026-04-27 09:32:38 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 09:32:38 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 09:32:38 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 09:32:38 | INFO     | logging:callHandlers:1737 | Finished server process [8924]
+2026-04-27 09:32:42 | INFO     | logging:callHandlers:1737 | Started server process [2904]
+2026-04-27 09:32:42 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 09:32:42 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 09:33:57 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 09:33:57 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 09:33:57 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 09:33:57 | INFO     | logging:callHandlers:1737 | Finished server process [2904]
+2026-04-27 09:33:59 | INFO     | logging:callHandlers:1737 | Started server process [8560]
+2026-04-27 09:33:59 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 09:33:59 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 09:34:00 | INFO     | logging:callHandlers:1737 | 127.0.0.1:50510 - "GET /api/auth/users?skip=0&limit=100 HTTP/1.1" 200
+2026-04-27 09:34:09 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61445 - "GET /api/auth/users/1/profile HTTP/1.1" 200
+2026-04-27 09:34:22 | INFO     | logging:callHandlers:1737 | 127.0.0.1:50495 - "GET /api/reports/documents?skip=0&limit=100&sort_by=id&sort_order=desc HTTP/1.1" 200
+2026-04-27 09:41:01 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 09:41:01 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 09:41:01 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 09:41:01 | INFO     | logging:callHandlers:1737 | Finished server process [8560]
+2026-04-27 09:41:03 | INFO     | logging:callHandlers:1737 | Started server process [19320]
+2026-04-27 09:41:03 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 09:41:03 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 09:41:22 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 09:41:22 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 09:41:22 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 09:41:22 | INFO     | logging:callHandlers:1737 | Finished server process [19320]
+2026-04-27 09:41:25 | INFO     | logging:callHandlers:1737 | Started server process [9824]
+2026-04-27 09:41:25 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 09:41:25 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 09:43:26 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 09:43:26 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 09:43:26 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 09:43:26 | INFO     | logging:callHandlers:1737 | Finished server process [9824]
+2026-04-27 09:43:28 | INFO     | logging:callHandlers:1737 | Started server process [18676]
+2026-04-27 09:43:28 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 09:43:28 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 09:48:41 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 09:48:42 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 09:48:42 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 09:48:42 | INFO     | logging:callHandlers:1737 | Finished server process [18676]
+2026-04-27 09:48:44 | INFO     | logging:callHandlers:1737 | Started server process [15376]
+2026-04-27 09:48:44 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 09:48:44 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 09:51:04 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 09:51:04 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 09:51:04 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 09:51:04 | INFO     | logging:callHandlers:1737 | Finished server process [15376]
+2026-04-27 09:51:06 | INFO     | logging:callHandlers:1737 | Started server process [5212]
+2026-04-27 09:51:06 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 09:51:06 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 09:51:10 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 09:51:10 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 09:51:10 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 09:51:10 | INFO     | logging:callHandlers:1737 | Finished server process [5212]
+2026-04-27 09:51:12 | INFO     | logging:callHandlers:1737 | Started server process [22380]
+2026-04-27 09:51:12 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 09:51:12 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 09:51:27 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: 401: Невалидный токен
+2026-04-27 09:51:27 | INFO     | logging:callHandlers:1737 | 127.0.0.1:52349 - "GET /api/reports/documents?skip=0&limit=100&sort_by=id&sort_order=desc HTTP/1.1" 401
+2026-04-27 09:51:36 | INFO     | logging:callHandlers:1737 | 127.0.0.1:63676 - "POST /api/auth/login HTTP/1.1" 200
+2026-04-27 09:51:42 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: 4 validation errors for DocumentResponse
+status
+  Input should be 'open', 'in_progress', 'waiting', 'closed' or 'rejected' [type=enum, input_value='OPEN', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+current_stage
+  Input should be 'NEW', 'IN_PROGRESS', 'WAITING' or 'CLOSED' [type=enum, input_value=1, input_type=int]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+language
+  Input should be 'ru' or 'en' [type=enum, input_value='RU', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+priority
+  Input should be 'low', 'medium', 'high' or 'urgent' [type=enum, input_value='MEDIUM', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-04-27 09:51:42 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61364 - "GET /api/reports/documents?skip=0&limit=100&sort_by=id&sort_order=desc HTTP/1.1" 500
+2026-04-27 09:51:42 | ERROR    | logging:callHandlers:1737 | Exception in ASGI application
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 316
+               │     └ 3
+               └ <function _main at 0x00000261482109E0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 316
+           │    └ <function BaseProcess._bootstrap at 0x00000261480DAAE0>
+           └ <SpawnProcess name='SpawnProcess-9' parent=6688 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 320, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x00000261480D9E80>
+    └ <SpawnProcess name='SpawnProcess-9' parent=6688 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x000002614A5D5BE0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-9' parent=6688 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-9' parent=6688 started>
+    │    └ <function subprocess_started at 0x000002614A51B7F0>
+    └ <SpawnProcess name='SpawnProcess-9' parent=6688 started>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=580, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x000002614A5D5D30>>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\server.py", line 75, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+           │           │    │             │                      │    │      └ <function Config.get_loop_factory at 0x000002614A4A3740>
+           │           │    │             │                      │    └ <uvicorn.config.Config object at 0x000002614A5D5BE0>
+           │           │    │             │                      └ <uvicorn.server.Server object at 0x000002614A5D5D30>
+           │           │    │             └ [<socket.socket fd=580, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+           │           │    └ <function Server.serve at 0x000002614A50ACF0>
+           │           └ <uvicorn.server.Server object at 0x000002614A5D5D30>
+           └ <function run at 0x0000026148ADFB60>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 204, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x000002614AE95030>
+           │      └ <function Runner.run at 0x0000026148AFC040>
+           └ <asyncio.runners.Runner object at 0x000002614A5D6BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packa...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x0000026148ADC510>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x000002614A5D6BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 706, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x0000026148ADC460>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 677, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x0000026148ADE560>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 2046, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x0000026148852B90>
+    └ <Handle Task.task_wakeup()>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+> File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000002615012A3C0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026150...
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x000002614EC5FCB0>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000002615012A3C0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\applications.py", line 1160, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026150...
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026150...
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000002615012AF90>
+          └ <fastapi.applications.FastAPI object at 0x000002614EC5FCB0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x0000026150162980>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000002615012AE40>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000002615012AF90>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x0000026150162980>
+          │                            │    │    │     │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026...
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x0000026150179BA0>
+          │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000002615012ACF0>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000002615012AE40>
+          └ <function wrap_app_handling_exceptions at 0x000002614B801C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000261501624B0>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000002615012ACF0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000261501624B0>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <fastapi.routing.APIRouter object at 0x000002614E9FEB70>
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000002615012ACF0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000261501624B0>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x000002614E9FEB70>>
+          └ <fastapi.routing.APIRouter object at 0x000002614E9FEB70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000261501624B0>
+          │     │      │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026...
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │     └ <function Route.handle at 0x000002614B82C930>
+          └ APIRoute(path='/api/reports/documents', name='list_documents', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000261501624B0>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <function request_response.<locals>.app at 0x000002614ECE2560>
+          └ APIRoute(path='/api/reports/documents', name='list_documents', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 130, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000261501624B0>
+          │                            │    │        │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026...
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x000002614E98B0B0>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x0000026150161B10>
+          └ <function wrap_app_handling_exceptions at 0x000002614B801C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000026150161FE0>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000026...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x0000026150161B10>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 116, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x000002614E98B0B0>
+                     └ <function get_request_handler.<locals>.app at 0x000002614ECE2400>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 670, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x000002614B831BC0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 324, in run_endpoint_function
+    return await dependant.call(**values)
+                 │         │      └ <unprintable dict object>
+                 │         └ <function list_documents at 0x000002614E604930>
+                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(0), name='skip', mode='validation', config=None), ModelFi...
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\documents\document_routes.py", line 41, in list_documents
+    result = await service.list_filtered(filters, skip, limit)
+                   │       │             │        │     └ 100
+                   │       │             │        └ 0
+                   │       │             └ DocumentFilter(track_id=None, created_by=None, assigned_to=None, status=None, doc_type_id=None, current_stage=None, is_locked...
+                   │       └ <function PublicDocumentService.list_filtered at 0x000002614E6026C0>
+                   └ <app.reports.documents.document_public_service.PublicDocumentService object at 0x0000026150186D50>
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\documents\document_public_service.py", line 131, in list_filtered
+    DocumentResponse.model_validate(doc, from_attributes=True)
+    │                └ <classmethod(<function BaseModel.model_validate at 0x000002614B4521F0>)>
+    └ <class 'app.reports.documents.schemas.document.DocumentResponse'>
+
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           │   │                      └ <method 'validate_python' of 'pydantic_core._pydantic_core.SchemaValidator' objects>
+           │   └ SchemaValidator(title="DocumentResponse", validator=Model(
+           │         ModelValidator {
+           │             revalidate: Never,
+           │             validator:...
+           └ <class 'app.reports.documents.schemas.document.DocumentResponse'>
+
+pydantic_core._pydantic_core.ValidationError: 4 validation errors for DocumentResponse
+status
+  Input should be 'open', 'in_progress', 'waiting', 'closed' or 'rejected' [type=enum, input_value='OPEN', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+current_stage
+  Input should be 'NEW', 'IN_PROGRESS', 'WAITING' or 'CLOSED' [type=enum, input_value=1, input_type=int]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+language
+  Input should be 'ru' or 'en' [type=enum, input_value='RU', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+priority
+  Input should be 'low', 'medium', 'high' or 'urgent' [type=enum, input_value='MEDIUM', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-04-27 09:55:25 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 09:55:25 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 09:55:25 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 09:55:25 | INFO     | logging:callHandlers:1737 | Finished server process [22380]
+2026-04-27 09:55:27 | INFO     | logging:callHandlers:1737 | Started server process [20008]
+2026-04-27 09:55:27 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 09:55:27 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 09:55:36 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: 1 validation error for DocumentResponse
+current_stage
+  Input should be 'NEW', 'IN_PROGRESS', 'WAITING' or 'CLOSED' [type=enum, input_value=1, input_type=int]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-04-27 09:55:36 | INFO     | logging:callHandlers:1737 | 127.0.0.1:56447 - "GET /api/reports/documents?skip=0&limit=100&sort_by=id&sort_order=desc HTTP/1.1" 500
+2026-04-27 09:55:36 | ERROR    | logging:callHandlers:1737 | Exception in ASGI application
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 304
+               │     └ 3
+               └ <function _main at 0x000002A9F74709E0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 304
+           │    └ <function BaseProcess._bootstrap at 0x000002A9F733AAE0>
+           └ <SpawnProcess name='SpawnProcess-10' parent=6688 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 320, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x000002A9F7339E80>
+    └ <SpawnProcess name='SpawnProcess-10' parent=6688 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x000002A9F9845BE0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-10' parent=6688 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-10' parent=6688 started>
+    │    └ <function subprocess_started at 0x000002A9F978B7F0>
+    └ <SpawnProcess name='SpawnProcess-10' parent=6688 started>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=572, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x000002A9F9845D30>>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\server.py", line 75, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+           │           │    │             │                      │    │      └ <function Config.get_loop_factory at 0x000002A9F9713740>
+           │           │    │             │                      │    └ <uvicorn.config.Config object at 0x000002A9F9845BE0>
+           │           │    │             │                      └ <uvicorn.server.Server object at 0x000002A9F9845D30>
+           │           │    │             └ [<socket.socket fd=572, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+           │           │    └ <function Server.serve at 0x000002A9F977ACF0>
+           │           └ <uvicorn.server.Server object at 0x000002A9F9845D30>
+           └ <function run at 0x000002A9F930FB60>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 204, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x000002A9F9905030>
+           │      └ <function Runner.run at 0x000002A9F932C040>
+           └ <asyncio.runners.Runner object at 0x000002A9F9846BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packa...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x000002A9F930C510>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x000002A9F9846BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 706, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x000002A9F930C460>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 677, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x000002A9F930E560>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 2046, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x000002A9F7AB2B90>
+    └ <Handle Task.task_wakeup()>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+> File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000002A9FF32A3C0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A9FF...
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x000002A9FDE5FCB0>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000002A9FF32A3C0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\applications.py", line 1160, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A9FF...
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A9FF...
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000002A9FF32AF90>
+          └ <fastapi.applications.FastAPI object at 0x000002A9FDE5FCB0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000002A9FF376350>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000002A9FF32AE40>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000002A9FF32AF90>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000002A9FF376350>
+          │                            │    │    │     │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A...
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x000002A9FF32B620>
+          │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000002A9FF32ACF0>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000002A9FF32AE40>
+          └ <function wrap_app_handling_exceptions at 0x000002A9FAA71C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002A9FF375F30>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000002A9FF32ACF0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002A9FF375F30>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <fastapi.routing.APIRouter object at 0x000002A9FDBF6B70>
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000002A9FF32ACF0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002A9FF375F30>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x000002A9FDBF6B70>>
+          └ <fastapi.routing.APIRouter object at 0x000002A9FDBF6B70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002A9FF375F30>
+          │     │      │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A...
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │     └ <function Route.handle at 0x000002A9FAA9C930>
+          └ APIRoute(path='/api/reports/documents', name='list_documents', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002A9FF375F30>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <function request_response.<locals>.app at 0x000002A9FDEEDFE0>
+          └ APIRoute(path='/api/reports/documents', name='list_documents', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 130, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002A9FF375F30>
+          │                            │    │        │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A...
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x000002A9FF388190>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x000002A9FF375DD0>
+          └ <function wrap_app_handling_exceptions at 0x000002A9FAA71C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002A9FF3759B0>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000002A...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x000002A9FF375DD0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 116, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x000002A9FF388190>
+                     └ <function get_request_handler.<locals>.app at 0x000002A9FDEEDE80>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 670, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x000002A9FAAA1BC0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 324, in run_endpoint_function
+    return await dependant.call(**values)
+                 │         │      └ <unprintable dict object>
+                 │         └ <function list_documents at 0x000002A9FD8043B0>
+                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(0), name='skip', mode='validation', config=None), ModelFi...
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\documents\document_routes.py", line 41, in list_documents
+    result = await service.list_filtered(filters, skip, limit)
+                   │       │             │        │     └ 100
+                   │       │             │        └ 0
+                   │       │             └ DocumentFilter(track_id=None, created_by=None, assigned_to=None, status=None, doc_type_id=None, current_stage=None, is_locked...
+                   │       └ <function PublicDocumentService.list_filtered at 0x000002A9FD802140>
+                   └ <app.reports.documents.document_public_service.PublicDocumentService object at 0x000002A9FF32BCB0>
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\documents\document_public_service.py", line 131, in list_filtered
+    DocumentResponse.model_validate(doc, from_attributes=True)
+    │                └ <classmethod(<function BaseModel.model_validate at 0x000002A9FA6C21F0>)>
+    └ <class 'app.reports.documents.schemas.document.DocumentResponse'>
+
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\pydantic\main.py", line 716, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           │   │                      └ <method 'validate_python' of 'pydantic_core._pydantic_core.SchemaValidator' objects>
+           │   └ SchemaValidator(title="DocumentResponse", validator=Model(
+           │         ModelValidator {
+           │             revalidate: Never,
+           │             validator:...
+           └ <class 'app.reports.documents.schemas.document.DocumentResponse'>
+
+pydantic_core._pydantic_core.ValidationError: 1 validation error for DocumentResponse
+current_stage
+  Input should be 'NEW', 'IN_PROGRESS', 'WAITING' or 'CLOSED' [type=enum, input_value=1, input_type=int]
+    For further information visit https://errors.pydantic.dev/2.12/v/enum
+2026-04-27 09:57:54 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 09:57:54 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 09:57:54 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 09:57:54 | INFO     | logging:callHandlers:1737 | Finished server process [20008]
+2026-04-27 10:05:13 | INFO     | logging:callHandlers:1737 | Started server process [15152]
+2026-04-27 10:05:13 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 10:05:13 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 10:06:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58306 - "GET /api/reports/documents?skip=0&limit=100&sort_by=id&sort_order=desc HTTP/1.1" 200
+2026-04-27 10:07:38 | INFO     | logging:callHandlers:1737 | 127.0.0.1:49904 - "POST /api/reports/documents HTTP/1.1" 201
+2026-04-27 10:08:45 | INFO     | logging:callHandlers:1737 | 127.0.0.1:54018 - "GET /api/reports/documents?skip=0&limit=100&sort_by=id&sort_order=desc HTTP/1.1" 200
+2026-04-27 10:08:55 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51618 - "DELETE /api/reports/documents/68 HTTP/1.1" 200
+2026-04-27 10:11:08 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 10:11:08 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 10:11:08 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 10:11:08 | INFO     | logging:callHandlers:1737 | Finished server process [15152]
+2026-04-27 10:11:10 | INFO     | logging:callHandlers:1737 | Started server process [18056]
+2026-04-27 10:11:10 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 10:11:10 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 10:11:23 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 10:11:24 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 10:11:24 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 10:11:24 | INFO     | logging:callHandlers:1737 | Finished server process [18056]
+2026-04-27 10:11:26 | INFO     | logging:callHandlers:1737 | Started server process [17356]
+2026-04-27 10:11:26 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 10:11:26 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 10:11:57 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 10:11:57 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 10:11:57 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 10:11:57 | INFO     | logging:callHandlers:1737 | Finished server process [17356]
+2026-04-27 10:11:59 | INFO     | logging:callHandlers:1737 | Started server process [13452]
+2026-04-27 10:11:59 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 10:11:59 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 10:16:39 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 10:16:39 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 10:16:39 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 10:16:39 | INFO     | logging:callHandlers:1737 | Finished server process [13452]
+2026-04-27 10:23:36 | INFO     | logging:callHandlers:1737 | Started server process [14932]
+2026-04-27 10:23:36 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 10:23:36 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 10:26:46 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59549 - "GET /docs HTTP/1.1" 200
+2026-04-27 10:26:47 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59549 - "GET /openapi.json HTTP/1.1" 200
+2026-04-27 10:26:54 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51587 - "POST /api/auth/login HTTP/1.1" 200
+2026-04-27 10:27:52 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58903 - "POST /api/reports/pr/problem-registrations?created_by=1 HTTP/1.1" 201
+2026-04-27 10:30:51 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 10:30:51 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 10:30:51 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 10:30:51 | INFO     | logging:callHandlers:1737 | Finished server process [14932]
+2026-04-27 10:30:53 | INFO     | logging:callHandlers:1737 | Started server process [4036]
+2026-04-27 10:30:53 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 10:30:53 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 10:33:02 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 10:33:02 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 10:33:02 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 10:33:02 | INFO     | logging:callHandlers:1737 | Finished server process [4036]
+2026-04-27 10:43:03 | INFO     | logging:callHandlers:1737 | Started server process [9524]
+2026-04-27 10:43:03 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 10:43:03 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 10:44:55 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 10:44:55 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 10:44:55 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 10:44:55 | INFO     | logging:callHandlers:1737 | Finished server process [9524]
+2026-04-27 10:44:57 | INFO     | logging:callHandlers:1737 | Started server process [21900]
+2026-04-27 10:44:57 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 10:44:57 | INFO     | logging:callHandlers:1737 | Application startup complete.
