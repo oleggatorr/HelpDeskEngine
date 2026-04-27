@@ -66,7 +66,7 @@ async def documents_page(
 
     total_pages = max(1, (result.total + 49) // 50)
 
-    return templates.TemplateResponse("documents.html", {
+    return templates.TemplateResponse("documents.html.j2", {
         "request": request,
         "documents": result.documents,
         "total": result.total,

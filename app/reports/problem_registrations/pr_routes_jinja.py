@@ -50,7 +50,7 @@ async def my_problem_registrations_page(
     result = await service.get_my(user_id=current_user.id, skip=skip, limit=50)
     total_pages = max(1, (result.total + 49) // 50)
 
-    return templates.TemplateResponse("my_problem_registrations.html", {
+    return templates.TemplateResponse("my_problem_registrations.html.j2", {
         "request": request,
         "items": result.items,
         "total": result.total,
@@ -76,7 +76,7 @@ async def assigned_registration_page(
 
     result = await service.get_assigned(user_id=current_user.id, skip=skip, limit=50)
     total_pages = max(1, (result.total + 49) // 50)
-    return templates.TemplateResponse("assigned_problem_registrations.html",{
+    return templates.TemplateResponse("assigned_problem_registrations.html.j2",{
         "request": request,
         "items": result.items,
         "total": result.total,
@@ -196,7 +196,7 @@ async def problem_registrations_admin_list_page(
     print(list(departments.items))
 
     # 🎨 Подготовка контекста для шаблона
-    return templates.TemplateResponse("problem_registrations_admin.html", {
+    return templates.TemplateResponse("problem_registrations_admin.html.j2", {
         "request": request,
         "items": result.items,
         "total": result.total,
@@ -293,7 +293,7 @@ async def problem_registrations_list_page(
 
     total_pages = max(1, (result.total + 49) // 50)
 
-    return templates.TemplateResponse("problem_registrations_list.html", {
+    return templates.TemplateResponse("problem_registrations_list.html.j2", {
         "request": request,
         "items": result.items,
         "total": result.total,
@@ -336,7 +336,7 @@ async def create_problem_registration_page(
     location_service = PublicLocationService(db)
     locations = await location_service.get_all(skip=0, limit=1000)
 
-    return templates.TemplateResponse("create_problem_registration.html", {
+    return templates.TemplateResponse("create_problem_registration.html.j2", {
         "request": request,
         "current_user": current_user,
         "locations": locations.items,
@@ -428,7 +428,7 @@ async def create_problem_registration_post(
         location_service = PublicLocationService(db)
         locations = await location_service.get_all(skip=0, limit=1000)
 
-        return templates.TemplateResponse("create_problem_registration.html", {
+        return templates.TemplateResponse("create_problem_registration.html.j2", {
             "request": request,
             "current_user": current_user,
             "locations": locations.items,
@@ -497,7 +497,7 @@ async def problem_registrations_locked_list_page(
     pds = PublicDepartmentService(db)
     _pds = await pds.get_by_id(user_department_id)
     # print(f"🔍 DEBUG: is_admin={is_admin}, user_department_id={user_department_id}, {_pds.name}")  # Для отладки
-    department_name = _pds.name
+    department_name = _pds.name if _pds else ("Все департаменты" if is_admin else "Не назначен")
 
     
     # 📦 Фильтры + принудительное is_locked=True
@@ -525,7 +525,7 @@ async def problem_registrations_locked_list_page(
     departments = await PDS.get_all()
 
     return templates.TemplateResponse(
-        "problem_registrations_locked_list.html",
+        "problem_registrations_locked_list.html.j2",
         {
             "request": request,
             "items": result.items,
@@ -604,7 +604,7 @@ async def view_problem_registration_page(
     responsible_department_name = await PDS.get_by_id(item.responsible_department_id)
 
     
-    return templates.TemplateResponse("view_problem_registration.html", {
+    return templates.TemplateResponse("view_problem_registration.html.j2", {
         "request": request,
         "item": item,
         "current_user": current_user,
@@ -648,7 +648,7 @@ async def view_problem_registration_page(
     responsible_department_name = await PDS.get_by_id(item.responsible_department_id)
 
     
-    return templates.TemplateResponse("owner_problem_registration.html", {
+    return templates.TemplateResponse("owner_problem_registration.html.j2", {
         "request": request,
         "item": item,
         "current_user": current_user,
@@ -726,7 +726,7 @@ async def edit_problem_registration_page(
     doc_service = PublicDocumentService(db)
     attachments = await doc_service.get_attachments(item.document_id)
 
-    return templates.TemplateResponse("edit_problem_registration.html", {
+    return templates.TemplateResponse("edit_problem_registration.html.j2", {
         "request": request,
         "item": item,
         "current_user": current_user,
@@ -819,7 +819,7 @@ async def edit_problem_registration_post(
         location_service = PublicLocationService(db)
         locations = await location_service.get_all(skip=0, limit=1000)
 
-        return templates.TemplateResponse("edit_problem_registration.html", {
+        return templates.TemplateResponse("edit_problem_registration.html.j2", {
             "request": request,
             "item": item,
             "current_user": current_user,
@@ -952,7 +952,7 @@ async def assign_user_to_problem_registration(
         await service.assign_user(registration_id, user_id_to_assign=user_id_to_assign, current_user_id=current_user.id)
     except ValueError as e:
         # Пользователь уже участник чата — показываем ошибку
-        return templates.TemplateResponse("view_problem_registration.html", {
+        return templates.TemplateResponse("view_problem_registration.html.j2", {
             "request": request,
             "item": item,
             "current_user": current_user,
@@ -1024,7 +1024,7 @@ async def unassign_problem_registration(
         await service.unassign(registration_id, current_user_id=current_user.id)
     except ValueError as e:
         # Пользователь уже участник чата — показываем ошибку
-        return templates.TemplateResponse("view_problem_registration.html", {
+        return templates.TemplateResponse("view_problem_registration.html.j2", {
             "request": request,
             "item": item,
             "current_user": current_user,
@@ -1065,7 +1065,7 @@ async def edit_problem_registration_details_page(
     doc_service = PublicDocumentService(db)
     attachments = await doc_service.get_attachments(item.document_id)
 
-    return templates.TemplateResponse("edit_problem_registration_details.html", {
+    return templates.TemplateResponse("edit_problem_registration_details.html.j2", {
         "request": request,
         "item": item,
         "attachments": attachments,
@@ -1155,7 +1155,7 @@ async def edit_problem_registration_details_post(
 
     from app.reports.problem_registrations.pr_schemas import ProblemAction
 
-    return templates.TemplateResponse("edit_problem_registration_details.html", {
+    return templates.TemplateResponse("edit_problem_registration_details.html.j2", {
         "request": request,
         "item": item,
         "current_user": current_user,

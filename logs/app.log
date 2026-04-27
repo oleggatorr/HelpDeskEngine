@@ -11677,3 +11677,1090 @@ ValueError: Document is locked
 2026-04-27 12:45:07 | INFO     | app.reports.problem_registrations.pr_service:lock:431 | Problem registration locked
 2026-04-27 12:45:07 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53580 - "GET /reports/problem-registrations/11/confirm HTTP/1.1" 303
 2026-04-27 12:45:07 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53580 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 12:48:55 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:48:55 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:48:55 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:48:55 | INFO     | logging:callHandlers:1737 | Finished server process [22380]
+2026-04-27 14:36:52 | INFO     | logging:callHandlers:1737 | Started server process [17972]
+2026-04-27 14:36:52 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 14:36:52 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 14:36:54 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59291 - "GET /reports/problem-registrations/locked HTTP/1.1" 303
+2026-04-27 14:36:54 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59291 - "GET /auth/login-page HTTP/1.1" 200
+2026-04-27 14:37:00 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58029 - "POST /auth/login-page HTTP/1.1" 303
+2026-04-27 14:37:00 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58029 - "GET / HTTP/1.1" 200
+2026-04-27 14:37:53 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: 'NoneType' object has no attribute 'name'
+2026-04-27 14:37:53 | INFO     | logging:callHandlers:1737 | 127.0.0.1:56062 - "GET /reports/problem-registrations/locked HTTP/1.1" 500
+2026-04-27 14:37:53 | ERROR    | logging:callHandlers:1737 | Exception in ASGI application
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 300
+               │     └ 3
+               └ <function _main at 0x000002104C6F09E0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 300
+           │    └ <function BaseProcess._bootstrap at 0x000002104C3BAAE0>
+           └ <SpawnProcess name='SpawnProcess-3' parent=3448 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 320, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x000002104C3B9E80>
+    └ <SpawnProcess name='SpawnProcess-3' parent=3448 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x000002104EAD5BE0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-3' parent=3448 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-3' parent=3448 started>
+    │    └ <function subprocess_started at 0x000002104EA1B7F0>
+    └ <SpawnProcess name='SpawnProcess-3' parent=3448 started>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=572, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x000002104EAD5D30>>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\server.py", line 75, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+           │           │    │             │                      │    │      └ <function Config.get_loop_factory at 0x000002104E9A3740>
+           │           │    │             │                      │    └ <uvicorn.config.Config object at 0x000002104EAD5BE0>
+           │           │    │             │                      └ <uvicorn.server.Server object at 0x000002104EAD5D30>
+           │           │    │             └ [<socket.socket fd=572, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+           │           │    └ <function Server.serve at 0x000002104EA0ACF0>
+           │           └ <uvicorn.server.Server object at 0x000002104EAD5D30>
+           └ <function run at 0x000002104CFCFB60>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 204, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x000002104F395030>
+           │      └ <function Runner.run at 0x000002104CFEC040>
+           └ <asyncio.runners.Runner object at 0x000002104EAD6BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packa...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x000002104CFCC510>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x000002104EAD6BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 706, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x000002104CFCC460>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 677, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x000002104CFCE560>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 2046, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x000002104C932B90>
+    └ <Handle Task.task_wakeup()>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+> File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000002105460E510>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021054...
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x000002105314BE00>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000002105460E510>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\applications.py", line 1160, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021054...
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021054...
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000002105460F0E0>
+          └ <fastapi.applications.FastAPI object at 0x000002105314BE00>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000002105461F8A0>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000002105460EF90>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000002105460F0E0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000002105461F8A0>
+          │                            │    │    │     │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x0000021053057750>
+          │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000002105460EE40>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000002105460EF90>
+          └ <function wrap_app_handling_exceptions at 0x000002104FD01C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002105461F480>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000002105460EE40>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002105461F480>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <fastapi.routing.APIRouter object at 0x0000021052EF2B70>
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000002105460EE40>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002105461F480>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x0000021052EF2B70>>
+          └ <fastapi.routing.APIRouter object at 0x0000021052EF2B70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002105461F480>
+          │     │      │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │     └ <function Route.handle at 0x000002104FD2C930>
+          └ APIRoute(path='/reports/problem-registrations/locked', name='problem_registrations_locked_list_page', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002105461F480>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <function request_response.<locals>.app at 0x000002105329B950>
+          └ APIRoute(path='/reports/problem-registrations/locked', name='problem_registrations_locked_list_page', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 130, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002105461F480>
+          │                            │    │        │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x0000021053057850>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x000002105461F320>
+          └ <function wrap_app_handling_exceptions at 0x000002104FD01C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000021054685BC0>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x000002105461F320>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 116, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x0000021053057850>
+                     └ <function get_request_handler.<locals>.app at 0x000002105329B7F0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 670, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x000002104FD31BC0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 324, in run_endpoint_function
+    return await dependant.call(**values)
+                 │         │      └ {'db': <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x0000021054678050>, 'subject': '', 'track_id': '', 'detected_f...
+                 │         └ <function problem_registrations_locked_list_page at 0x0000021052C9A400>
+                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(), name='subject', mode='validation', config=None), Model...
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\problem_registrations\pr_routes_jinja.py", line 500, in problem_registrations_locked_list_page
+    department_name = _pds.name
+                      └ None
+
+AttributeError: 'NoneType' object has no attribute 'name'
+2026-04-27 14:40:13 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55328 - "GET /docs HTTP/1.1" 200
+2026-04-27 14:40:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55328 - "GET /openapi.json HTTP/1.1" 200
+2026-04-27 14:41:10 | INFO     | logging:callHandlers:1737 | 127.0.0.1:56921 - "POST /api/auth/login HTTP/1.1" 200
+2026-04-27 14:41:57 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: 'NoneType' object has no attribute 'name'
+2026-04-27 14:41:57 | INFO     | logging:callHandlers:1737 | 127.0.0.1:56608 - "GET /reports/problem-registrations/locked HTTP/1.1" 500
+2026-04-27 14:41:57 | ERROR    | logging:callHandlers:1737 | Exception in ASGI application
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 300
+               │     └ 3
+               └ <function _main at 0x000002104C6F09E0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 300
+           │    └ <function BaseProcess._bootstrap at 0x000002104C3BAAE0>
+           └ <SpawnProcess name='SpawnProcess-3' parent=3448 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 320, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x000002104C3B9E80>
+    └ <SpawnProcess name='SpawnProcess-3' parent=3448 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x000002104EAD5BE0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-3' parent=3448 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-3' parent=3448 started>
+    │    └ <function subprocess_started at 0x000002104EA1B7F0>
+    └ <SpawnProcess name='SpawnProcess-3' parent=3448 started>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=572, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x000002104EAD5D30>>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\server.py", line 75, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+           │           │    │             │                      │    │      └ <function Config.get_loop_factory at 0x000002104E9A3740>
+           │           │    │             │                      │    └ <uvicorn.config.Config object at 0x000002104EAD5BE0>
+           │           │    │             │                      └ <uvicorn.server.Server object at 0x000002104EAD5D30>
+           │           │    │             └ [<socket.socket fd=572, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+           │           │    └ <function Server.serve at 0x000002104EA0ACF0>
+           │           └ <uvicorn.server.Server object at 0x000002104EAD5D30>
+           └ <function run at 0x000002104CFCFB60>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 204, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x000002104F395030>
+           │      └ <function Runner.run at 0x000002104CFEC040>
+           └ <asyncio.runners.Runner object at 0x000002104EAD6BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packa...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x000002104CFCC510>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x000002104EAD6BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 706, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x000002104CFCC460>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 677, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x000002104CFCE560>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 2046, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x000002104C932B90>
+    └ <Handle Task.task_wakeup()>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+> File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000002105460E510>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021054...
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x000002105314BE00>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000002105460E510>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\applications.py", line 1160, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021054...
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021054...
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000002105460F0E0>
+          └ <fastapi.applications.FastAPI object at 0x000002105314BE00>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000002105461FB60>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000002105460EF90>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000002105460F0E0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000002105461FB60>
+          │                            │    │    │     │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x000002105461F330>
+          │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000002105460EE40>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000002105460EF90>
+          └ <function wrap_app_handling_exceptions at 0x000002104FD01C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002105461F480>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000002105460EE40>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002105461F480>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <fastapi.routing.APIRouter object at 0x0000021052EF2B70>
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000002105460EE40>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002105461F480>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x0000021052EF2B70>>
+          └ <fastapi.routing.APIRouter object at 0x0000021052EF2B70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002105461F480>
+          │     │      │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │     └ <function Route.handle at 0x000002104FD2C930>
+          └ APIRoute(path='/reports/problem-registrations/locked', name='problem_registrations_locked_list_page', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002105461F480>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <function request_response.<locals>.app at 0x000002105329B950>
+          └ APIRoute(path='/reports/problem-registrations/locked', name='problem_registrations_locked_list_page', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 130, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000002105461F480>
+          │                            │    │        │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x000002105461F3E0>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x000002105461F060>
+          └ <function wrap_app_handling_exceptions at 0x000002104FD01C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x0000021054685BC0>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000021...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x000002105461F060>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 116, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x000002105461F3E0>
+                     └ <function get_request_handler.<locals>.app at 0x000002105329B7F0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 670, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x000002104FD31BC0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 324, in run_endpoint_function
+    return await dependant.call(**values)
+                 │         │      └ {'db': <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x0000021054D7ECF0>, 'subject': '', 'track_id': '', 'detected_f...
+                 │         └ <function problem_registrations_locked_list_page at 0x0000021052C9A400>
+                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(), name='subject', mode='validation', config=None), Model...
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\problem_registrations\pr_routes_jinja.py", line 500, in problem_registrations_locked_list_page
+    department_name = _pds.name
+                      └ None
+
+AttributeError: 'NoneType' object has no attribute 'name'
+2026-04-27 14:49:09 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 14:49:09 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 14:49:09 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 14:49:09 | INFO     | logging:callHandlers:1737 | Finished server process [17972]
+2026-04-27 14:49:11 | INFO     | logging:callHandlers:1737 | Started server process [16108]
+2026-04-27 14:49:11 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 14:49:11 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 14:59:51 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 14:59:51 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 14:59:51 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 14:59:51 | INFO     | logging:callHandlers:1737 | Finished server process [16108]
+2026-04-27 14:59:53 | INFO     | logging:callHandlers:1737 | Started server process [2372]
+2026-04-27 14:59:53 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 14:59:53 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 14:59:57 | INFO     | app.reports.problem_registrations.pr_service:get_all:317 | Problem registrations retrieved
+2026-04-27 14:59:57 | INFO     | app.reports.problem_registrations.pr_public_services:get_all:74 | Registration list retrieved
+2026-04-27 14:59:57 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61827 - "GET /reports/problem-registrations/locked HTTP/1.1" 200
+2026-04-27 15:03:44 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58196 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 15:05:16 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58857 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 15:06:34 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61113 - "GET /docs HTTP/1.1" 200
+2026-04-27 15:06:35 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61113 - "GET /openapi.json HTTP/1.1" 200
+2026-04-27 15:06:42 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65146 - "POST /api/auth/login HTTP/1.1" 200
+2026-04-27 15:13:10 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 15:13:10 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 15:13:10 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 15:13:10 | INFO     | logging:callHandlers:1737 | Finished server process [2372]
+2026-04-27 15:13:13 | INFO     | logging:callHandlers:1737 | Started server process [17976]
+2026-04-27 15:13:13 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 15:13:13 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 15:13:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55203 - "GET /reports/problem-registrations/11 HTTP/1.1" 303
+2026-04-27 15:13:15 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55203 - "GET /auth/login-page HTTP/1.1" 200
+2026-04-27 15:13:20 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55203 - "POST /auth/login-page HTTP/1.1" 303
+2026-04-27 15:13:20 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55203 - "GET / HTTP/1.1" 200
+2026-04-27 15:13:24 | INFO     | app.reports.problem_registrations.pr_service:get_all:317 | Problem registrations retrieved
+2026-04-27 15:13:24 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55203 - "GET /reports/problem-registrations/my HTTP/1.1" 200
+2026-04-27 15:13:27 | INFO     | app.reports.problem_registrations.pr_service:get_all:317 | Problem registrations retrieved
+2026-04-27 15:13:27 | INFO     | app.reports.problem_registrations.pr_public_services:get_all:74 | Registration list retrieved
+2026-04-27 15:13:27 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55203 - "GET /reports/problem-registrations/list HTTP/1.1" 200
+2026-04-27 15:22:01 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 15:22:01 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 15:22:01 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 15:22:01 | INFO     | logging:callHandlers:1737 | Finished server process [17976]
+2026-04-27 15:22:04 | INFO     | logging:callHandlers:1737 | Started server process [20924]
+2026-04-27 15:22:04 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 15:22:04 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 15:22:30 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 15:22:30 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 15:22:30 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 15:22:30 | INFO     | logging:callHandlers:1737 | Finished server process [20924]
+2026-04-27 15:22:32 | INFO     | logging:callHandlers:1737 | Started server process [23456]
+2026-04-27 15:22:32 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 15:22:32 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 15:23:23 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 15:23:24 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 15:23:24 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 15:23:24 | INFO     | logging:callHandlers:1737 | Finished server process [23456]
+2026-04-27 15:23:26 | INFO     | logging:callHandlers:1737 | Started server process [14188]
+2026-04-27 15:23:26 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 15:23:26 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 15:25:14 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 15:25:14 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 15:25:14 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 15:25:14 | INFO     | logging:callHandlers:1737 | Finished server process [14188]
+2026-04-27 15:25:16 | INFO     | logging:callHandlers:1737 | Started server process [17704]
+2026-04-27 15:25:16 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 15:25:16 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 15:28:24 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 15:28:24 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 15:28:24 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 15:28:24 | INFO     | logging:callHandlers:1737 | Finished server process [17704]
+2026-04-27 15:28:27 | INFO     | logging:callHandlers:1737 | Started server process [19732]
+2026-04-27 15:28:27 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 15:28:27 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 15:31:08 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 15:31:08 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 15:31:08 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 15:31:08 | INFO     | logging:callHandlers:1737 | Finished server process [19732]
+2026-04-27 15:33:28 | INFO     | logging:callHandlers:1737 | Started server process [14780]
+2026-04-27 15:33:28 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 15:33:28 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 15:33:34 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 15:33:34 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 15:33:34 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 15:33:35 | INFO     | logging:callHandlers:1737 | Finished server process [14780]
+2026-04-27 15:33:36 | INFO     | logging:callHandlers:1737 | Started server process [21660]
+2026-04-27 15:33:36 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 15:33:36 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 15:33:39 | INFO     | logging:callHandlers:1737 | 127.0.0.1:63089 - "GET /docs HTTP/1.1" 200
+2026-04-27 15:33:39 | INFO     | logging:callHandlers:1737 | 127.0.0.1:63089 - "GET /openapi.json HTTP/1.1" 200
+2026-04-27 15:33:52 | INFO     | app.reports.problem_registrations.pr_service:get_all:317 | Problem registrations retrieved
+2026-04-27 15:33:52 | INFO     | app.reports.problem_registrations.pr_public_services:get_all:74 | Registration list retrieved
+2026-04-27 15:33:52 | INFO     | app.reports.correction.correction_routes_jinja:correction_create_page:56 | Correction create page loaded
+2026-04-27 15:33:52 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: correction_create.html.j2
+2026-04-27 15:33:52 | INFO     | logging:callHandlers:1737 | 127.0.0.1:63704 - "GET /reports/cor/reports/corrections/create HTTP/1.1" 500
+2026-04-27 15:33:52 | ERROR    | logging:callHandlers:1737 | Exception in ASGI application
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 336
+               │     └ 3
+               └ <function _main at 0x000001F862F809E0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 336
+           │    └ <function BaseProcess._bootstrap at 0x000001F862E4AAE0>
+           └ <SpawnProcess name='SpawnProcess-15' parent=3448 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 320, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x000001F862E49E80>
+    └ <SpawnProcess name='SpawnProcess-15' parent=3448 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x000001F865345BE0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-15' parent=3448 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-15' parent=3448 started>
+    │    └ <function subprocess_started at 0x000001F86528B7F0>
+    └ <SpawnProcess name='SpawnProcess-15' parent=3448 started>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=580, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x000001F865345D30>>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\server.py", line 75, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+           │           │    │             │                      │    │      └ <function Config.get_loop_factory at 0x000001F865213740>
+           │           │    │             │                      │    └ <uvicorn.config.Config object at 0x000001F865345BE0>
+           │           │    │             │                      └ <uvicorn.server.Server object at 0x000001F865345D30>
+           │           │    │             └ [<socket.socket fd=580, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+           │           │    └ <function Server.serve at 0x000001F86527ACF0>
+           │           └ <uvicorn.server.Server object at 0x000001F865345D30>
+           └ <function run at 0x000001F864E0FB60>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 204, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x000001F865405030>
+           │      └ <function Runner.run at 0x000001F864E2C040>
+           └ <asyncio.runners.Runner object at 0x000001F865346BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packa...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x000001F864E0C510>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x000001F865346BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 706, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x000001F864E0C460>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 677, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x000001F864E0E560>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 2046, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x000001F8631C2B90>
+    └ <Handle Task.task_wakeup()>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+> File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001F86AE17380>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F869...
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x000001F8699A86E0>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001F86AE17380>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\applications.py", line 1160, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F869...
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F869...
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001F86AE9C050>
+          └ <fastapi.applications.FastAPI object at 0x000001F8699A86E0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001F86AE992D0>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001F86AE17E00>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001F86AE9C050>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001F86AE992D0>
+          │                            │    │    │     │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x000001F86AE8DA70>
+          │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001F86AE17CB0>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001F86AE17E00>
+          └ <function wrap_app_handling_exceptions at 0x000001F866575C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE99010>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001F86AE17CB0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE99010>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <fastapi.routing.APIRouter object at 0x000001F8696FED50>
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001F86AE17CB0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE99010>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x000001F8696FED50>>
+          └ <fastapi.routing.APIRouter object at 0x000001F8696FED50>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE99010>
+          │     │      │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │     └ <function Route.handle at 0x000001F86659C930>
+          └ APIRoute(path='/reports/cor/reports/corrections/create', name='correction_create_page', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE99010>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <function request_response.<locals>.app at 0x000001F869B8B690>
+          └ APIRoute(path='/reports/cor/reports/corrections/create', name='correction_create_page', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 130, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE99010>
+          │                            │    │        │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x000001F869643770>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x000001F86AE98D50>
+          └ <function wrap_app_handling_exceptions at 0x000001F866575C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE99B10>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x000001F86AE98D50>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 116, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x000001F869643770>
+                     └ <function get_request_handler.<locals>.app at 0x000001F869B8B5E0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 670, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x000001F8665A1BC0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 324, in run_endpoint_function
+    return await dependant.call(**values)
+                 │         │      └ {'db': <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x000001F86AE9D010>, 'problem_registration_id': None, 'request'...
+                 │         └ <function correction_create_page at 0x000001F8695DA2A0>
+                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(None), name='problem_registration_id', mode='validation',...
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\correction\correction_routes_jinja.py", line 58, in correction_create_page
+    return templates.TemplateResponse("correction_create.html.j2", {
+           │         └ <function Jinja2Templates.TemplateResponse at 0x000001F868BDF270>
+           └ <starlette.templating.Jinja2Templates object at 0x000001F868B43A10>
+
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\templating.py", line 209, in TemplateResponse
+    template = self.get_template(name)
+               │    │            └ 'correction_create.html.j2'
+               │    └ <function Jinja2Templates.get_template at 0x000001F868BDEE50>
+               └ <starlette.templating.Jinja2Templates object at 0x000001F868B43A10>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\templating.py", line 132, in get_template
+    return self.env.get_template(name)
+           │    │   │            └ 'correction_create.html.j2'
+           │    │   └ <function Environment.get_template at 0x000001F868BC85C0>
+           │    └ <jinja2.environment.Environment object at 0x000001F868B438C0>
+           └ <starlette.templating.Jinja2Templates object at 0x000001F868B43A10>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\jinja2\environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           │    │              │     └ None
+           │    │              └ 'correction_create.html.j2'
+           │    └ <function Environment._load_template at 0x000001F868BC8460>
+           └ <jinja2.environment.Environment object at 0x000001F868B438C0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\jinja2\environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               │    │      │    │     │     │    │            └ None
+               │    │      │    │     │     │    └ <function Environment.make_globals at 0x000001F868BC8B40>
+               │    │      │    │     │     └ <jinja2.environment.Environment object at 0x000001F868B438C0>
+               │    │      │    │     └ 'correction_create.html.j2'
+               │    │      │    └ <jinja2.environment.Environment object at 0x000001F868B438C0>
+               │    │      └ <function ChoiceLoader.load at 0x000001F868BDDF30>
+               │    └ <jinja2.loaders.ChoiceLoader object at 0x000001F868B43770>
+               └ <jinja2.environment.Environment object at 0x000001F868B438C0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\jinja2\loaders.py", line 607, in load
+    raise TemplateNotFound(name)
+          │                └ 'correction_create.html.j2'
+          └ <class 'jinja2.exceptions.TemplateNotFound'>
+
+jinja2.exceptions.TemplateNotFound: correction_create.html.j2
+2026-04-27 15:33:58 | INFO     | app.reports.problem_registrations.pr_service:get_all:317 | Problem registrations retrieved
+2026-04-27 15:33:58 | INFO     | app.reports.problem_registrations.pr_public_services:get_all:74 | Registration list retrieved
+2026-04-27 15:33:58 | INFO     | app.reports.correction.correction_routes_jinja:correction_create_page:56 | Correction create page loaded
+2026-04-27 15:33:58 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: correction_create.html.j2
+2026-04-27 15:33:58 | INFO     | logging:callHandlers:1737 | 127.0.0.1:60904 - "GET /reports/cor/reports/corrections/create HTTP/1.1" 500
+2026-04-27 15:33:58 | ERROR    | logging:callHandlers:1737 | Exception in ASGI application
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 336
+               │     └ 3
+               └ <function _main at 0x000001F862F809E0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 336
+           │    └ <function BaseProcess._bootstrap at 0x000001F862E4AAE0>
+           └ <SpawnProcess name='SpawnProcess-15' parent=3448 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 320, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x000001F862E49E80>
+    └ <SpawnProcess name='SpawnProcess-15' parent=3448 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x000001F865345BE0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-15' parent=3448 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-15' parent=3448 started>
+    │    └ <function subprocess_started at 0x000001F86528B7F0>
+    └ <SpawnProcess name='SpawnProcess-15' parent=3448 started>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=580, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x000001F865345D30>>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\server.py", line 75, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+           │           │    │             │                      │    │      └ <function Config.get_loop_factory at 0x000001F865213740>
+           │           │    │             │                      │    └ <uvicorn.config.Config object at 0x000001F865345BE0>
+           │           │    │             │                      └ <uvicorn.server.Server object at 0x000001F865345D30>
+           │           │    │             └ [<socket.socket fd=580, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+           │           │    └ <function Server.serve at 0x000001F86527ACF0>
+           │           └ <uvicorn.server.Server object at 0x000001F865345D30>
+           └ <function run at 0x000001F864E0FB60>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 204, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x000001F865405030>
+           │      └ <function Runner.run at 0x000001F864E2C040>
+           └ <asyncio.runners.Runner object at 0x000001F865346BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packa...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x000001F864E0C510>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x000001F865346BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 706, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x000001F864E0C460>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 677, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x000001F864E0E560>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 2046, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x000001F8631C2B90>
+    └ <Handle Task.task_wakeup()>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+> File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001F86AE17380>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F86A...
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x000001F8699A86E0>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x000001F86AE17380>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\applications.py", line 1160, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F86A...
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F86A...
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001F86AE9C050>
+          └ <fastapi.applications.FastAPI object at 0x000001F8699A86E0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001F86AE99010>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001F86AE17E00>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001F86AE9C050>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001F86AE99010>
+          │                            │    │    │     │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x000001F86AE57020>
+          │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001F86AE17CB0>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001F86AE17E00>
+          └ <function wrap_app_handling_exceptions at 0x000001F866575C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE98D50>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001F86AE17CB0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE98D50>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <fastapi.routing.APIRouter object at 0x000001F8696FED50>
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x000001F86AE17CB0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE98D50>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x000001F8696FED50>>
+          └ <fastapi.routing.APIRouter object at 0x000001F8696FED50>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE98D50>
+          │     │      │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │     └ <function Route.handle at 0x000001F86659C930>
+          └ APIRoute(path='/reports/cor/reports/corrections/create', name='correction_create_page', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE98D50>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <function request_response.<locals>.app at 0x000001F869B8B690>
+          └ APIRoute(path='/reports/cor/reports/corrections/create', name='correction_create_page', methods=['GET'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 130, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE98D50>
+          │                            │    │        │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x000001F86986F650>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x000001F86AE99B10>
+          └ <function wrap_app_handling_exceptions at 0x000001F866575C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001F86AE987D0>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x000001F...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x000001F86AE99B10>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 116, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x000001F86986F650>
+                     └ <function get_request_handler.<locals>.app at 0x000001F869B8B5E0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 670, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x000001F8665A1BC0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 324, in run_endpoint_function
+    return await dependant.call(**values)
+                 │         │      └ {'db': <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x000001F86AFEF4D0>, 'problem_registration_id': None, 'request'...
+                 │         └ <function correction_create_page at 0x000001F8695DA2A0>
+                 └ Dependant(path_params=[], query_params=[ModelField(field_info=Query(None), name='problem_registration_id', mode='validation',...
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\correction\correction_routes_jinja.py", line 58, in correction_create_page
+    return templates.TemplateResponse("correction_create.html.j2", {
+           │         └ <function Jinja2Templates.TemplateResponse at 0x000001F868BDF270>
+           └ <starlette.templating.Jinja2Templates object at 0x000001F868B43A10>
+
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\templating.py", line 209, in TemplateResponse
+    template = self.get_template(name)
+               │    │            └ 'correction_create.html.j2'
+               │    └ <function Jinja2Templates.get_template at 0x000001F868BDEE50>
+               └ <starlette.templating.Jinja2Templates object at 0x000001F868B43A10>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\templating.py", line 132, in get_template
+    return self.env.get_template(name)
+           │    │   │            └ 'correction_create.html.j2'
+           │    │   └ <function Environment.get_template at 0x000001F868BC85C0>
+           │    └ <jinja2.environment.Environment object at 0x000001F868B438C0>
+           └ <starlette.templating.Jinja2Templates object at 0x000001F868B43A10>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\jinja2\environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           │    │              │     └ None
+           │    │              └ 'correction_create.html.j2'
+           │    └ <function Environment._load_template at 0x000001F868BC8460>
+           └ <jinja2.environment.Environment object at 0x000001F868B438C0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\jinja2\environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               │    │      │    │     │     │    │            └ None
+               │    │      │    │     │     │    └ <function Environment.make_globals at 0x000001F868BC8B40>
+               │    │      │    │     │     └ <jinja2.environment.Environment object at 0x000001F868B438C0>
+               │    │      │    │     └ 'correction_create.html.j2'
+               │    │      │    └ <jinja2.environment.Environment object at 0x000001F868B438C0>
+               │    │      └ <function ChoiceLoader.load at 0x000001F868BDDF30>
+               │    └ <jinja2.loaders.ChoiceLoader object at 0x000001F868B43770>
+               └ <jinja2.environment.Environment object at 0x000001F868B438C0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\jinja2\loaders.py", line 607, in load
+    raise TemplateNotFound(name)
+          │                └ 'correction_create.html.j2'
+          └ <class 'jinja2.exceptions.TemplateNotFound'>
+
+jinja2.exceptions.TemplateNotFound: correction_create.html.j2
+2026-04-27 15:34:36 | INFO     | app.reports.problem_registrations.pr_service:get_all:317 | Problem registrations retrieved
+2026-04-27 15:34:36 | INFO     | app.reports.problem_registrations.pr_public_services:get_all:74 | Registration list retrieved
+2026-04-27 15:34:37 | INFO     | logging:callHandlers:1737 | 127.0.0.1:49229 - "GET /reports/problem-registrations/list HTTP/1.1" 200
+2026-04-27 15:47:34 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53419 - "GET / HTTP/1.1" 303
+2026-04-27 15:47:34 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53419 - "GET /auth/login-page HTTP/1.1" 200
+2026-04-27 15:47:42 | INFO     | logging:callHandlers:1737 | 127.0.0.1:49666 - "POST /auth/login-page HTTP/1.1" 303
+2026-04-27 15:47:42 | INFO     | logging:callHandlers:1737 | 127.0.0.1:49666 - "GET / HTTP/1.1" 200
+2026-04-27 15:47:50 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58130 - "GET /reports/problem-registrations/create HTTP/1.1" 200
+2026-04-27 15:48:11 | INFO     | app.reports.problem_registrations.pr_service:get_all:317 | Problem registrations retrieved
+2026-04-27 15:48:11 | INFO     | logging:callHandlers:1737 | 127.0.0.1:63260 - "GET /reports/problem-registrations/my HTTP/1.1" 200
+2026-04-27 15:48:24 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58026 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 15:48:29 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58026 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 15:48:31 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58026 - "GET /reports/problem-registrations/11/edit HTTP/1.1" 303
+2026-04-27 15:48:31 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58026 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 15:48:33 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58026 - "GET /messeges/38 HTTP/1.1" 404
+2026-04-27 15:48:39 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59994 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 15:48:40 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59994 - "GET /messeges/28 HTTP/1.1" 404
+2026-04-27 15:48:47 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65158 - "GET /reports/problem-registrations/create HTTP/1.1" 200
+2026-04-27 15:48:57 | INFO     | app.reports.problem_registrations.pr_public_services:create:43 | Creating problem registration
+2026-04-27 15:48:57 | INFO     | app.reports.problem_registrations.pr_service:create:33 | Creating problem registration
+2026-04-27 15:48:58 | INFO     | app.reports.documents.document_service:create:87 | Creating document
+2026-04-27 15:48:58 | INFO     | app.reports.documents.document_service:create:152 | Document created successfully
+2026-04-27 15:48:58 | INFO     | app.reports.documents.document_public_service:create:36 | Document created successfully
+2026-04-27 15:48:58 | INFO     | app.reports.problem_registrations.pr_service:create:118 | Problem registration created successfully
+2026-04-27 15:48:58 | INFO     | app.reports.problem_registrations.pr_public_services:create:50 | Problem registration created successfully
+2026-04-27 15:48:58 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51744 - "POST /reports/problem-registrations/create HTTP/1.1" 303
+2026-04-27 15:48:58 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51744 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 15:49:00 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51744 - "GET /messeges/39 HTTP/1.1" 404
+2026-04-27 15:49:26 | INFO     | app.reports.problem_registrations.pr_service:get_all:317 | Problem registrations retrieved
+2026-04-27 15:49:26 | INFO     | app.reports.problem_registrations.pr_public_services:get_all:74 | Registration list retrieved
+2026-04-27 15:49:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59123 - "GET /reports/problem-registrations/list HTTP/1.1" 200
+2026-04-27 15:49:37 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51238 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 15:49:39 | INFO     | app.reports.problem_registrations.pr_public_services:assign_user:202 | Assigning user to registration
+2026-04-27 15:49:39 | INFO     | app.reports.problem_registrations.pr_service:assign_user_to_document:415 | Assigning user to document
+2026-04-27 15:49:39 | INFO     | app.reports.documents.document_public_service:assign_to_user:197 | Assigning document to user
+2026-04-27 15:49:39 | INFO     | app.reports.documents.document_service:update:276 | Updating document
+2026-04-27 15:49:39 | INFO     | app.reports.documents.document_service:update:315 | Document updated successfully
+2026-04-27 15:49:39 | INFO     | app.reports.documents.document_public_service:update:185 | Document updated
+2026-04-27 15:49:39 | INFO     | app.reports.problem_registrations.pr_public_services:assign_user:223 | User assigned successfully
+2026-04-27 15:49:39 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51238 - "POST /reports/problem-registrations/12/assign-self HTTP/1.1" 303
+2026-04-27 15:49:39 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51238 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 15:49:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57258 - "GET /messeges/39 HTTP/1.1" 404
+2026-04-27 15:50:13 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59620 - "GET /messeges HTTP/1.1" 404
+2026-04-27 15:50:27 | INFO     | logging:callHandlers:1737 | 127.0.0.1:50401 - "GET /reports/problem-registrations/12/edit HTTP/1.1" 200
+2026-04-27 15:50:34 | INFO     | logging:callHandlers:1737 | 127.0.0.1:49829 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 15:50:46 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61652 - "GET /reports/problem-registrations/12/edit-details HTTP/1.1" 200
+2026-04-27 15:51:03 | INFO     | app.reports.problem_registrations.pr_public_services:update_detale:257 | Updating registration details
+2026-04-27 15:51:03 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:370 | Updating registration response details
+2026-04-27 15:51:03 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:402 | Registration details updated
+2026-04-27 15:51:03 | INFO     | app.reports.problem_registrations.pr_public_services:update:79 | Updating registration
+2026-04-27 15:51:03 | INFO     | app.reports.problem_registrations.pr_service:update:173 | Updating problem registration
+2026-04-27 15:51:03 | INFO     | app.reports.problem_registrations.pr_public_services:update:110 | Registration updated successfully
+2026-04-27 15:51:03 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58017 - "POST /reports/problem-registrations/12/edit-details HTTP/1.1" 303
+2026-04-27 15:51:03 | INFO     | app.reports.problem_registrations.pr_public_services:confirm:115 | Confirming (locking) registration
+2026-04-27 15:51:03 | INFO     | app.reports.problem_registrations.pr_service:lock:419 | Locking problem registration
+2026-04-27 15:51:03 | INFO     | app.reports.documents.document_public_service:lock:209 | Locking document
+2026-04-27 15:51:03 | INFO     | app.reports.documents.document_service:lock:401 | Locking document
+2026-04-27 15:51:03 | INFO     | app.reports.documents.document_service:lock:407 | Document locked
+2026-04-27 15:51:03 | INFO     | app.reports.problem_registrations.pr_service:lock:431 | Problem registration locked
+2026-04-27 15:51:03 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58017 - "GET /reports/problem-registrations/12/confirm HTTP/1.1" 303
+2026-04-27 15:51:03 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58017 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 15:51:23 | INFO     | app.reports.problem_registrations.pr_service:get_all:317 | Problem registrations retrieved
+2026-04-27 15:51:23 | INFO     | app.reports.problem_registrations.pr_public_services:get_all:74 | Registration list retrieved
+2026-04-27 15:51:23 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59655 - "GET /reports/problem-registrations/locked HTTP/1.1" 200
+2026-04-27 15:51:32 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53669 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 16:38:03 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61115 - "GET / HTTP/1.1" 303
+2026-04-27 16:38:03 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61115 - "GET /auth/login-page HTTP/1.1" 200
+2026-04-27 16:38:11 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58744 - "POST /auth/login-page HTTP/1.1" 303
+2026-04-27 16:38:11 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58744 - "GET / HTTP/1.1" 200
+2026-04-27 16:40:51 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61190 - "GET /messeges HTTP/1.1" 404
+2026-04-27 16:41:23 | INFO     | logging:callHandlers:1737 | 127.0.0.1:56064 - "GET /messages HTTP/1.1" 200
+2026-04-27 16:42:41 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53669 - "GET /messages HTTP/1.1" 200
+2026-04-27 16:42:54 | INFO     | logging:callHandlers:1737 | 127.0.0.1:52952 - "GET /messages/34 HTTP/1.1" 200
+2026-04-27 16:43:03 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64807 - "GET /messages/39 HTTP/1.1" 200
+2026-04-27 16:43:03 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64807 - "GET /messages/38 HTTP/1.1" 200
+2026-04-27 16:43:04 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64807 - "GET /messages/37 HTTP/1.1" 200
+2026-04-27 16:43:19 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55451 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:43:34 | INFO     | logging:callHandlers:1737 | 127.0.0.1:56822 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:43:49 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61298 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:44:04 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58522 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:44:19 | INFO     | logging:callHandlers:1737 | 127.0.0.1:54782 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:44:34 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55916 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:44:49 | INFO     | logging:callHandlers:1737 | 127.0.0.1:50060 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:45:04 | INFO     | logging:callHandlers:1737 | 127.0.0.1:54985 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:45:19 | INFO     | logging:callHandlers:1737 | 127.0.0.1:52273 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:45:34 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61612 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:45:49 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58554 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:46:04 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64044 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:46:19 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57771 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:46:34 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53316 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:46:49 | INFO     | logging:callHandlers:1737 | 127.0.0.1:54684 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:47:04 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58425 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:47:19 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59732 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:47:24 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62562 - "GET /messages/37 HTTP/1.1" 200
+2026-04-27 16:47:28 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62562 - "GET /messages/39 HTTP/1.1" 200
+2026-04-27 16:47:29 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62562 - "GET /messages/38 HTTP/1.1" 200
+2026-04-27 16:47:29 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62562 - "GET /messages/37 HTTP/1.1" 200
+2026-04-27 16:47:30 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62562 - "GET /messages/36 HTTP/1.1" 200
+2026-04-27 16:47:31 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62562 - "GET /reports/problem-registrations/document/67 HTTP/1.1" 303
+2026-04-27 16:47:31 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62562 - "GET /reports/problem-registrations HTTP/1.1" 404
+2026-04-27 16:47:42 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65517 - "GET /reports/problem-registrations/create HTTP/1.1" 200
+2026-04-27 16:47:44 | INFO     | app.reports.problem_registrations.pr_service:get_all:317 | Problem registrations retrieved
+2026-04-27 16:47:44 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65517 - "GET /reports/problem-registrations/my HTTP/1.1" 200
+2026-04-27 16:47:46 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65517 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 16:47:47 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65517 - "GET /messeges/39 HTTP/1.1" 404
+2026-04-27 16:48:02 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58833 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 16:48:03 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58833 - "GET /messages/39 HTTP/1.1" 200
+2026-04-27 16:48:05 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58833 - "GET /reports/problem-registrations/document/72 HTTP/1.1" 303
+2026-04-27 16:48:05 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58833 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 16:48:06 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58833 - "GET /messages/39 HTTP/1.1" 200
+2026-04-27 16:48:07 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58833 - "GET /reports/problem-registrations/document/72 HTTP/1.1" 303
+2026-04-27 16:48:07 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58833 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 16:48:07 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58833 - "GET /messages/39 HTTP/1.1" 200
+2026-04-27 16:48:22 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58407 - "GET /api/messages/chats/39/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:48:31 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51360 - "GET /messages/34 HTTP/1.1" 200
+2026-04-27 16:48:43 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64408 - "GET /messages/36 HTTP/1.1" 200
+2026-04-27 16:48:43 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64408 - "GET /messages/37 HTTP/1.1" 200
+2026-04-27 16:48:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:50530 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:49:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64382 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:49:29 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51639 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:49:44 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58355 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:49:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:52802 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:50:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:49360 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:50:29 | INFO     | logging:callHandlers:1737 | 127.0.0.1:52241 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:50:44 | INFO     | logging:callHandlers:1737 | 127.0.0.1:56209 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:50:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:63116 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:51:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55576 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:51:29 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65285 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:51:44 | INFO     | logging:callHandlers:1737 | 127.0.0.1:56031 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:51:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61717 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:52:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55746 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:52:29 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51470 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:52:44 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61832 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:52:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59666 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:53:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51647 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:53:29 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61377 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:53:44 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64620 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:53:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51050 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:54:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59819 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:55:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51113 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:56:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62490 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:57:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62039 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:58:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:50060 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 16:59:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55649 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:00:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:49666 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:01:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:49938 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:02:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:49254 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:03:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:52169 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:04:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:52017 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:04:50 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55642 - "GET / HTTP/1.1" 200
+2026-04-27 17:04:59 | INFO     | app.reports.problem_registrations.pr_service:get_all:317 | Problem registrations retrieved
+2026-04-27 17:04:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:54027 - "GET /reports/problem-registrations/my HTTP/1.1" 200
+2026-04-27 17:05:00 | INFO     | logging:callHandlers:1737 | 127.0.0.1:54027 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 17:05:02 | INFO     | logging:callHandlers:1737 | 127.0.0.1:54027 - "GET /messages/39 HTTP/1.1" 200
+2026-04-27 17:05:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:59495 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:06:06 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61144 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 17:06:07 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61144 - "GET /reports/problem-registrations/12 HTTP/1.1" 200
+2026-04-27 17:06:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:52109 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:07:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:63928 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:08:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53714 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:09:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:50122 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:10:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:54150 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:11:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51737 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:11:53 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 17:11:53 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 17:11:53 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 17:11:53 | INFO     | logging:callHandlers:1737 | Finished server process [21660]
+2026-04-27 17:11:55 | INFO     | logging:callHandlers:1737 | Started server process [15580]
+2026-04-27 17:11:55 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 17:11:55 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 17:12:17 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 17:12:17 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 17:12:17 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 17:12:17 | INFO     | logging:callHandlers:1737 | Finished server process [15580]
+2026-04-27 17:12:19 | INFO     | logging:callHandlers:1737 | Started server process [20824]
+2026-04-27 17:12:19 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 17:12:19 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 17:12:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57882 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:13:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:50306 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:14:23 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62986 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404

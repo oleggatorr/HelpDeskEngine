@@ -16,7 +16,7 @@
         <div class="d-flex align-items-center gap-2">
             {% if current_user %}
             <span class="navbar-text text-light me-2">{{ current_user.full_name or current_user.login }}</span>
-            <a href="/messeges" class="btn btn-outline-light btn-sm">Сообщения</a>
+            <a href="/messages" class="btn btn-outline-light btn-sm">Сообщения</a>
             <a href="/auth/logout" class="btn btn-outline-danger btn-sm">Выйти</a>
             {% else %}
             <a href="/auth/login-page" class="btn btn-outline-light btn-sm">Войти</a>

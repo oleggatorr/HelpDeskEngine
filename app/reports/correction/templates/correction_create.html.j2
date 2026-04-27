@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% set title = "Создать корректирующее действие — Help Desk Engine" %}
+
+{% block content %}
+{% include 'partials/left_side_menu.html' %}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Создать корректирующее действие</h1>
+
+    {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" action="/reports/corrections/create" enctype="multipart/form-data">
+        
+        {# 🔗 Привязка к заявке #}
+        <div class="card mb-3">
+            <div class="card-header"><h6 class="mb-0">Связь с проблемой</h6></div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">Регистрация проблемы <span class="text-danger">*</span></label>
+                        <select name="problem_registration_id" class="form-select" required>
+                            <option value="">— Выберите заявку —</option>
+                            {% for pr in problem_registrations %}
+                            <option value="{{ pr.id }}" 
+                                    {% if form_data and form_data.problem_registration_id == pr.id %}selected{% endif %}>
+                                #{{ pr.track_id }} — {{ pr.subject }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Коррекция будет привязана к выбранной регистрации проблемы</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# 📝 Основные поля Correction #}
+        <div class="card mb-3">
+            <div class="card-header"><h6 class="mb-0">Детали коррекции</h6></div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Название <span class="text-danger">*</span></label>
+                        <input type="text" name="title" class="form-control" 
+                               value="{{ form_data.title if form_data else '' }}" 
+                               required minlength="3" maxlength="200"
+                               placeholder="Краткое описание коррекции">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Статус</label>
+                        <select name="status" class="form-select">
+                            {% for s in correction_statuses %}
+                            <option value="{{ s }}" 
+                                    {% if form_data and form_data.status == s %}selected
+                                    {% elif not form_data and s == 'planned' %}selected{% endif %}>
+                                {{ s }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Плановая дата выполнения</label>
+                        <input type="datetime-local" name="planned_date" class="form-control"
+                               value="{{ form_data.planned_date if form_data else '' }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Фактическая дата выполнения</label>
+                        <input type="datetime-local" name="completed_date" class="form-control"
+                               value="{{ form_data.completed_date if form_data else '' }}">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Описание проблемы</label>
+                        <textarea name="description" class="form-control" rows="3" 
+                                  placeholder="Детальное описание">{{ form_data.description if form_data else '' }}</textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Корректирующие действия <span class="text-danger">*</span></label>
+                        <textarea name="corrective_action" class="form-control" rows="4" required minlength="3"
+                                  placeholder="Что было сделано для устранения проблемы">{{ form_data.corrective_action if form_data else '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# 📎 Вложения #}
+        <div class="card mb-3">
+            <div class="card-header"><h6 class="mb-0">Вложения</h6></div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <input type="file" name="files" class="form-control" multiple accept="*/*">
+                    <div class="form-text">Можно выбрать несколько файлов: скриншоты, логи, документы</div>
+                </div>
+            </div>
+        </div>
+
+        {# ⚙️ Параметры документа (авто-создание) #}
+        <div class="card mb-3">
+            <div class="card-header"><h6 class="mb-0">Параметры документа</h6></div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <input type="hidden" name="doc_status" value="open">
+                    
+                    <div class="col-md-4">
+                        <label class="form-label">Язык</label>
+                        <select name="doc_language" class="form-select">
+                            {% for lang in languages %}
+                            <option value="{{ lang }}" 
+                                    {% if form_data and form_data.doc_language == lang %}selected
+                                    {% elif not form_data and lang == 'ru' %}selected{% endif %}>
+                                {{ lang }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Приоритет</label>
+                        <select name="doc_priority" class="form-select">
+                            {% for p in priorities %}
+                            <option value="{{ p }}" 
+                                    {% if form_data and form_data.doc_priority == p %}selected
+                                    {% elif not form_data and p == 'medium' %}selected{% endif %}>
+                                {{ p }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Статус документа</label>
+                        <select name="doc_status" class="form-select" disabled>
+                            <option value="open" selected>open (только чтение)</option>
+                        </select>
+                        <input type="hidden" name="doc_status" value="open">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# 🔘 Кнопки #}
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-circle me-1"></i>Создать коррекцию
+            </button>
+            <a href="/reports/corrections" class="btn btn-secondary">
+                <i class="bi bi-x-circle me-1"></i>Отмена
+            </a>
+        </div>
+    </form>
+</div>
+
+{# 🎨 Дополнительные стили #}
+<style>
+    .form-label .text-danger { margin-left: 2px; }
+    .card-header h6 { font-weight: 600; color: #495057; }
+</style>
+{% endblock %}

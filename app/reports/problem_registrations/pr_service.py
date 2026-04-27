@@ -291,7 +291,7 @@ class ProblemRegistrationService:
             Document, ProblemRegistration.document_id == Document.id
         ).options(
             selectinload(ProblemRegistration.location),
-            selectinload(ProblemRegistration.responsible_department)
+            selectinload(ProblemRegistration.responsible_department),
         )
 
         if conditions:
@@ -458,3 +458,4 @@ class ProblemRegistrationService:
                 status_code=status.HTTP_409_CONFLICT,
                 detail=str(e)
             )
+    

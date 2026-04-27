@@ -7,18 +7,6 @@ from app.messages.services.message_service import MessageService
 from app.messages.schemas import ChatResponse
 
 
-class PublicProblemRegistrationService:
-    """Публичный сервис для работы с назначениями проблем."""
-
-    def __init__(self, db: AsyncSession):
-        from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService as PRService
-        self._service = PRService(db)
-
-    async def get_assigned(self, user_id: int, skip: int = 0, limit: int = 100):
-        """Получить список регистраций проблем, назначенных на пользователя."""
-        return await self._service.get_assigned(user_id=user_id, skip=skip, limit=limit)
-
-
 class PublicChatService:
     """Публичный слой чатов."""
 
