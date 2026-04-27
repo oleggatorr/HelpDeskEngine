@@ -1,6 +1,9 @@
 from typing import Optional
 from sqlalchemy import select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import HTTPException, status
+from loguru import logger
+from sqlalchemy.orm import selectinload
 
 from app.reports.models import ProblemRegistration, Document, DocumentType
 from app.reports.problem_registrations.pr_schemas import (
@@ -10,21 +13,16 @@ from app.reports.problem_registrations.pr_schemas import (
     ProblemRegistration_DetaleUpdate,
     ProblemRegistrationFilter,
 )
-
-
 from app.reports.documents.schemas.document import DocumentCreate, DocumentStage
 from app.reports.documents.document_public_service import PublicDocumentService
 from app.messages.models import Chat, Message, MessageAttachment
 from app.auth.models import User
 
-# В начале файла сервиса добавьте:
-from sqlalchemy.orm import selectinload
-
 
 class ProblemRegistrationService:
     """
     Сервис регистраций проблем.
-    Использует DocumentService для работы с документами.
+    Использует PublicDocumentService для работы с документами.
     """
 
     def __init__(self, db: AsyncSession, doc_service: PublicDocumentService):
@@ -32,6 +30,8 @@ class ProblemRegistrationService:
         self.doc_service = doc_service
 
     async def create(self, request: ProblemRegistrationCreate, created_by: int) -> ProblemRegistrationResponse:
+        logger.info("Creating problem registration", created_by=created_by, subject=request.subject)
+        
         # Нормализуем FK-поля: 0 → None
         location_id = request.location_id or None
 
@@ -40,6 +40,9 @@ class ProblemRegistrationService:
             select(DocumentType.id).where(DocumentType.code == "ProblemRegistration")
         )
         doc_type_id = doc_type_result.scalar_one_or_none()
+        if not doc_type_id:
+            logger.error("DocumentType 'ProblemRegistration' not found in DB")
+            raise HTTPException(status_code=500, detail="Missing document type configuration")
 
         # Проверяем существование FK
         if location_id:
@@ -48,7 +51,9 @@ class ProblemRegistrationService:
                 select(func.count()).select_from(Location).where(Location.id == location_id)
             )
             if result.scalar_one() == 0:
+                logger.warning("Location ID not found, setting to None", location_id=location_id)
                 location_id = None
+                
         # 1. Создаём документ автоматически
         doc = await self.doc_service.create(DocumentCreate(
             created_by=created_by,
@@ -60,7 +65,8 @@ class ProblemRegistrationService:
             assigned_to=request.doc_assigned_to,
             attachment_files=request.attachment_files,
         ))
-        print(123)
+        logger.debug("Underlying document created", doc_id=doc.id, track_id=doc.track_id)
+
         # 2. Создаём регистрацию проблемы, привязанную к документу
         registration = ProblemRegistration(
             document_id=doc.id,
@@ -74,10 +80,9 @@ class ProblemRegistrationService:
 
         # 3. Создаём чат, привязанный к документу
         chat = Chat(
-            name=f"Обращение #{doc.track_id} - {request.subject}" ,
+            name=f"Обращение #{doc.track_id} - {request.subject}",
             document_id=doc.id,
         )
-        # Добавляем создателя как участника
         creator = await self.db.execute(select(User).where(User.id == created_by))
         creator_user = creator.scalar_one_or_none()
         if creator_user:
@@ -86,7 +91,6 @@ class ProblemRegistrationService:
 
         # 4. Отправляем первое сообщение с темой и описанием проблемы
         if request.subject or request.description:
-            # Используем flush чтобы получить chat.id до commit
             await self.db.flush()
             first_message = Message(
                 chat_id=chat.id,
@@ -97,7 +101,7 @@ class ProblemRegistrationService:
 
             # 5. Копируем вложения документа в сообщение чата
             if getattr(request, 'attachment_files', None):
-                await self.db.flush()  # чтобы получить first_message.id
+                await self.db.flush()
                 for att_data in request.attachment_files:
                     message_attachment = MessageAttachment(
                         message_id=first_message.id,
@@ -106,114 +110,120 @@ class ProblemRegistrationService:
                         file_type=att_data.get("file_type", "application/octet-stream"),
                     )
                     self.db.add(message_attachment)
+                logger.debug("Added attachments to first message", count=len(request.attachment_files))
 
         await self.db.commit()
         await self.db.refresh(registration)
 
-        # Возвращаем с полями документа (JOIN)
+        logger.info("Problem registration created successfully", registration_id=registration.id, doc_track_id=doc.track_id)
         return await self.get_by_id(registration.id)
 
     async def get_by_id(self, registration_id: int) -> Optional[ProblemRegistrationResponse]:
+        logger.debug("Fetching problem registration by ID", registration_id=registration_id)
         result = await self.db.execute(
             select(ProblemRegistration, Document)
             .join(Document, ProblemRegistration.document_id == Document.id)
             .where(ProblemRegistration.id == registration_id)
-            .options(  # 🔥 ДОБАВЬТЕ ЭТО:
+            .options(
                 selectinload(ProblemRegistration.location),
                 selectinload(ProblemRegistration.responsible_department),
             )
         )
         row = result.first()
         if not row:
+            logger.debug("Problem registration not found", registration_id=registration_id)
             return None
         return self._row_to_response(row)
 
-
     async def get_by_document_id(self, doc_id: int) -> Optional[ProblemRegistrationResponse]:
+        logger.debug("Fetching problem registration by document ID", doc_id=doc_id)
         result = await self.db.execute(
             select(ProblemRegistration, Document)
             .join(Document, ProblemRegistration.document_id == Document.id)
             .where(ProblemRegistration.document_id == doc_id)
-            .options(  # 🔥 ТО ЖЕ САМОЕ:
+            .options(
                 selectinload(ProblemRegistration.location),
                 selectinload(ProblemRegistration.responsible_department),
             )
         )
         row = result.first()
         if not row:
+            logger.debug("Problem registration not found by doc_id", doc_id=doc_id)
             return None
         return self._row_to_response(row)
 
     async def get_by_track_id(self, track_id: str) -> Optional[ProblemRegistrationResponse]:
+        logger.debug("Fetching problem registration by track_id", track_id=track_id)
         result = await self.db.execute(
             select(ProblemRegistration, Document)
             .join(Document, ProblemRegistration.document_id == Document.id)
             .where(Document.track_id == track_id)
-            .options(  # 🔥 И ЗДЕСЬ:
+            .options(
                 selectinload(ProblemRegistration.location),
                 selectinload(ProblemRegistration.responsible_department),
             )
         )
         row = result.first()
         if not row:
+            logger.debug("Problem registration not found by track_id", track_id=track_id)
             return None
         return self._row_to_response(row)
 
     async def update(self, registration_id: int, request: ProblemRegistrationUpdate) -> Optional[ProblemRegistrationResponse]:
-        """Обновить регистрацию проблемы."""
-        from sqlalchemy import select, func
-        from app.reports.models import ProblemRegistration
-        from app.reports.models import ProblemAction  # Ваш enum
-        
+        logger.info("Updating problem registration", registration_id=registration_id)
+        from app.reports.models import ProblemAction
+
         result = await self.db.execute(
             select(ProblemRegistration).where(ProblemRegistration.id == registration_id)
         )
         registration = result.scalar_one_or_none()
         if not registration:
+            logger.warning("Registration not found for update", registration_id=registration_id)
             return None
 
         update_data = request.model_dump(exclude_unset=True)
         
         if update_data:
-            # 🔧 Нормализуем FK-поля: 0 → None
+            logger.debug("Applying update fields", fields=list(update_data.keys()))
+            
             if "location_id" in update_data and not update_data["location_id"]:
                 update_data["location_id"] = None
 
-            # 🔧 Проверяем существование location_id
             if update_data.get("location_id"):
                 from app.knowledge_base.models import Location
                 loc_result = await self.db.execute(
                     select(func.count()).select_from(Location).where(Location.id == update_data["location_id"])
                 )
                 if loc_result.scalar_one() == 0:
+                    logger.warning("Invalid location_id in update, ignoring", location_id=update_data["location_id"])
                     update_data["location_id"] = None
 
-            # 🔥 ГЛАВНОЕ ИСПРАВЛЕНИЕ: пропускаем None для полей с NOT NULL
             for field, value in update_data.items():
-                # Для поля action: если None или пустая строка — подставляем дефолт
                 if field == "action" and (value is None or value == ""):
                     value = ProblemAction.UNDEFINED.value
                 
-                # Обновляем только если значение не None (защита от NOT NULL)
                 if value is not None:
                     setattr(registration, field, value)
                     
             await self.db.commit()
             await self.db.refresh(registration)
+            logger.info("Problem registration updated", registration_id=registration_id)
 
         return await self.get_by_id(registration_id)
 
     async def delete(self, registration_id: int) -> bool:
-        """Удалить регистрацию проблемы (вместе с документом через cascade)."""
+        logger.info("Deleting problem registration", registration_id=registration_id)
         result = await self.db.execute(
             select(ProblemRegistration).where(ProblemRegistration.id == registration_id)
         )
         registration = result.scalar_one_or_none()
         if not registration:
+            logger.warning("Registration not found for deletion", registration_id=registration_id)
             return False
 
         await self.db.delete(registration)
         await self.db.commit()
+        logger.info("Problem registration deleted", registration_id=registration_id)
         return True
 
     async def get_all(
@@ -222,11 +232,10 @@ class ProblemRegistrationService:
         limit: int = 100,
         filters: Optional[ProblemRegistrationFilter] = None,
     ) -> dict:
-        """Список регистраций с total-счётчиком и полной фильтрацией."""
+        logger.debug("Listing problem registrations", skip=skip, limit=limit)
         conditions = []
 
         if filters:
-            # 🔹 ProblemRegistration фильтры
             if filters.subject:
                 conditions.append(ProblemRegistration.subject.ilike(f"%{filters.subject}%"))
             if filters.detected_from:
@@ -251,7 +260,6 @@ class ProblemRegistrationService:
             if filters.comment:
                 conditions.append(ProblemRegistration.comment.ilike(f"%{filters.comment}%"))
 
-            # 🔹 Document фильтры
             if filters.track_id:
                 conditions.append(Document.track_id.ilike(f"%{filters.track_id}%"))
             if filters.doc_created_from:
@@ -268,7 +276,7 @@ class ProblemRegistrationService:
                     stage_val = DocumentStage[filters.doc_current_stage]
                     conditions.append(Document.current_stage == stage_val)
                 except KeyError:
-                    pass  # Игнорируем невалидные названия этапов
+                    pass
             if filters.created_by is not None:
                 conditions.append(Document.created_by == filters.created_by)
             if filters.assigned_to is not None:
@@ -279,7 +287,6 @@ class ProblemRegistrationService:
             if filters.is_locked is not None:
                 conditions.append(Document.is_locked == filters.is_locked)
 
-        # 📦 Базовый запрос с JOIN
         base_query = select(ProblemRegistration, Document).join(
             Document, ProblemRegistration.document_id == Document.id
         ).options(
@@ -290,30 +297,25 @@ class ProblemRegistrationService:
         if conditions:
             base_query = base_query.where(and_(*conditions))
 
-        # 🔢 Подсчёт общего количества
         count_subq = base_query.subquery()
         count_query = select(func.count()).select_from(count_subq)
         count_result = await self.db.execute(count_query)
         total = count_result.scalar_one()
 
-        # ↕️ Сортировка (поддержка полей из обеих таблиц)
         sort_by = filters.sort_by if filters and filters.sort_by else "id"
         sort_order = (filters.sort_order if filters and filters.sort_order else "desc").lower()
 
-        # Пробуем найти поле в ProblemRegistration, если нет — в Document
         sort_col = getattr(ProblemRegistration, sort_by, None) or getattr(Document, sort_by, ProblemRegistration.id)
         order_fn = sort_col.asc if sort_order == "asc" else sort_col.desc
 
         final_query = base_query.order_by(order_fn()).offset(skip).limit(limit)
 
-        # 📤 Выполнение и маппинг
         result = await self.db.execute(final_query)
         rows = result.all()
         items = [self._row_to_response(row) for row in rows]
 
+        logger.info("Problem registrations retrieved", total=total, returned=len(items))
         return {"items": items, "total": total}
-
-    # app/reports/problem_registrations/services/problem_registration.py
 
     def _row_to_response(self, row) -> ProblemRegistrationResponse:
         """Конвертация строки (registration, document) в Response."""
@@ -322,7 +324,6 @@ class ProblemRegistrationService:
         reg, doc = row
         stage = doc.current_stage
 
-        # Нормализуем stage в строку (ваш код без изменений)
         if stage is None:
             stage_str = None
         elif hasattr(stage, 'name'):
@@ -356,68 +357,104 @@ class ProblemRegistrationService:
             action=reg.action.value if hasattr(reg.action, 'value') else reg.action,
             responsible_department_id=reg.responsible_department_id,
             comment=reg.comment,
-            
-            # 🔥 КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: явно передаём имена из загруженных отношений
             location_name=reg.location.name if reg.location else None,
             department_name=reg.responsible_department.name if reg.responsible_department else None,
             created_by=doc.created_by,
         )
-
-    
 
     async def update_response_details(
         self, 
         registration_id: int, 
         request: ProblemRegistration_DetaleUpdate
     ) -> Optional[ProblemRegistrationResponse]:
-        """Обновить дополнительную информацию/обработку регистрации проблемы."""
+        logger.info("Updating registration response details", registration_id=registration_id)
         result = await self.db.execute(
             select(ProblemRegistration).where(ProblemRegistration.id == registration_id)
         )
         registration = result.scalar_one_or_none()
         if not registration:
+            logger.warning("Registration not found for details update", registration_id=registration_id)
             return None
 
         update_data = request.model_dump(exclude_unset=True)
         if update_data:
-            # 1. Нормализуем FK: 0 или пустое значение → None
             if "responsible_department_id" in update_data and not update_data["responsible_department_id"]:
                 update_data["responsible_department_id"] = None
 
-            # 2. (Опционально) Проверка существования department_id
             if update_data.get("responsible_department_id"):
-                from app.knowledge_base.models import Department  # замените на ваш реальный путь
+                from app.knowledge_base.models import Department
                 dept_exists = await self.db.execute(
                     select(func.count()).select_from(Department).where(
                         Department.id == update_data["responsible_department_id"]
                     )
                 )
                 if dept_exists.scalar_one() == 0:
+                    logger.warning("Invalid department_id in details update, ignoring", dept_id=update_data["responsible_department_id"])
                     update_data["responsible_department_id"] = None
 
-            # 3. Безопасное применение полей
             for field, value in update_data.items():
-                # Если action приходит как Enum, а в БД колонка String/Integer
                 if field == "action" and hasattr(value, "value"):
                     value = value.value
                 setattr(registration, field, value)
 
             await self.db.commit()
             await self.db.refresh(registration)
+            logger.info("Registration details updated", registration_id=registration_id)
 
         return await self.get_by_id(registration_id)
-    
 
     async def archive_document(self, doc_id: int, user_id: int) -> ProblemRegistrationResponse:
-        """Архивировать документ и регистрацию."""
+        logger.info("Archiving problem registration document", doc_id=doc_id, user_id=user_id)
         return await self.doc_service.archive(doc_id, user_id)
 
     async def unarchive_document(self, doc_id: int, user_id: int) -> ProblemRegistrationResponse:
-        """Восстановить документ и регистрацию из архива."""
+        logger.info("Unarchiving problem registration document", doc_id=doc_id, user_id=user_id)
         return await self.doc_service.unarchive(doc_id, user_id)
 
     async def assign_user_to_document(self, doc_id: int, user_id: int, current_user_id: int) -> ProblemRegistrationResponse:
-        """Назначить пользователя на документ."""
+        logger.info("Assigning user to document", doc_id=doc_id, assignee_id=user_id, assigned_by=current_user_id)
         return await self.doc_service.assign_to_user(doc_id, user_id, current_user_id)
-    
 
+    async def lock(self, registration_id: int, user_id: int) -> Optional[ProblemRegistrationResponse]:
+        logger.info("Locking problem registration", registration_id=registration_id, user_id=user_id)
+        item = await self.get_by_id(registration_id)
+        if not item:
+            logger.warning("Cannot lock: registration not found", registration_id=registration_id)
+            return None
+
+        if item.is_locked:
+            logger.debug("Registration already locked", registration_id=registration_id)
+            return item
+
+        try:
+            await self.doc_service.lock(item.document_id, user_id=user_id)
+            logger.info("Problem registration locked", registration_id=registration_id)
+            return await self.get_by_id(registration_id)
+        except Exception as e:
+            logger.warning("Lock failed for registration", registration_id=registration_id, error=str(e))
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=str(e)
+            )
+
+    async def unlock(self, registration_id: int, user_id: int) -> Optional[ProblemRegistrationResponse]:
+        logger.info("Unlocking problem registration", registration_id=registration_id, user_id=user_id)
+        item = await self.get_by_id(registration_id)
+        if not item:
+            logger.warning("Cannot unlock: registration not found", registration_id=registration_id)
+            return None
+            
+        if not item.is_locked:
+            logger.debug("Registration already unlocked", registration_id=registration_id)
+            return item
+
+        try:
+            await self.doc_service.unlock(item.document_id, user_id=user_id)
+            logger.info("Problem registration unlocked", registration_id=registration_id)
+            return await self.get_by_id(registration_id)
+        except Exception as e:
+            logger.warning("Unlock failed for registration", registration_id=registration_id, error=str(e))
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=str(e)
+            )

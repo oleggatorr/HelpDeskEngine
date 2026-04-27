@@ -11056,3 +11056,624 @@ current_stage
 2026-04-27 10:44:57 | INFO     | logging:callHandlers:1737 | Started server process [21900]
 2026-04-27 10:44:57 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
 2026-04-27 10:44:57 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:06:35 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:06:35 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:06:35 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:06:35 | INFO     | logging:callHandlers:1737 | Finished server process [21900]
+2026-04-27 11:06:37 | INFO     | logging:callHandlers:1737 | Started server process [19820]
+2026-04-27 11:06:37 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:06:37 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:11:14 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:11:14 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:11:14 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:11:14 | INFO     | logging:callHandlers:1737 | Finished server process [19820]
+2026-04-27 11:11:17 | INFO     | logging:callHandlers:1737 | Started server process [6312]
+2026-04-27 11:11:17 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:11:17 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:12:27 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:12:27 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:12:27 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:12:27 | INFO     | logging:callHandlers:1737 | Finished server process [6312]
+2026-04-27 11:12:29 | INFO     | logging:callHandlers:1737 | Started server process [8936]
+2026-04-27 11:12:29 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:12:29 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:12:39 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:12:39 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:12:39 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:12:39 | INFO     | logging:callHandlers:1737 | Finished server process [8936]
+2026-04-27 11:12:41 | INFO     | logging:callHandlers:1737 | Started server process [3392]
+2026-04-27 11:12:41 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:12:41 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:29:26 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:29:26 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:29:26 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:29:26 | INFO     | logging:callHandlers:1737 | Finished server process [3392]
+2026-04-27 11:29:29 | INFO     | logging:callHandlers:1737 | Started server process [21688]
+2026-04-27 11:29:29 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:29:29 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:37:18 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:37:18 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:37:18 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:37:18 | INFO     | logging:callHandlers:1737 | Finished server process [21688]
+2026-04-27 11:37:20 | INFO     | logging:callHandlers:1737 | Started server process [15636]
+2026-04-27 11:37:20 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:37:20 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:37:58 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:37:58 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:37:58 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:37:58 | INFO     | logging:callHandlers:1737 | Finished server process [15636]
+2026-04-27 11:38:00 | INFO     | logging:callHandlers:1737 | Started server process [13092]
+2026-04-27 11:38:00 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:38:00 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:38:33 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:38:34 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:38:34 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:38:34 | INFO     | logging:callHandlers:1737 | Finished server process [13092]
+2026-04-27 11:38:35 | INFO     | logging:callHandlers:1737 | Started server process [2548]
+2026-04-27 11:38:35 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:38:35 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:40:07 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:40:07 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:40:07 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:40:07 | INFO     | logging:callHandlers:1737 | Finished server process [2548]
+2026-04-27 11:40:09 | INFO     | logging:callHandlers:1737 | Started server process [8464]
+2026-04-27 11:40:09 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:40:09 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:40:31 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:40:31 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:40:31 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:40:31 | INFO     | logging:callHandlers:1737 | Finished server process [8464]
+2026-04-27 11:40:33 | INFO     | logging:callHandlers:1737 | Started server process [14084]
+2026-04-27 11:40:33 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:40:33 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:44:41 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:44:41 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:44:41 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:44:41 | INFO     | logging:callHandlers:1737 | Finished server process [14084]
+2026-04-27 11:46:11 | INFO     | logging:callHandlers:1737 | Started server process [18708]
+2026-04-27 11:46:11 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:46:11 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:50:24 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:50:24 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:50:24 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:50:24 | INFO     | logging:callHandlers:1737 | Finished server process [18708]
+2026-04-27 11:50:26 | INFO     | logging:callHandlers:1737 | Started server process [21628]
+2026-04-27 11:50:26 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:50:26 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:50:26 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:50:26 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:50:26 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:50:26 | INFO     | logging:callHandlers:1737 | Finished server process [21628]
+2026-04-27 11:50:28 | INFO     | logging:callHandlers:1737 | Started server process [23140]
+2026-04-27 11:50:28 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:50:28 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:50:31 | INFO     | logging:callHandlers:1737 | 127.0.0.1:56582 - "GET /docs HTTP/1.1" 200
+2026-04-27 11:50:31 | INFO     | logging:callHandlers:1737 | 127.0.0.1:56582 - "GET /openapi.json HTTP/1.1" 200
+2026-04-27 11:50:40 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57699 - "POST /api/auth/login HTTP/1.1" 200
+2026-04-27 11:51:09 | INFO     | logging:callHandlers:1737 | 127.0.0.1:56646 - "GET /api/reports/pr/problem-registrations?skip=0&limit=100&sort_by=id&sort_order=desc HTTP/1.1" 200
+2026-04-27 11:51:57 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58995 - "GET / HTTP/1.1" 303
+2026-04-27 11:51:58 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58995 - "GET /auth/login-page HTTP/1.1" 200
+2026-04-27 11:51:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58995 - "GET /favicon.ico HTTP/1.1" 404
+2026-04-27 11:52:05 | INFO     | logging:callHandlers:1737 | 127.0.0.1:60528 - "POST /auth/login-page HTTP/1.1" 303
+2026-04-27 11:52:05 | INFO     | logging:callHandlers:1737 | 127.0.0.1:60528 - "GET / HTTP/1.1" 200
+2026-04-27 11:52:11 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51543 - "GET /reports/problem-registrations/create HTTP/1.1" 200
+2026-04-27 11:52:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51543 - "GET /reports/problem-registrations/my HTTP/1.1" 200
+2026-04-27 11:52:17 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51543 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 11:52:20 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: Document is locked
+2026-04-27 11:52:20 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51543 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 500
+2026-04-27 11:52:20 | ERROR    | logging:callHandlers:1737 | Exception in ASGI application
+
+Traceback (most recent call last):
+
+  File "<string>", line 1, in <module>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               │     │   └ 332
+               │     └ 3
+               └ <function _main at 0x00000282F32109E0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\spawn.py", line 135, in _main
+    return self._bootstrap(parent_sentinel)
+           │    │          └ 332
+           │    └ <function BaseProcess._bootstrap at 0x00000282F30DAAE0>
+           └ <SpawnProcess name='SpawnProcess-50' parent=6688 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 320, in _bootstrap
+    self.run()
+    │    └ <function BaseProcess.run at 0x00000282F30D9E80>
+    └ <SpawnProcess name='SpawnProcess-50' parent=6688 started>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\multiprocessing\process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+    │    │        │    │        │    └ {'config': <uvicorn.config.Config object at 0x00000282F55C5BE0>, 'target': <bound method Server.run of <uvicorn.server.Server...
+    │    │        │    │        └ <SpawnProcess name='SpawnProcess-50' parent=6688 started>
+    │    │        │    └ ()
+    │    │        └ <SpawnProcess name='SpawnProcess-50' parent=6688 started>
+    │    └ <function subprocess_started at 0x00000282F550B7F0>
+    └ <SpawnProcess name='SpawnProcess-50' parent=6688 started>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\_subprocess.py", line 80, in subprocess_started
+    target(sockets=sockets)
+    │              └ [<socket.socket fd=384, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+    └ <bound method Server.run of <uvicorn.server.Server object at 0x00000282F55C5D30>>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\server.py", line 75, in run
+    return asyncio_run(self.serve(sockets=sockets), loop_factory=self.config.get_loop_factory())
+           │           │    │             │                      │    │      └ <function Config.get_loop_factory at 0x00000282F54A3740>
+           │           │    │             │                      │    └ <uvicorn.config.Config object at 0x00000282F55C5BE0>
+           │           │    │             │                      └ <uvicorn.server.Server object at 0x00000282F55C5D30>
+           │           │    │             └ [<socket.socket fd=384, family=2, type=1, proto=6, laddr=('0.0.0.0', 7999)>]
+           │           │    └ <function Server.serve at 0x00000282F54FACF0>
+           │           └ <uvicorn.server.Server object at 0x00000282F55C5D30>
+           └ <function run at 0x00000282F3ADFB60>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 204, in run
+    return runner.run(main)
+           │      │   └ <coroutine object Server.serve at 0x00000282F5675030>
+           │      └ <function Runner.run at 0x00000282F3AF8040>
+           └ <asyncio.runners.Runner object at 0x00000282F55C6BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<Server.serve() running at c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packa...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x00000282F3ADC510>
+           │    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x00000282F55C6BA0>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 706, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x00000282F3ADC460>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 677, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x00000282F3ADE560>
+    └ <_WindowsSelectorEventLoop running=True closed=False debug=False>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 2046, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x00000282F3852B90>
+    └ <Handle Task.task_wakeup()>
+  File "C:\Users\gw07014942\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+> File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 416, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+                   └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x00000282FB092120>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+                 │    │   │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x00000282F9...
+                 │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000028...
+                 │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+                 │    └ <fastapi.applications.FastAPI object at 0x00000282F9BC3A10>
+                 └ <uvicorn.middleware.proxy_headers.ProxyHeadersMiddleware object at 0x00000282FB092120>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\applications.py", line 1160, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x00000282F9...
+                           │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000028...
+                           └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\applications.py", line 107, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <bound method RequestResponseCycle.send of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x00000282F9...
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000028...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x00000282FB092CF0>
+          └ <fastapi.applications.FastAPI object at 0x00000282F9BC3A10>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 186, in __call__
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x00000282FB193060>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000028...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x00000282FB092BA0>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x00000282FB092CF0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x00000282FB193060>
+          │                            │    │    │     │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000028...
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    │    └ <starlette.requests.Request object at 0x00000282FB133800>
+          │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x00000282FB092A50>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x00000282FB092BA0>
+          └ <function wrap_app_handling_exceptions at 0x00000282F6781C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000282FB133B60>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000028...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x00000282FB092A50>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000282FB133B60>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000028...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <fastapi.routing.APIRouter object at 0x00000282F99AA6C0>
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x00000282FB092A50>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 716, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000282FB133B60>
+          │    │                │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000028...
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x00000282F99AA6C0>>
+          └ <fastapi.routing.APIRouter object at 0x00000282F99AA6C0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 736, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000282FB133B60>
+          │     │      │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000028...
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │     └ <function Route.handle at 0x00000282F67AC930>
+          └ APIRoute(path='/reports/problem-registrations/{registration_id}/unlock', name='unlock_problem_registration', methods=['POST'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\routing.py", line 290, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000282FB133B60>
+          │    │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000028...
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │    └ <function request_response.<locals>.app at 0x00000282F9D2F7F0>
+          └ APIRoute(path='/reports/problem-registrations/{registration_id}/unlock', name='unlock_problem_registration', methods=['POST'])
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 130, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000282FB133B60>
+          │                            │    │        │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000028...
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          │                            │    └ <starlette.requests.Request object at 0x00000282FB130730>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x00000282FB130510>
+          └ <function wrap_app_handling_exceptions at 0x00000282F6781C70>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000282FB8BB110>
+          │   │      └ <bound method RequestResponseCycle.receive of <uvicorn.protocols.http.httptools_impl.RequestResponseCycle object at 0x0000028...
+          │   └ {'type': 'http', 'asgi': {'version': '3.0', 'spec_version': '2.3'}, 'http_version': '1.1', 'server': ('127.0.0.1', 7999), 'cl...
+          └ <function request_response.<locals>.app.<locals>.app at 0x00000282FB130510>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 116, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x00000282FB130730>
+                     └ <function get_request_handler.<locals>.app at 0x00000282F9D2F690>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 670, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x00000282F67B5BC0>
+  File "c:\Users\gw07014942\Projects\help_desk_engine\venv\Lib\site-packages\fastapi\routing.py", line 324, in run_endpoint_function
+    return await dependant.call(**values)
+                 │         │      └ {'db': <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x00000282FB881050>, 'registration_id': 6, 'request': <starlett...
+                 │         └ <function unlock_problem_registration at 0x00000282F96CE350>
+                 └ Dependant(path_params=[ModelField(field_info=Path(PydanticUndefined), name='registration_id', mode='validation', config=None)...
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\problem_registrations\pr_routes_jinja.py", line 697, in unlock_problem_registration
+    await service.unconfirm(registration_id, user_id=current_user.id)
+          │       │         │                        │            └ 1
+          │       │         │                        └ UserResponse(id=1, login='admin', full_name='Administrator', email='admin@helpdesk.local', is_active=True, created_at=datetim...
+          │       │         └ 6
+          │       └ <function PublicProblemRegistrationService.unconfirm at 0x00000282F9641BC0>
+          └ <app.reports.problem_registrations.pr_public_services.PublicProblemRegistrationService object at 0x00000282FB887100>
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\problem_registrations\pr_public_services.py", line 98, in unconfirm
+    return await self._service.unlock(registration_id, user_id)
+                 │    │        │      │                └ 1
+                 │    │        │      └ 6
+                 │    │        └ <function ProblemRegistrationService.unlock at 0x00000282F9640F60>
+                 │    └ <app.reports.problem_registrations.pr_service.ProblemRegistrationService object at 0x00000282FB8868B0>
+                 └ <app.reports.problem_registrations.pr_public_services.PublicProblemRegistrationService object at 0x00000282FB887100>
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\problem_registrations\pr_service.py", line 443, in unlock
+    await self.doc_service.unlock(item.document_id, user_id=user_id)
+          │    │           │      │    │                    └ 1
+          │    │           │      │    └ 51
+          │    │           │      └ ProblemRegistrationResponse(id=6, document_id=51, track_id='QQZ-N84-91OB', doc_created_at=datetime.datetime(2026, 4, 15, 13, ...
+          │    │           └ <function PublicDocumentService.unlock at 0x00000282F955EF00>
+          │    └ <app.reports.documents.document_public_service.PublicDocumentService object at 0x00000282FB887490>
+          └ <app.reports.problem_registrations.pr_service.ProblemRegistrationService object at 0x00000282FB8868B0>
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\documents\document_public_service.py", line 193, in unlock
+    return await self._service.update(doc_id, self._update_payload(is_locked=False), user_id)
+                 │    │        │      │       │    │                                 └ 1
+                 │    │        │      │       │    └ <function PublicDocumentService._update_payload at 0x00000282F955E6C0>
+                 │    │        │      │       └ <app.reports.documents.document_public_service.PublicDocumentService object at 0x00000282FB887490>
+                 │    │        │      └ 51
+                 │    │        └ <function DocumentService.update at 0x00000282F94B2CF0>
+                 │    └ <app.reports.documents.document_service.DocumentService object at 0x00000282FB887820>
+                 └ <app.reports.documents.document_public_service.PublicDocumentService object at 0x00000282FB887490>
+
+  File "C:\Users\gw07014942\Projects\help_desk_engine\app\reports\documents\document_service.py", line 260, in update
+    raise ValueError("Document is locked")
+
+ValueError: Document is locked
+2026-04-27 11:57:13 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:57:13 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:57:13 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:57:13 | INFO     | logging:callHandlers:1737 | Finished server process [23140]
+2026-04-27 11:57:15 | INFO     | logging:callHandlers:1737 | Started server process [16564]
+2026-04-27 11:57:15 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:57:15 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:57:23 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51199 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 11:57:25 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: 409: Document is locked
+2026-04-27 11:57:25 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51199 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 409
+2026-04-27 11:57:36 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: 409: Document is locked
+2026-04-27 11:57:36 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65072 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 409
+2026-04-27 11:57:39 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: 409: Document is locked
+2026-04-27 11:57:39 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65072 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 409
+2026-04-27 11:59:34 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:59:34 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:59:34 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:59:34 | INFO     | logging:callHandlers:1737 | Finished server process [16564]
+2026-04-27 11:59:36 | INFO     | logging:callHandlers:1737 | Started server process [3696]
+2026-04-27 11:59:36 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:59:36 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 11:59:38 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: 409: Document is locked
+2026-04-27 11:59:38 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62774 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 409
+2026-04-27 11:59:44 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 11:59:44 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 11:59:44 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 11:59:44 | INFO     | logging:callHandlers:1737 | Finished server process [3696]
+2026-04-27 11:59:46 | INFO     | logging:callHandlers:1737 | Started server process [20728]
+2026-04-27 11:59:46 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 11:59:46 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:01:42 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:01:42 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:01:42 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:01:42 | INFO     | logging:callHandlers:1737 | Finished server process [20728]
+2026-04-27 12:01:44 | INFO     | logging:callHandlers:1737 | Started server process [9532]
+2026-04-27 12:01:44 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:01:44 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:01:44 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: 409: Document is locked
+2026-04-27 12:01:44 | INFO     | logging:callHandlers:1737 | 127.0.0.1:52145 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 409
+2026-04-27 12:01:57 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:01:57 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:01:57 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:01:57 | INFO     | logging:callHandlers:1737 | Finished server process [9532]
+2026-04-27 12:02:02 | INFO     | logging:callHandlers:1737 | Started server process [13216]
+2026-04-27 12:02:02 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:02:02 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:02:05 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: 409: Document is locked
+2026-04-27 12:02:05 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51018 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 409
+2026-04-27 12:02:19 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:02:19 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:02:19 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:02:19 | INFO     | logging:callHandlers:1737 | Finished server process [13216]
+2026-04-27 12:02:21 | INFO     | logging:callHandlers:1737 | Started server process [10996]
+2026-04-27 12:02:21 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:02:21 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:09:27 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:09:27 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:09:27 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:09:27 | INFO     | logging:callHandlers:1737 | Finished server process [10996]
+2026-04-27 12:09:29 | INFO     | logging:callHandlers:1737 | Started server process [5184]
+2026-04-27 12:09:29 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:09:29 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:09:38 | INFO     | app.reports.documents.document_public_service:unlock:213 | Unlocking document
+2026-04-27 12:09:38 | ERROR    | logging:callHandlers:1737 | ❌ Transaction rolled back: 409: Document is locked
+2026-04-27 12:09:38 | INFO     | logging:callHandlers:1737 | 127.0.0.1:51099 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 409
+2026-04-27 12:11:29 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:11:29 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:11:29 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:11:29 | INFO     | logging:callHandlers:1737 | Finished server process [5184]
+2026-04-27 12:11:31 | INFO     | logging:callHandlers:1737 | Started server process [23020]
+2026-04-27 12:11:31 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:11:31 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:18:08 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:18:09 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:18:09 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:18:09 | INFO     | logging:callHandlers:1737 | Finished server process [23020]
+2026-04-27 12:18:11 | INFO     | logging:callHandlers:1737 | Started server process [5788]
+2026-04-27 12:18:11 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:18:11 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:18:15 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:18:15 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:18:15 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:18:15 | INFO     | logging:callHandlers:1737 | Finished server process [5788]
+2026-04-27 12:18:17 | INFO     | logging:callHandlers:1737 | Started server process [3044]
+2026-04-27 12:18:17 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:18:17 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:18:20 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57327 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:18:21 | INFO     | app.reports.documents.document_public_service:unlock:215 | Unlocking document
+2026-04-27 12:18:21 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57327 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 303
+2026-04-27 12:18:21 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57327 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:18:24 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57327 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:18:25 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57327 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:18:27 | INFO     | app.reports.documents.document_public_service:unlock:215 | Unlocking document
+2026-04-27 12:18:27 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57327 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 303
+2026-04-27 12:18:27 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57327 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:18:29 | INFO     | app.reports.documents.document_public_service:unlock:215 | Unlocking document
+2026-04-27 12:18:29 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57327 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 303
+2026-04-27 12:18:29 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57327 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:18:32 | INFO     | app.reports.documents.document_public_service:unlock:215 | Unlocking document
+2026-04-27 12:18:32 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57327 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 303
+2026-04-27 12:18:33 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57327 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:18:34 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57327 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:19:11 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55522 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:19:11 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55522 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:19:11 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55522 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:19:11 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55522 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:19:12 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55522 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:19:12 | INFO     | logging:callHandlers:1737 | 127.0.0.1:55522 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:19:34 | INFO     | app.reports.documents.document_public_service:unlock:215 | Unlocking document
+2026-04-27 12:19:34 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58537 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 303
+2026-04-27 12:19:34 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58537 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:20:34 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:20:34 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:20:34 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:20:34 | INFO     | logging:callHandlers:1737 | Finished server process [3044]
+2026-04-27 12:20:36 | INFO     | logging:callHandlers:1737 | Started server process [9380]
+2026-04-27 12:20:36 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:20:36 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:20:41 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53583 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:20:43 | INFO     | app.reports.problem_registrations.pr_service:unlock:441 | Unlocking problem registration
+2026-04-27 12:20:43 | INFO     | app.reports.documents.document_public_service:unlock:215 | Unlocking document
+2026-04-27 12:20:43 | INFO     | app.reports.problem_registrations.pr_service:unlock:453 | Problem registration unlocked
+2026-04-27 12:20:43 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53583 - "POST /reports/problem-registrations/6/unlock HTTP/1.1" 303
+2026-04-27 12:20:43 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53583 - "GET /reports/problem-registrations/6 HTTP/1.1" 200
+2026-04-27 12:24:00 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:24:00 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:24:00 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:24:00 | INFO     | logging:callHandlers:1737 | Finished server process [9380]
+2026-04-27 12:24:03 | INFO     | logging:callHandlers:1737 | Started server process [2124]
+2026-04-27 12:24:03 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:24:03 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:24:12 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:24:12 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:24:12 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:24:12 | INFO     | logging:callHandlers:1737 | Finished server process [2124]
+2026-04-27 12:24:14 | INFO     | logging:callHandlers:1737 | Started server process [21964]
+2026-04-27 12:24:14 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:24:14 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:24:16 | INFO     | logging:callHandlers:1737 | 127.0.0.1:60755 - "GET /reports/problem-registrations/6 HTTP/1.1" 303
+2026-04-27 12:24:16 | INFO     | logging:callHandlers:1737 | 127.0.0.1:60755 - "GET /auth/login-page HTTP/1.1" 200
+2026-04-27 12:24:21 | INFO     | logging:callHandlers:1737 | 127.0.0.1:60755 - "POST /auth/login-page HTTP/1.1" 303
+2026-04-27 12:24:21 | INFO     | logging:callHandlers:1737 | 127.0.0.1:60755 - "GET / HTTP/1.1" 200
+2026-04-27 12:24:25 | INFO     | app.reports.problem_registrations.pr_service:get_all:317 | Problem registrations retrieved
+2026-04-27 12:24:25 | INFO     | logging:callHandlers:1737 | 127.0.0.1:60755 - "GET /reports/problem-registrations/my HTTP/1.1" 200
+2026-04-27 12:24:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:60755 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 12:24:29 | INFO     | logging:callHandlers:1737 | 127.0.0.1:60755 - "GET /reports/problem-registrations/11/edit-details HTTP/1.1" 200
+2026-04-27 12:24:35 | INFO     | app.reports.problem_registrations.pr_public_services:update_detale:257 | Updating registration details
+2026-04-27 12:24:35 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:370 | Updating registration response details
+2026-04-27 12:24:35 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:402 | Registration details updated
+2026-04-27 12:24:35 | INFO     | app.reports.problem_registrations.pr_public_services:update:79 | Updating registration
+2026-04-27 12:24:35 | INFO     | app.reports.problem_registrations.pr_service:update:173 | Updating problem registration
+2026-04-27 12:24:35 | INFO     | app.reports.problem_registrations.pr_public_services:update:110 | Registration updated successfully
+2026-04-27 12:24:35 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65417 - "POST /reports/problem-registrations/11/edit-details HTTP/1.1" 303
+2026-04-27 12:24:35 | INFO     | app.reports.problem_registrations.pr_public_services:confirm:115 | Confirming (locking) registration
+2026-04-27 12:24:35 | INFO     | app.reports.problem_registrations.pr_service:lock:419 | Locking problem registration
+2026-04-27 12:24:35 | INFO     | app.reports.documents.document_public_service:lock:209 | Locking document
+2026-04-27 12:24:36 | INFO     | app.reports.problem_registrations.pr_service:lock:431 | Problem registration locked
+2026-04-27 12:24:36 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65417 - "GET /reports/problem-registrations/11/confirm HTTP/1.1" 303
+2026-04-27 12:24:36 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65417 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 12:24:39 | INFO     | logging:callHandlers:1737 | 127.0.0.1:65417 - "GET /reports/problem-registrations/11/edit-details HTTP/1.1" 200
+2026-04-27 12:24:44 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53790 - "GET /reports/problem-registrations/11/edit-details HTTP/1.1" 200
+2026-04-27 12:24:45 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53790 - "GET /reports/problem-registrations/11/edit-details HTTP/1.1" 200
+2026-04-27 12:24:46 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53790 - "GET /reports/problem-registrations/11/edit-details HTTP/1.1" 200
+2026-04-27 12:24:51 | INFO     | app.reports.problem_registrations.pr_public_services:update_detale:257 | Updating registration details
+2026-04-27 12:24:51 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:370 | Updating registration response details
+2026-04-27 12:24:51 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:402 | Registration details updated
+2026-04-27 12:24:51 | INFO     | app.reports.problem_registrations.pr_public_services:update:79 | Updating registration
+2026-04-27 12:24:51 | INFO     | app.reports.problem_registrations.pr_service:update:173 | Updating problem registration
+2026-04-27 12:24:51 | INFO     | app.reports.problem_registrations.pr_public_services:update:110 | Registration updated successfully
+2026-04-27 12:24:51 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62352 - "POST /reports/problem-registrations/11/edit-details HTTP/1.1" 303
+2026-04-27 12:24:51 | INFO     | app.reports.problem_registrations.pr_public_services:confirm:115 | Confirming (locking) registration
+2026-04-27 12:24:51 | INFO     | app.reports.problem_registrations.pr_service:lock:419 | Locking problem registration
+2026-04-27 12:24:51 | INFO     | app.reports.documents.document_public_service:lock:209 | Locking document
+2026-04-27 12:24:51 | INFO     | app.reports.problem_registrations.pr_service:lock:431 | Problem registration locked
+2026-04-27 12:24:51 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62352 - "GET /reports/problem-registrations/11/confirm HTTP/1.1" 303
+2026-04-27 12:24:51 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62352 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 12:24:57 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62233 - "GET /reports/problem-registrations/11/edit-details HTTP/1.1" 200
+2026-04-27 12:24:59 | INFO     | app.reports.problem_registrations.pr_public_services:update_detale:257 | Updating registration details
+2026-04-27 12:24:59 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:370 | Updating registration response details
+2026-04-27 12:24:59 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:402 | Registration details updated
+2026-04-27 12:24:59 | INFO     | app.reports.problem_registrations.pr_public_services:update:79 | Updating registration
+2026-04-27 12:24:59 | INFO     | app.reports.problem_registrations.pr_service:update:173 | Updating problem registration
+2026-04-27 12:24:59 | INFO     | app.reports.problem_registrations.pr_public_services:update:110 | Registration updated successfully
+2026-04-27 12:24:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62233 - "POST /reports/problem-registrations/11/edit-details HTTP/1.1" 303
+2026-04-27 12:24:59 | INFO     | app.reports.problem_registrations.pr_public_services:confirm:115 | Confirming (locking) registration
+2026-04-27 12:24:59 | INFO     | app.reports.problem_registrations.pr_service:lock:419 | Locking problem registration
+2026-04-27 12:24:59 | INFO     | app.reports.documents.document_public_service:lock:209 | Locking document
+2026-04-27 12:24:59 | INFO     | app.reports.problem_registrations.pr_service:lock:431 | Problem registration locked
+2026-04-27 12:24:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62233 - "GET /reports/problem-registrations/11/confirm HTTP/1.1" 303
+2026-04-27 12:24:59 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62233 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 12:25:06 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:25:06 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:25:06 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:25:06 | INFO     | logging:callHandlers:1737 | Finished server process [21964]
+2026-04-27 12:25:14 | INFO     | logging:callHandlers:1737 | Started server process [13708]
+2026-04-27 12:25:14 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:25:14 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:25:18 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57813 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 12:25:33 | INFO     | logging:callHandlers:1737 | 127.0.0.1:60315 - "GET /reports/problem-registrations/11/edit-details HTTP/1.1" 200
+2026-04-27 12:25:41 | INFO     | app.reports.problem_registrations.pr_public_services:update_detale:257 | Updating registration details
+2026-04-27 12:25:41 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:370 | Updating registration response details
+2026-04-27 12:25:41 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:402 | Registration details updated
+2026-04-27 12:25:41 | INFO     | app.reports.problem_registrations.pr_public_services:update:79 | Updating registration
+2026-04-27 12:25:41 | INFO     | app.reports.problem_registrations.pr_service:update:173 | Updating problem registration
+2026-04-27 12:25:41 | INFO     | app.reports.problem_registrations.pr_public_services:update:110 | Registration updated successfully
+2026-04-27 12:25:41 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64898 - "POST /reports/problem-registrations/11/edit-details HTTP/1.1" 303
+2026-04-27 12:25:41 | INFO     | app.reports.problem_registrations.pr_public_services:confirm:115 | Confirming (locking) registration
+2026-04-27 12:25:41 | INFO     | app.reports.problem_registrations.pr_service:lock:419 | Locking problem registration
+2026-04-27 12:25:41 | INFO     | app.reports.documents.document_public_service:lock:209 | Locking document
+2026-04-27 12:25:41 | INFO     | app.reports.problem_registrations.pr_service:lock:431 | Problem registration locked
+2026-04-27 12:25:41 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64898 - "GET /reports/problem-registrations/11/confirm HTTP/1.1" 303
+2026-04-27 12:25:41 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64898 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 12:26:42 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53718 - "GET /reports/problem-registrations/11/edit-details HTTP/1.1" 200
+2026-04-27 12:26:44 | INFO     | app.reports.problem_registrations.pr_public_services:update_detale:257 | Updating registration details
+2026-04-27 12:26:44 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:370 | Updating registration response details
+2026-04-27 12:26:44 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:402 | Registration details updated
+2026-04-27 12:26:44 | INFO     | app.reports.problem_registrations.pr_public_services:update:79 | Updating registration
+2026-04-27 12:26:44 | INFO     | app.reports.problem_registrations.pr_service:update:173 | Updating problem registration
+2026-04-27 12:26:44 | INFO     | app.reports.problem_registrations.pr_public_services:update:110 | Registration updated successfully
+2026-04-27 12:26:44 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53718 - "POST /reports/problem-registrations/11/edit-details HTTP/1.1" 303
+2026-04-27 12:26:44 | INFO     | app.reports.problem_registrations.pr_public_services:confirm:115 | Confirming (locking) registration
+2026-04-27 12:26:44 | INFO     | app.reports.problem_registrations.pr_service:lock:419 | Locking problem registration
+2026-04-27 12:26:44 | INFO     | app.reports.documents.document_public_service:lock:209 | Locking document
+2026-04-27 12:26:44 | INFO     | app.reports.problem_registrations.pr_service:lock:431 | Problem registration locked
+2026-04-27 12:26:44 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53718 - "GET /reports/problem-registrations/11/confirm HTTP/1.1" 303
+2026-04-27 12:26:44 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53718 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 12:27:43 | INFO     | logging:callHandlers:1737 | 127.0.0.1:63761 - "GET /reports/problem-registrations/11/edit-details HTTP/1.1" 200
+2026-04-27 12:27:45 | INFO     | app.reports.problem_registrations.pr_public_services:update_detale:257 | Updating registration details
+2026-04-27 12:27:45 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:370 | Updating registration response details
+2026-04-27 12:27:45 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:402 | Registration details updated
+2026-04-27 12:27:45 | INFO     | app.reports.problem_registrations.pr_public_services:update:79 | Updating registration
+2026-04-27 12:27:45 | INFO     | app.reports.problem_registrations.pr_service:update:173 | Updating problem registration
+2026-04-27 12:27:45 | INFO     | app.reports.problem_registrations.pr_public_services:update:110 | Registration updated successfully
+2026-04-27 12:27:45 | INFO     | logging:callHandlers:1737 | 127.0.0.1:63761 - "POST /reports/problem-registrations/11/edit-details HTTP/1.1" 303
+2026-04-27 12:27:45 | INFO     | app.reports.problem_registrations.pr_public_services:confirm:115 | Confirming (locking) registration
+2026-04-27 12:27:45 | INFO     | app.reports.problem_registrations.pr_service:lock:419 | Locking problem registration
+2026-04-27 12:27:45 | INFO     | app.reports.documents.document_public_service:lock:209 | Locking document
+2026-04-27 12:27:45 | INFO     | app.reports.problem_registrations.pr_service:lock:431 | Problem registration locked
+2026-04-27 12:27:45 | INFO     | logging:callHandlers:1737 | 127.0.0.1:63761 - "GET /reports/problem-registrations/11/confirm HTTP/1.1" 303
+2026-04-27 12:27:45 | INFO     | logging:callHandlers:1737 | 127.0.0.1:63761 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 12:32:14 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:32:14 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:32:14 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:32:14 | INFO     | logging:callHandlers:1737 | Finished server process [13708]
+2026-04-27 12:33:58 | INFO     | logging:callHandlers:1737 | Started server process [23524]
+2026-04-27 12:33:58 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:33:58 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:34:11 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:34:11 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:34:11 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:34:11 | INFO     | logging:callHandlers:1737 | Finished server process [23524]
+2026-04-27 12:34:13 | INFO     | logging:callHandlers:1737 | Started server process [22984]
+2026-04-27 12:34:13 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:34:13 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:34:18 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:34:18 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:34:18 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:34:18 | INFO     | logging:callHandlers:1737 | Finished server process [22984]
+2026-04-27 12:34:20 | INFO     | logging:callHandlers:1737 | Started server process [22396]
+2026-04-27 12:34:20 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:34:20 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:34:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:58500 - "GET /reports/problem-registrations/11/edit-details HTTP/1.1" 200
+2026-04-27 12:34:33 | INFO     | app.reports.problem_registrations.pr_public_services:update_detale:257 | Updating registration details
+2026-04-27 12:34:33 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:370 | Updating registration response details
+2026-04-27 12:34:33 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:402 | Registration details updated
+2026-04-27 12:34:33 | INFO     | app.reports.problem_registrations.pr_public_services:update:79 | Updating registration
+2026-04-27 12:34:33 | INFO     | app.reports.problem_registrations.pr_service:update:173 | Updating problem registration
+2026-04-27 12:34:33 | INFO     | app.reports.problem_registrations.pr_public_services:update:110 | Registration updated successfully
+2026-04-27 12:34:33 | INFO     | logging:callHandlers:1737 | 127.0.0.1:54203 - "POST /reports/problem-registrations/11/edit-details HTTP/1.1" 303
+2026-04-27 12:34:33 | INFO     | app.reports.problem_registrations.pr_public_services:confirm:115 | Confirming (locking) registration
+2026-04-27 12:34:33 | INFO     | app.reports.problem_registrations.pr_service:lock:419 | Locking problem registration
+2026-04-27 12:34:33 | INFO     | app.reports.documents.document_public_service:lock:209 | Locking document
+2026-04-27 12:34:33 | INFO     | app.reports.documents.document_service:lock:401 | Locking document
+2026-04-27 12:34:33 | INFO     | app.reports.documents.document_service:lock:406 | Document locked
+2026-04-27 12:34:33 | INFO     | app.reports.problem_registrations.pr_service:lock:431 | Problem registration locked
+2026-04-27 12:34:33 | INFO     | logging:callHandlers:1737 | 127.0.0.1:54203 - "GET /reports/problem-registrations/11/confirm HTTP/1.1" 303
+2026-04-27 12:34:33 | INFO     | logging:callHandlers:1737 | 127.0.0.1:54203 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 12:44:55 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 12:44:55 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 12:44:55 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 12:44:55 | INFO     | logging:callHandlers:1737 | Finished server process [22396]
+2026-04-27 12:44:57 | INFO     | logging:callHandlers:1737 | Started server process [22380]
+2026-04-27 12:44:57 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-27 12:44:57 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-27 12:45:03 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53580 - "GET /reports/problem-registrations/11 HTTP/1.1" 200
+2026-04-27 12:45:05 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53580 - "GET /reports/problem-registrations/11/edit-details HTTP/1.1" 200
+2026-04-27 12:45:07 | INFO     | app.reports.problem_registrations.pr_public_services:update_detale:257 | Updating registration details
+2026-04-27 12:45:07 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:370 | Updating registration response details
+2026-04-27 12:45:07 | INFO     | app.reports.problem_registrations.pr_service:update_response_details:402 | Registration details updated
+2026-04-27 12:45:07 | INFO     | app.reports.problem_registrations.pr_public_services:update:79 | Updating registration
+2026-04-27 12:45:07 | INFO     | app.reports.problem_registrations.pr_service:update:173 | Updating problem registration
+2026-04-27 12:45:07 | INFO     | app.reports.problem_registrations.pr_public_services:update:110 | Registration updated successfully
+2026-04-27 12:45:07 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53580 - "POST /reports/problem-registrations/11/edit-details HTTP/1.1" 303
+2026-04-27 12:45:07 | INFO     | app.reports.problem_registrations.pr_public_services:confirm:115 | Confirming (locking) registration
+2026-04-27 12:45:07 | INFO     | app.reports.problem_registrations.pr_service:lock:419 | Locking problem registration
+2026-04-27 12:45:07 | INFO     | app.reports.documents.document_public_service:lock:209 | Locking document
+2026-04-27 12:45:07 | INFO     | app.reports.documents.document_service:lock:401 | Locking document
+2026-04-27 12:45:07 | INFO     | app.reports.documents.document_service:lock:407 | Document locked
+2026-04-27 12:45:07 | INFO     | app.reports.problem_registrations.pr_service:lock:431 | Problem registration locked
+2026-04-27 12:45:07 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53580 - "GET /reports/problem-registrations/11/confirm HTTP/1.1" 303
+2026-04-27 12:45:07 | INFO     | logging:callHandlers:1737 | 127.0.0.1:53580 - "GET /reports/problem-registrations/11 HTTP/1.1" 200

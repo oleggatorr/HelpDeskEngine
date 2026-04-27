@@ -3,6 +3,7 @@ from datetime import datetime
 
 from sqlalchemy import select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
+from loguru import logger
 
 from app.reports.models import (
     Document,
@@ -24,10 +25,12 @@ from app.reports.documents.document_models import DocumentStage, DocumentLanguag
 class DocumentService:
     def __init__(self, db: AsyncSession):
         self.db = db
+        logger.debug("DocumentService initialized")
 
     # ===================== HELPERS =====================
 
     async def _exists(self, model, condition) -> bool:
+        logger.debug("Checking entity existence", model=model.__name__)
         result = await self.db.execute(
             select(func.count()).select_from(model).where(condition)
         )
@@ -41,16 +44,17 @@ class DocumentService:
         if value is None:
             return None
         if isinstance(value, enum_class):
-            return value.value  # ← ✅ Возвращаем примитив: "open" или 1
-        # Если уже примитив (строка/число) — возвращаем как есть
+            return value.value
         return value
 
     async def _get_or_fail(self, doc_id: int) -> Document:
+        logger.debug("Fetching document for mutation", doc_id=doc_id)
         result = await self.db.execute(
             select(Document).where(Document.id == doc_id)
         )
         doc = result.scalar_one_or_none()
         if not doc:
+            logger.warning("Document not found for operation", doc_id=doc_id)
             raise ValueError(f"Document {doc_id} not found")
         return doc
 
@@ -80,6 +84,7 @@ class DocumentService:
     async def create(self, request: DocumentCreate) -> DocumentResponse:
         from app.auth.models import User
 
+        logger.info("Creating document", track_id=request.track_id or "auto-generated")
         track_id = request.track_id or generate_track_id()
 
         # doc_type
@@ -89,8 +94,11 @@ class DocumentService:
                 select(DocumentType.id).where(DocumentType.code == "Empty")
             )
             doc_type_id = result.scalar_one_or_none()
+            if not doc_type_id:
+                logger.warning("Default DocumentType 'Empty' not found")
         else:
             if not await self._exists(DocumentType, DocumentType.id == doc_type_id):
+                logger.warning("Invalid doc_type_id provided, ignoring", doc_type_id=doc_type_id)
                 doc_type_id = None
 
         # created_by
@@ -98,6 +106,8 @@ class DocumentService:
         if request.created_by:
             if await self._exists(User, User.id == request.created_by):
                 created_by = request.created_by
+            else:
+                logger.warning("Invalid created_by user ID, ignoring", user_id=request.created_by)
 
         doc = Document(
             track_id=track_id,
@@ -128,6 +138,7 @@ class DocumentService:
                         uploaded_by=created_by,
                     )
                 )
+            logger.debug("Attachments added to document", count=len(request.attachment_files))
 
         await self._log(
             doc.id,
@@ -138,18 +149,23 @@ class DocumentService:
 
         # ❌ commit() делает get_db, не сервис
         await self.db.refresh(doc)
+        logger.info("Document created successfully", doc_id=doc.id, track_id=doc.track_id)
         return DocumentResponse.model_validate(doc)
 
     # ===================== READ =====================
 
     async def get_by_id(self, doc_id: int) -> Optional[DocumentResponse]:
+        logger.debug("Fetching document by ID", doc_id=doc_id)
         result = await self.db.execute(
             select(Document).where(Document.id == doc_id)
         )
         doc = result.scalar_one_or_none()
+        if not doc:
+            logger.debug("Document not found", doc_id=doc_id)
         return DocumentResponse.model_validate(doc) if doc else None
 
     async def get_by_track_id(self, track_id: str) -> Optional[DocumentResponse]:
+        logger.debug("Fetching document by track_id", track_id=track_id)
         result = await self.db.execute(
             select(Document).where(Document.track_id == track_id)
         )
@@ -165,6 +181,7 @@ class DocumentService:
         current_stage: Optional[DocumentStage] = None,
         created_by: Optional[int] = None,
     ) -> DocumentListResponse:
+        logger.debug("Fetching all documents (legacy method)", skip=skip, limit=limit)
         return await self.list_filtered(
             skip=skip,
             limit=limit,
@@ -194,6 +211,7 @@ class DocumentService:
         sort_by: str = "id",
         sort_order: str = "desc",
     ) -> DocumentListResponse:
+        logger.debug("Listing filtered documents", skip=skip, limit=limit, sort_by=sort_by)
 
         conditions = []
 
@@ -244,6 +262,7 @@ class DocumentService:
         result = await self.db.execute(query)
         docs = result.scalars().all()
 
+        logger.info("Document list retrieved", total=total, returned=len(docs))
         return DocumentListResponse(
             documents=[DocumentResponse.model_validate(d) for d in docs],
             total=total,
@@ -254,15 +273,19 @@ class DocumentService:
     async def update(self, doc_id: int, request, user_id: int) -> DocumentResponse:
         from app.auth.models import User
 
+        logger.info("Updating document", doc_id=doc_id, user_id=user_id)
         doc = await self._get_or_fail(doc_id)
 
         if doc.is_locked:
+            logger.warning("Update blocked: document is locked", doc_id=doc_id)
             raise ValueError("Document is locked")
 
         update_data = request.model_dump(exclude_unset=True)
+        logger.debug("Update payload received", fields=list(update_data.keys()))
 
         if "assigned_to" in update_data and update_data["assigned_to"]:
             if not await self._exists(User, User.id == update_data["assigned_to"]):
+                logger.warning("Invalid user for assignment, ignoring", user_id=update_data["assigned_to"])
                 raise ValueError(f"User {update_data['assigned_to']} not found")
 
         enum_fields = {
@@ -289,12 +312,13 @@ class DocumentService:
         )
 
         await self.db.refresh(doc)
+        logger.info("Document updated successfully", doc_id=doc_id)
         return DocumentResponse.model_validate(doc)
 
     async def update_stage(
         self, doc_id: int, stage: DocumentStage, user_id: int
     ) -> DocumentResponse:
-
+        logger.info("Updating document stage", doc_id=doc_id, new_stage=stage, user_id=user_id)
         doc = await self._get_or_fail(doc_id)
 
         old_stage = str(doc.current_stage)
@@ -312,14 +336,17 @@ class DocumentService:
         )
 
         await self.db.refresh(doc)
+        logger.info("Document stage updated", doc_id=doc_id)
         return DocumentResponse.model_validate(doc)
 
     # ===================== DELETE =====================
 
     async def delete(self, doc_id: int) -> bool:
+        logger.info("Deleting document", doc_id=doc_id)
         doc = await self._get_or_fail(doc_id)
         await self.db.delete(doc)
         # ❌ commit() делает get_db, не сервис
+        logger.info("Document marked for deletion", doc_id=doc_id)
         return True
 
     # ===================== EXTRA =====================
@@ -329,7 +356,9 @@ class DocumentService:
     ) -> DocumentResponse:
         from app.auth.models import User
 
+        logger.info("Assigning user to document", doc_id=doc_id, user_id=user_id_to_assign, assigned_by=current_user_id)
         if not await self._exists(User, User.id == user_id_to_assign):
+            logger.warning("Cannot assign: user not found", user_id=user_id_to_assign)
             raise ValueError(f"User {user_id_to_assign} not found")
 
         doc = await self._get_or_fail(doc_id)
@@ -347,39 +376,51 @@ class DocumentService:
         )
 
         await self.db.refresh(doc)
+        logger.info("User assigned successfully", doc_id=doc_id)
         return DocumentResponse.model_validate(doc)
 
     async def archive(self, doc_id: int, user_id: int) -> DocumentResponse:
+        logger.info("Archiving document", doc_id=doc_id, user_id=user_id)
         doc = await self._get_or_fail(doc_id)
         doc.is_archived = True
         await self._log(doc_id, user_id, "ARCHIVED")
         await self.db.refresh(doc)
+        logger.info("Document archived", doc_id=doc_id)
         return DocumentResponse.model_validate(doc)
 
     async def unarchive(self, doc_id: int, user_id: int) -> DocumentResponse:
+        logger.info("Unarchiving document", doc_id=doc_id, user_id=user_id)
         doc = await self._get_or_fail(doc_id)
         doc.is_archived = False
         await self._log(doc_id, user_id, "UNARCHIVED")
         await self.db.refresh(doc)
+        logger.info("Document unarchived", doc_id=doc_id)
         return DocumentResponse.model_validate(doc)
 
     async def lock(self, doc_id: int, user_id: int) -> DocumentResponse:
+        logger.info("Locking document", doc_id=doc_id, user_id=user_id)
         doc = await self._get_or_fail(doc_id)
         doc.is_locked = True
         await self._log(doc_id, user_id, "LOCKED")
+        await self.db.commit()
         await self.db.refresh(doc)
+        logger.info("Document locked", doc_id=doc_id)
         return DocumentResponse.model_validate(doc)
 
     async def unlock(self, doc_id: int, user_id: int) -> DocumentResponse:
+        logger.info("Unlocking document", doc_id=doc_id, user_id=user_id)
         doc = await self._get_or_fail(doc_id)
         doc.is_locked = False
         await self._log(doc_id, user_id, "UNLOCKED")
+        await self.db.commit()
         await self.db.refresh(doc)
+        logger.info("Document unlocked", doc_id=doc_id)
         return DocumentResponse.model_validate(doc)
 
     async def anonymize(self, doc_id: int, user_id: int) -> DocumentResponse:
         from app.messages.models import Chat
 
+        logger.info("Anonymizing document", doc_id=doc_id, user_id=user_id)
         doc = await self._get_or_fail(doc_id)
         doc.is_anonymized = True
 
@@ -390,6 +431,7 @@ class DocumentService:
 
         for chat in chats:
             chat.is_anonymized = True
+        logger.debug("Related chats anonymized", count=len(chats))
 
         await self._log(
             doc_id,
@@ -399,12 +441,13 @@ class DocumentService:
         )
 
         await self.db.refresh(doc)
+        logger.info("Document anonymized successfully", doc_id=doc_id)
         return DocumentResponse.model_validate(doc)
 
     async def get_logs(
         self, doc_id: int, skip: int = 0, limit: int = 100
     ) -> List[dict]:
-
+        logger.debug("Fetching document logs", doc_id=doc_id, skip=skip, limit=limit)
         result = await self.db.execute(
             select(DocumentLog)
             .where(DocumentLog.document_id == doc_id)
@@ -415,6 +458,7 @@ class DocumentService:
 
         logs = result.scalars().all()
 
+        logger.info("Document logs retrieved", count=len(logs))
         return [
             {
                 "id": log.id,

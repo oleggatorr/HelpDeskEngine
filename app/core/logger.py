@@ -1,6 +1,9 @@
+# app\core\logger.py
+
 import sys
 import logging
 from loguru import logger
+
 
 def setup_logger(log_level: str = "DEBUG", log_file: str = "logs/app.log"):
     """Настройка Loguru для FastAPI"""
