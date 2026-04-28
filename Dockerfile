@@ -1,26 +1,15 @@
-FROM python:3.12-slim
-
-# Создаём пользователя для безопасности
-RUN groupadd -r appuser && useradd -r -g appuser -d /app -s /sbin/nologin appuser
+FROM python:3.11-slim
 
 WORKDIR /app
 
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1
-
-# Копируем зависимости отдельно для кэширования слоёв
+# Установка зависимостей
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Копируем весь проект
+# Копирование кода
 COPY . .
-
-# Права и пользователь
-RUN chown -R appuser:appuser /app
-USER appuser
 
 EXPOSE 8000
 
-# Запуск: Uvicorn с воркерами для продакшена
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+# Production-запуск: 4 воркера, без autoreload
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
