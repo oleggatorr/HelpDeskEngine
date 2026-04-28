@@ -2,12 +2,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # ✅ Pydantic v2 конфигурация
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        extra="ignore",  # ✅ Игнорировать неизвестные переменные (DATABASE_URL и др.)
-        case_sensitive=False  # ✅ DB_HOST и db_host будут считаться одним полем
+        extra="ignore",
+        case_sensitive=False,
     )
 
     # Project
@@ -17,20 +16,21 @@ class Settings(BaseSettings):
     # Database
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
-    DB_USER: str = "root"
+    DB_USER: str = "postgres"
     DB_PASSWORD: str = ""
-    DB_NAME: str = "helpdesk"
+    DB_NAME: str = "helpdesk_db"
 
     # JWT
-    SECRET_KEY: str = "change-me-in-production"
+    SECRET_KEY: str = "change-me"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    # ✅ Вычисляемое свойство — не поле, не будет конфликтовать с окружением
     @property
     def DATABASE_URL(self) -> str:
-        auth = f"{self.DB_USER}:{self.DB_PASSWORD}" if self.DB_PASSWORD else self.DB_USER
-        return f"postgresql+asyncpg://{auth}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        return (
+            f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}"
+            f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        )
 
 
 settings = Settings()

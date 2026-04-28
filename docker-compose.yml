@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   db:
     image: postgres:16-alpine
@@ -8,7 +10,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5433:5432"  # Доступ к БД снаружи: 5433 -> 5432 внутри контейнера
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -27,9 +29,9 @@ services:
       - .env
     environment:
       DB_HOST: db
-      # DB_PORT в .env оставляем 5432! Контейнеры общаются внутри сети по стандартному порту.
+      DB_PORT: 5432
     ports:
-      - "8002:8000"  # Доступ к API снаружи: 8002 -> 8000 внутри контейнера
+      - "8002:8000"
     depends_on:
       db:
         condition: service_healthy
