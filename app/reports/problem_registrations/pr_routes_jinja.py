@@ -1118,12 +1118,12 @@ async def edit_problem_registration_details_post(
 
     try:
         from app.reports.problem_registrations.pr_schemas import (
-            ProblemRegistration_DetaleUpdate,
+            ProblemRegistrationDetailUpdate,
             ProblemRegistrationUpdate,
         )
         
         # 🔧 FIX 1: Передаём пустую строку вместо None — валидатор подставит дефолт
-        update_data = ProblemRegistration_DetaleUpdate(
+        update_data = ProblemRegistrationDetailUpdate(
             approved_at=parsed_approved_at,
             action=action.strip() if action else "",  # ← Было: else None
             responsible_department_id=parsed_dept_id,

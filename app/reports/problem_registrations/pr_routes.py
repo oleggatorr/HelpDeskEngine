@@ -9,7 +9,7 @@ from app.reports.problem_registrations.pr_schemas import (
     ProblemRegistrationResponse,
     ProblemRegistrationListResponse,
     ProblemRegistrationFilter,
-    ProblemRegistration_DetaleUpdate,
+    ProblemRegistrationDetailUpdate,
 )
 
 router = APIRouter()
@@ -220,7 +220,7 @@ async def anassign_problem_registration(
 )
 async def update_problem_registration_details(
     registration_id: int,
-    request: ProblemRegistration_DetaleUpdate,
+    request: ProblemRegistrationDetailUpdate,
     service: PublicProblemRegistrationService = Depends(_get_service),
 ):
     """Обновить дополнительную информацию о регистрации проблемы по ID."""

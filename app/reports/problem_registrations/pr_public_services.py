@@ -10,7 +10,7 @@ from app.reports.problem_registrations.pr_schemas import (
     ProblemRegistrationUpdate,
     ProblemRegistrationResponse,
     ProblemRegistrationListResponse,
-    ProblemRegistration_DetaleUpdate,
+    ProblemRegistrationDetailUpdate,
 )
 
 
@@ -252,7 +252,7 @@ class PublicProblemRegistrationService:
         return await self.get_by_id(registration_id)
     
 
-    async def update_detale(self, registration_id: int, request: ProblemRegistration_DetaleUpdate) -> Optional[ProblemRegistrationResponse]:
+    async def update_detale(self, registration_id: int, request: ProblemRegistrationDetailUpdate) -> Optional[ProblemRegistrationResponse]:
         """Обновить детальную информацию регистрации проблемы."""
         logger.info("Updating registration details", reg_id=registration_id)
         item = await self.get_by_id(registration_id)

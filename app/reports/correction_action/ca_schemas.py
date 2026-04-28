@@ -1,64 +1,84 @@
 # app/reports/correction_action/schemas.py
-"""Схемы Pydantic для действий по коррекции."""
 
 from pydantic import BaseModel, ConfigDict, Field, BeforeValidator, field_validator
 from datetime import datetime
 from typing import Optional, List, Any, Literal
 from typing_extensions import Annotated
 
-# 🔗 Единый источник энумов (убираем дубликаты!)
-from app.reports.documents.document_models import DocumentStage, DocumentLanguage, DocumentPriority, DocumentStatus
+from app.reports.documents.document_models import (
+    DocumentStage, DocumentLanguage, DocumentPriority, DocumentStatus
+)
 from app.reports.correction_action.ca_models import CorrectionActionStatus
 
 
 # ========================
-# UNIVERSAL ENUM PARSER
+# UNIVERSAL ENUM PARSER (SOFT MODE)
 # ========================
 
-def parse_enum_safe(enum_cls, value: Any):
-    """
-    Универсальный парсер: принимает .value, .name, или уже готовый enum.
-    Возвращает экземпляр enum или None.
-    """
-    if value is None or isinstance(value, enum_cls):
+def parse_enum_safe(enum_cls, value: Any, default=None, strict=False):
+    if value is None or value == "":
+        return default
+
+    if isinstance(value, enum_cls):
         return value
-    
-    # 1. Поиск по значению (основной: "pending", "completed")
+
+    # match by value
     for member in enum_cls:
         if member.value == value or str(member.value) == str(value):
             return member
-            
-    # 2. Поиск по имени (обратная совместимость: "PENDING")
+
+    # match by name
     if isinstance(value, str):
         try:
             return enum_cls[value.upper()]
         except (KeyError, AttributeError):
             pass
-            
-    raise ValueError(f"Invalid value '{value}' for {enum_cls.__name__}")
+
+    if strict:
+        raise ValueError(f"Invalid value '{value}' for {enum_cls.__name__}")
+
+    return default
 
 
-# 🔧 Переиспользуемые типы полей через Annotated
-ActionStatusField = Annotated[Optional[CorrectionActionStatus], BeforeValidator(lambda v: parse_enum_safe(CorrectionActionStatus, v))]
-DocStatusField = Annotated[Optional[DocumentStatus], BeforeValidator(lambda v: parse_enum_safe(DocumentStatus, v))]
-DocLangField = Annotated[Optional[DocumentLanguage], BeforeValidator(lambda v: parse_enum_safe(DocumentLanguage, v))]
-DocPriorityField = Annotated[Optional[DocumentPriority], BeforeValidator(lambda v: parse_enum_safe(DocumentPriority, v))]
+# ========================
+# ENUM FIELDS
+# ========================
+
+ActionStatusField = Annotated[
+    Optional[CorrectionActionStatus],
+    BeforeValidator(lambda v: parse_enum_safe(CorrectionActionStatus, v, CorrectionActionStatus.PENDING))
+]
+
+DocStatusField = Annotated[
+    Optional[DocumentStatus],
+    BeforeValidator(lambda v: parse_enum_safe(DocumentStatus, v, DocumentStatus.OPEN))
+]
+
+DocLangField = Annotated[
+    Optional[DocumentLanguage],
+    BeforeValidator(lambda v: parse_enum_safe(DocumentLanguage, v, DocumentLanguage.RU))
+]
+
+DocPriorityField = Annotated[
+    Optional[DocumentPriority],
+    BeforeValidator(lambda v: parse_enum_safe(DocumentPriority, v, DocumentPriority.MEDIUM))
+]
 
 
 # =========================================================
-# 📥 CREATE
+# CREATE
 # =========================================================
 
 class CorrectionActionCreate(BaseModel):
-    """Создание корректирующего действия."""
-    model_config = ConfigDict(use_enum_values=True)  # ✅ В сервис/БД уйдут .value
+    model_config = ConfigDict(use_enum_values=True)
 
-    correction_id: int = Field(..., gt=0, description="ID родительской коррекции")
-    assigned_user_id: Optional[int] = Field(None, gt=0, description="ID исполнителя")
+    correction_id: int = Field(..., gt=0)
+    assigned_user_id: Optional[int] = Field(None, gt=0)
+
     description: str = Field(..., min_length=1, max_length=5000)
     comment: Optional[str] = Field(None, max_length=2000)
 
-    # Поля Document (создаётся автоматически) — используем Annotated-поля
+    # document auto-create
     doc_status: DocStatusField = Field(default=DocumentStatus.OPEN)
     doc_language: DocLangField = Field(default=DocumentLanguage.RU)
     doc_priority: DocPriorityField = Field(default=DocumentPriority.MEDIUM)
@@ -66,33 +86,24 @@ class CorrectionActionCreate(BaseModel):
 
 
 # =========================================================
-# ✏️ UPDATE (PATCH)
+# UPDATE
 # =========================================================
 
 class CorrectionActionUpdate(BaseModel):
-    """Частичное обновление."""
     model_config = ConfigDict(use_enum_values=True)
 
     assigned_user_id: Optional[int] = Field(None, gt=0)
     description: Optional[str] = Field(None, min_length=1, max_length=5000)
-    status: ActionStatusField = Field(None)  # ✅ Гибкий парсинг: "pending", "PENDING", или энум
-    comment: Optional[str] = Field(None, max_length=2000)
 
-    @field_validator("status", mode="before")
-    @classmethod
-    def validate_status(cls, v):
-        """Доп. валидация, если нужна специфичная логика"""
-        return parse_enum_safe(CorrectionActionStatus, v)
+    status: ActionStatusField = None
+    comment: Optional[str] = Field(None, max_length=2000)
 
 
 # =========================================================
-# 📤 RESPONSE
+# RESPONSE
 # =========================================================
 
 class CorrectionActionResponse(BaseModel):
-    """Ответ клиенту"""
-    # ✅ from_attributes=True для чтения из ORM
-    # ✅ use_enum_values=True для сериализации .value в JSON
     model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 
     id: int
@@ -101,14 +112,13 @@ class CorrectionActionResponse(BaseModel):
     assigned_user_id: Optional[int]
 
     description: str
-    status: CorrectionActionStatus  # ✅ Сериализуется в "pending"/"in_progress"
+    status: CorrectionActionStatus
     comment: Optional[str]
 
     created_at: datetime
     assigned_at: Optional[datetime]
     completed_at: Optional[datetime]
 
-    # Пример для OpenAPI docs
     model_config["json_schema_extra"] = {
         "example": {
             "id": 1,
@@ -116,8 +126,8 @@ class CorrectionActionResponse(BaseModel):
             "document_id": 5,
             "assigned_user_id": 3,
             "description": "Провести RCA-анализ отклонения",
-            "status": "in_progress",  # ✅ строка, не объект Enum
-            "comment": "Ожидание данных от лаборатории",
+            "status": "in_progress",
+            "comment": "Ожидание данных",
             "created_at": "2026-04-23T10:00:00+03:00",
             "assigned_at": "2026-04-23T10:05:00+03:00",
             "completed_at": None,
@@ -126,11 +136,12 @@ class CorrectionActionResponse(BaseModel):
 
 
 # =========================================================
-# 📄 LIST RESPONSE
+# LIST RESPONSE
 # =========================================================
 
 class CorrectionActionListResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
+    model_config = ConfigDict(from_attributes=True)
+
     items: List[CorrectionActionResponse]
     total: int
     limit: int
@@ -138,37 +149,31 @@ class CorrectionActionListResponse(BaseModel):
 
 
 # =========================================================
-# 🔍 FILTER
+# FILTER
 # =========================================================
 
 class CorrectionActionFilter(BaseModel):
-    """Фильтры списка"""
-    # ❌ УБРАНО: from_attributes=True — не нужен для входных данных
-    
+    model_config = ConfigDict(use_enum_values=True)
+
     correction_id: Optional[int] = Field(None, gt=0)
     document_id: Optional[int] = Field(None, gt=0)
     assigned_user_id: Optional[int] = Field(None, gt=0)
 
-    status: ActionStatusField = Field(None)  # ✅ Гибкий парсинг
+    status: ActionStatusField = None
 
-    description: Optional[str] = Field(
-        None,
-        max_length=100,
-        description="Поиск по описанию (ILIKE %...%)",
-    )
-    comment: Optional[str] = Field(
-        None,
-        max_length=100,
-        description="Поиск по комментарию (ILIKE %...%)",
-    )
+    description: Optional[str] = Field(None, max_length=100)
+    comment: Optional[str] = Field(None, max_length=100)
 
-    created_from: Optional[datetime] = Field(None, description=">= created_at")
-    created_to: Optional[datetime] = Field(None, description="<= created_at")
+    created_from: Optional[datetime] = None
+    created_to: Optional[datetime] = None
 
-    # ✅ безопасная сортировка
     sort_by: Literal["id", "created_at", "status", "assigned_at"] = "created_at"
     sort_order: Literal["asc", "desc"] = "desc"
 
-    # ✅ пагинация
     limit: int = Field(20, ge=1, le=100)
     offset: int = Field(0, ge=0)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def parse_status(cls, v):
+        return parse_enum_safe(CorrectionActionStatus, v, None)

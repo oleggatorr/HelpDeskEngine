@@ -12764,3 +12764,31 @@ jinja2.exceptions.TemplateNotFound: correction_create.html.j2
 2026-04-27 17:12:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57882 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
 2026-04-27 17:13:26 | INFO     | logging:callHandlers:1737 | 127.0.0.1:50306 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
 2026-04-27 17:14:23 | INFO     | logging:callHandlers:1737 | 127.0.0.1:62986 - "GET /api/messages/chats/37/messages/fragment?skip=0&limit=200 HTTP/1.1" 404
+2026-04-27 17:25:05 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-27 17:25:05 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-27 17:25:05 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-27 17:25:05 | INFO     | logging:callHandlers:1737 | Finished server process [20824]
+2026-04-28 09:03:00 | INFO     | logging:callHandlers:1737 | Started server process [6340]
+2026-04-28 09:03:00 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-28 09:03:00 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-28 09:03:00 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-28 09:03:00 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-28 09:03:00 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-28 09:03:00 | INFO     | logging:callHandlers:1737 | Finished server process [6340]
+2026-04-28 09:03:02 | INFO     | logging:callHandlers:1737 | Started server process [18064]
+2026-04-28 09:03:02 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-28 09:03:02 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-28 09:11:15 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-28 09:11:15 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-28 09:11:15 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-28 09:11:15 | INFO     | logging:callHandlers:1737 | Finished server process [18064]
+2026-04-28 09:11:18 | INFO     | logging:callHandlers:1737 | Started server process [22440]
+2026-04-28 09:11:18 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-28 09:11:18 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-28 09:14:49 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-28 09:14:49 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-28 09:14:49 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-28 09:14:49 | INFO     | logging:callHandlers:1737 | Finished server process [22440]
+2026-04-28 09:14:52 | INFO     | logging:callHandlers:1737 | Started server process [15280]
+2026-04-28 09:14:52 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-28 09:14:52 | INFO     | logging:callHandlers:1737 | Application startup complete.

@@ -10,7 +10,7 @@ from app.reports.problem_registrations.pr_schemas import (
     ProblemRegistrationCreate,
     ProblemRegistrationUpdate,
     ProblemRegistrationResponse,
-    ProblemRegistration_DetaleUpdate,
+    ProblemRegistrationDetailUpdate,
     ProblemRegistrationFilter,
 )
 from app.reports.documents.schemas.document import DocumentCreate, DocumentStage
@@ -365,7 +365,7 @@ class ProblemRegistrationService:
     async def update_response_details(
         self, 
         registration_id: int, 
-        request: ProblemRegistration_DetaleUpdate
+        request: ProblemRegistrationDetailUpdate
     ) -> Optional[ProblemRegistrationResponse]:
         logger.info("Updating registration response details", registration_id=registration_id)
         result = await self.db.execute(
