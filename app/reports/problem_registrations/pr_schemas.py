@@ -9,6 +9,8 @@ from app.reports.documents.document_models import (
 )
 from app.reports.models import ProblemAction
 
+from app.reports.enums import *
+
 
 # ========================
 # UNIVERSAL ENUM PARSER (soft mode)

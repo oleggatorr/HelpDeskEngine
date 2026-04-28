@@ -7,6 +7,8 @@ import string
 from pydantic import BaseModel, field_validator, ConfigDict, BeforeValidator
 from typing_extensions import Annotated
 from app.reports.documents.document_models import DocumentStage, DocumentLanguage, DocumentPriority, DocumentStatus
+
+from app.reports.enums import *
 # from app.reports.enums import (
 #     DocumentStage,      # IntEnum: NEW=1, IN_PROGRESS=2...
 #     DocumentLanguage,   # str-enum: RU="ru", EN="en"

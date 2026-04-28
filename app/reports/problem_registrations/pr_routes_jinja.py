@@ -1,10 +1,11 @@
-from typing import List
-from fastapi import APIRouter, Request, Depends, Form, UploadFile, File
+from typing import List, Annotated
+from fastapi import APIRouter, Request, Depends, Form, UploadFile, File, HTTPException
 from fastapi.responses import RedirectResponse, FileResponse
 
 # from fastapi.templating import Jinja2Templates
 # from jinja2 import ChoiceLoader, FileSystemLoader, Environment
 from app.core.templates import templates
+from loguru import logger
 
 from pathlib import Path
 from datetime import datetime
@@ -15,6 +16,12 @@ from app.core.database import get_db
 from app.auth.routes_jinja import require_auth
 from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
 from app.reports.documents.document_models import DocumentStage, DocumentLanguage, DocumentPriority, DocumentStatus
+from app.core.storage.local_storage import LocalFileStorage
+from app.reports.documents.document_attachment_service import DocumentAttachmentService
+from app.reports.problem_registrations.pr_schemas import ProblemRegistrationCreate
+from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
+
+
 
 router = APIRouter()
 
@@ -367,9 +374,12 @@ async def create_problem_registration_post(
     if isinstance(auth_result, RedirectResponse):
         return auth_result
     current_user = auth_result
+    attachment_service = DocumentAttachmentService(
+        db=db,
+        storage=LocalFileStorage("uploads/document_attachments")
+        )
 
-    from app.reports.problem_registrations.pr_schemas import ProblemRegistrationCreate
-    from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
+
 
     service = PublicProblemRegistrationService(db)
 
@@ -448,6 +458,119 @@ async def create_problem_registration_post(
             },
             "now": datetime.now,
         })
+
+
+@router.post("/reports/problem-registrations/create")
+async def create_problem_registration_post(
+    request: Request,
+    subject: str = Form(""),
+    detected_at: str = Form(""),
+    location_id: str = Form(""),
+    description: str = Form(""),
+    nomenclature: str = Form(""),
+    doc_status: str = Form("open"),
+    doc_language: str = Form("ru"),
+    doc_priority: str = Form("medium"),
+    files: List[UploadFile] = File(default=[]),
+    db=Depends(get_db),
+):
+    """Обработка формы создания регистрации проблемы."""
+
+    auth_result = await require_auth(request, db)
+    if isinstance(auth_result, RedirectResponse):
+        return auth_result
+    current_user = auth_result
+
+    service = PublicProblemRegistrationService(db)
+
+    attachment_service = DocumentAttachmentService(
+        db=db,
+        storage=LocalFileStorage("uploads", "reports/attachments")
+    )
+
+    # --- helpers ---
+    def clean_str(v):
+        return v.strip() if v and v.strip() else None
+
+    # --- parsing ---
+    loc_id = int(location_id) if location_id and location_id.strip() else None
+
+    parsed_detected_at = None
+    if detected_at and detected_at.strip():
+        try:
+            parsed_detected_at = datetime.fromisoformat(detected_at.strip())
+        except (ValueError, TypeError):
+            pass
+
+    try:
+        # ✅ 1. создаём документ БЕЗ файлов
+        create_data = ProblemRegistrationCreate(
+            subject=clean_str(subject),
+            detected_at=parsed_detected_at,
+            location_id=loc_id,
+            description=clean_str(description),
+            nomenclature=clean_str(nomenclature),
+            doc_status=doc_status,
+            doc_language=doc_language,
+            doc_priority=doc_priority,
+            attachment_files=None,  # <-- больше не передаём файлы сюда
+        )
+
+        result = await service.create(create_data, created_by=current_user.id)
+
+        # ✅ 2. сохраняем файлы через сервис
+        for file in files or []:
+            if not file.filename:
+                continue
+
+            content = await file.read()
+
+            await attachment_service.upload(
+                document_id=result.id,
+                content=content,
+                filename=file.filename,
+                user_id=current_user.id,
+            )
+
+        # ✅ 3. редирект
+        return RedirectResponse(
+            url=f"/reports/problem-registrations/{result.id}",
+            status_code=303
+        )
+
+    except Exception as e:
+        from app.knowledge_base.public_services import PublicLocationService
+
+        location_service = PublicLocationService(db)
+        locations = await location_service.get_all(skip=0, limit=1000)
+
+        return templates.TemplateResponse(
+            "create_problem_registration.html.j2",
+            {
+                "request": request,
+                "current_user": current_user,
+                "locations": locations.items,
+                "statuses": [s.value for s in DocumentStatus],
+                "languages": ["ru", "en"],
+                "priorities": ["low", "medium", "high", "urgent"],
+                "error": str(e),
+                "form_data": {
+                    "subject": subject,
+                    "detected_at": detected_at,
+                    "location_id": loc_id,
+                    "description": description,
+                    "nomenclature": nomenclature,
+                    "doc_status": doc_status,
+                    "doc_language": doc_language,
+                    "doc_priority": doc_priority,
+                },
+                "now": datetime.now,
+            },
+        )
+
+
+    
+
 
 @router.get("/reports/problem-registrations/locked")
 async def problem_registrations_locked_list_page(
@@ -555,20 +678,46 @@ async def problem_registrations_locked_list_page(
 async def view_by_document_page(
     request: Request,
     document_id: int,
-    db=Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
-    """Перенаправление на регистрацию проблемы по ID документа."""
+    """Перенаправление на регистрацию проблемы по ID связанного документа."""
+    
+    # 1. Аутентификация
     auth_result = await require_auth(request, db)
     if isinstance(auth_result, RedirectResponse):
         return auth_result
     current_user = auth_result
 
-    service = PublicProblemRegistrationService(db)
-    item = await service.get_by_document_id(document_id)
-    if not item:
-        return RedirectResponse(url="/reports/problem-registrations", status_code=303)
+    logger.debug("Redirect attempt by document_id", document_id=document_id, user_id=current_user.id)
 
-    return RedirectResponse(url=f"/reports/problem-registrations/{item.id}", status_code=303)
+    try:
+        from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
+        service = PublicProblemRegistrationService(db)
+        
+        item = await service.get_by_document_id(document_id)
+        
+        if not item:
+            logger.warning("Problem registration not found by document_id", document_id=document_id)
+            # Вариант А: показать 404
+            # raise HTTPException(status_code=404, detail="Регистрация не найдена")
+            # Вариант Б: мягкий редирект на список (как у вас)
+            return RedirectResponse(url="/reports/problem-registrations", status_code=302)
+
+        logger.info("Redirected to problem registration", 
+                   document_id=document_id, 
+                   registration_id=item.id, 
+                   user_id=current_user.id)
+        
+        # 302 Found — стандартный редирект для GET-запросов
+        # 307 Temporary Redirect — если важно сохранить метод запроса (не актуально здесь)
+        return RedirectResponse(url=f"/reports/problem-registrations/{item.id}", status_code=302)
+        
+    except HTTPException:
+        raise  # Пробрасываем наши 404/403 дальше
+    except Exception as e:
+        logger.exception("Error in view_by_document_page", document_id=document_id, error=str(e))
+        # Не показываем детали ошибки пользователю
+        return RedirectResponse(url="/reports/problem-registrations", status_code=302)
 
 
 @router.get("/reports/problem-registrations/{registration_id}")
@@ -747,26 +896,36 @@ async def edit_problem_registration_post(
     files: List[UploadFile] = File(default=[]),
     db=Depends(get_db),
 ):
-    """Обработка формы редактирования регистрации проблемы."""
+    """Обработка формы редактирования регистрации проблемы с загрузкой вложений."""
+    
+    # 1. Аутентификация
     auth_result = await require_auth(request, db)
     if isinstance(auth_result, RedirectResponse):
         return auth_result
     current_user = auth_result
 
+    # 2. Инициализация сервисов
+    from app.reports.documents.document_attachment_service import DocumentAttachmentService
+    from app.core.storage.local_storage import LocalFileStorage
     from app.reports.problem_registrations.pr_schemas import ProblemRegistrationUpdate
     from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService
 
-    service = PublicProblemRegistrationService(db)
-    item = await service.get_by_id(registration_id)
+    problem_service = PublicProblemRegistrationService(db)
+    attachment_service = DocumentAttachmentService(
+        db=db,
+        storage=LocalFileStorage("uploads/document_attachments")
+    )
+
+    # 3. Проверка существования и блокировки записи
+    item = await problem_service.get_by_id(registration_id)
     if not item:
         return RedirectResponse(url="/reports/problem-registrations", status_code=404)
     if item.is_locked:
         return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}", status_code=303)
 
-    # Конвертируем location_id из строки формы
-    loc_id = int(location_id) if location_id and location_id.strip() else 0
-
-    # Парсим detected_at
+    # 4. Парсинг данных формы
+    loc_id = int(location_id) if location_id and location_id.strip() else None
+    
     parsed_detected_at = None
     if detected_at and detected_at.strip():
         try:
@@ -774,65 +933,123 @@ async def edit_problem_registration_post(
         except (ValueError, TypeError):
             pass
 
-    # Обработка загруженных файлов
-    attachment_files = []
+    def clean_str(v: str) -> str | None:
+        return v.strip() if v and v.strip() else None
+
+    # 5. Обработка файлов через сервис
+    uploaded_attachments = []
     if files:
-        upload_dir = os.path.join("uploads", "document_attachments")
-        os.makedirs(upload_dir, exist_ok=True)
-
         for file in files:
-            if file.filename:
-                ext = os.path.splitext(file.filename)[1]
-                unique_name = f"{uuid.uuid4().hex}{ext}"
-                file_path = os.path.join(upload_dir, unique_name)
+            if not file.filename:
+                continue
+            try:
+                content = await file.read()
+                # Используем item.id (или item.document_id) как document_id для вложений
+                doc_id = getattr(item, 'document_id', item.id)
+                
+                attachment = await attachment_service.upload(
+                    document_id=doc_id,
+                    content=content,
+                    filename=file.filename,
+                    user_id=current_user.id,
+                )
+                uploaded_attachments.append(attachment)
+                
+            except ValueError as e:
+                # Ошибка валидации файла — откат уже загруженных и возврат формы
+                for att in uploaded_attachments:
+                    await attachment_service.storage.delete(att.file_path)
+                return _render_edit_form_error(
+                    request=request,
+                    item=item,
+                    current_user=current_user,
+                    db=db,
+                    error=f"Ошибка файла '{file.filename}': {str(e)}",
+                    form_data={
+                        "subject": subject, "detected_at": detected_at,
+                        "location_id": location_id, "description": description,
+                        "nomenclature": nomenclature,
+                    }
+                )
+            except Exception as e:
+                logger.exception("File upload failed", filename=file.filename)
+                for att in uploaded_attachments:
+                    await attachment_service.storage.delete(att.file_path)
+                return _render_edit_form_error(
+                    request=request,
+                    item=item,
+                    current_user=current_user,
+                    db=db,
+                    error=f"Не удалось загрузить файл '{file.filename}'",
+                    form_data={
+                        "subject": subject, "detected_at": detected_at,
+                        "location_id": location_id, "description": description,
+                        "nomenclature": nomenclature,
+                    }
+                )
 
-                content_bytes = await file.read()
-                with open(file_path, "wb") as f:
-                    f.write(content_bytes)
-
-                attachment_files.append({
-                    "file_path": file_path,
-                    "original_filename": file.filename,
-                    "file_type": file.content_type or "application/octet-stream",
-                })
-
+    # 6. Обновление записи проблемы
     try:
         update_data = ProblemRegistrationUpdate(
-            subject=subject.strip() or None,
+            subject=clean_str(subject),
             detected_at=parsed_detected_at,
-            location_id=loc_id or None,
-            description=description.strip() or None,
-            nomenclature=nomenclature.strip() or None,
+            location_id=loc_id,
+            description=clean_str(description),
+            nomenclature=clean_str(nomenclature),
         )
-        await service.update(registration_id, update_data)
-
-        # Добавляем новые вложения к документу
-        if attachment_files:
-            from app.reports.documents.document_public_service import PublicDocumentService
-            doc_service = PublicDocumentService(db)
-            for att_data in attachment_files:
-                await doc_service.add_attachment(item.document_id, att_data["file_path"], att_data["original_filename"], att_data["file_type"], current_user.id)
-
-        return RedirectResponse(url=f"/reports/problem-registrations/{registration_id}", status_code=303)
+        await problem_service.update(registration_id, update_data)
+        
+        return RedirectResponse(
+            url=f"/reports/problem-registrations/{registration_id}", 
+            status_code=303
+        )
+        
     except Exception as e:
-        from app.knowledge_base.public_services import PublicLocationService
-        location_service = PublicLocationService(db)
-        locations = await location_service.get_all(skip=0, limit=1000)
-
-        return templates.TemplateResponse("edit_problem_registration.html.j2", {
-            "request": request,
-            "item": item,
-            "current_user": current_user,
-            "locations": locations.items,
-            "error": str(e),
-            "form_data": {
-                "subject": subject,
-                "detected_at": detected_at,
-                "location_id": loc_id,
-                "description": description,
+        logger.exception("Failed to update problem registration")
+        # Откат: удаляем новые файлы с диска, если обновление БД не прошло
+        for attachment in uploaded_attachments:
+            await attachment_service.storage.delete(attachment.file_path)
+        
+        return _render_edit_form_error(
+            request=request,
+            item=item,
+            current_user=current_user,
+            db=db,
+            error=str(e),
+            form_data={
+                "subject": subject, "detected_at": detected_at,
+                "location_id": location_id, "description": description,
                 "nomenclature": nomenclature,
-            },
-        })
+            }
+        )
+
+
+# ─────────────────────────────────────────────────────────────
+# Вспомогательная функция для рендеринга формы редактирования с ошибкой
+# ─────────────────────────────────────────────────────────────
+async def _render_edit_form_error(
+    request: Request,
+    item,
+    current_user,
+    db: AsyncSession,
+    error: str,
+    form_data: dict,
+):
+    """Возвращает шаблон формы редактирования с сообщением об ошибке."""
+    from app.knowledge_base.public_services import PublicLocationService
+    
+    location_service = PublicLocationService(db)
+    locations = await location_service.get_all(skip=0, limit=1000)
+
+    return templates.TemplateResponse("edit_problem_registration.html.j2", {
+        "request": request,
+        "item": item,
+        "current_user": current_user,
+        "locations": locations.items,
+        "error": error,
+        "form_data": form_data,
+        "now": datetime.now,
+    })
 
 
 @router.get("/reports/documents/attachments/{attachment_id}/download")
@@ -859,6 +1076,7 @@ async def download_document_attachment(
         path=file_path,
         filename=attachment.original_filename or file_path.split(os.sep)[-1],
         media_type=attachment.file_type or "application/octet-stream",
+        content_disposition_type="inline"  # <--- Ключевое изменение
     )
 
 
