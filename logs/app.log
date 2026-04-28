@@ -15749,3 +15749,30 @@ TypeError: 'bool' object can't be awaited
 2026-04-28 15:22:46 | INFO     | logging:callHandlers:1737 | Started server process [18940]
 2026-04-28 15:22:46 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
 2026-04-28 15:22:46 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-28 15:24:05 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-28 15:24:05 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-28 15:24:05 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-28 15:24:05 | INFO     | logging:callHandlers:1737 | Finished server process [18940]
+2026-04-28 15:24:07 | INFO     | logging:callHandlers:1737 | Started server process [18684]
+2026-04-28 15:24:07 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-28 15:24:07 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-28 15:24:11 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-28 15:24:11 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-28 15:24:11 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-28 15:24:11 | INFO     | logging:callHandlers:1737 | Finished server process [18684]
+2026-04-28 15:24:13 | INFO     | logging:callHandlers:1737 | Started server process [18820]
+2026-04-28 15:24:13 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-28 15:24:13 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-28 15:24:20 | INFO     | logging:callHandlers:1737 | 127.0.0.1:64555 - "GET / HTTP/1.1" 200
+2026-04-28 15:24:52 | INFO     | logging:callHandlers:1737 | 127.0.0.1:54263 - "GET /reports/problem-registrations/create HTTP/1.1" 200
+2026-04-28 15:25:13 | INFO     | app.core.storage.local_storage:__init__:12 | __init__
+2026-04-28 15:25:13 | INFO     | app.reports.problem_registrations.pr_public_services:create:43 | Creating problem registration
+2026-04-28 15:25:13 | INFO     | app.reports.problem_registrations.pr_service:create:33 | Creating problem registration
+2026-04-28 15:25:13 | INFO     | app.reports.documents.document_service:create:87 | Creating document
+2026-04-28 15:25:14 | INFO     | app.reports.documents.document_service:create:152 | Document created successfully
+2026-04-28 15:25:14 | INFO     | app.reports.documents.document_public_service:create:36 | Document created successfully
+2026-04-28 15:25:14 | INFO     | app.reports.problem_registrations.pr_service:create:118 | Problem registration created successfully
+2026-04-28 15:25:14 | INFO     | app.reports.problem_registrations.pr_public_services:create:50 | Problem registration created successfully
+2026-04-28 15:25:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57274 - "POST /reports/problem-registrations/create HTTP/1.1" 303
+2026-04-28 15:25:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57274 - "GET /reports/problem-registrations/15 HTTP/1.1" 200
+2026-04-28 15:25:21 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61531 - "GET /reports/documents/attachments/30/download HTTP/1.1" 200

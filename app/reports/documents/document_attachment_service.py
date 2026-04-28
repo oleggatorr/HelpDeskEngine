@@ -1,3 +1,12 @@
+# app\reports\documents\document_attachment_service.py
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, delete
+
+from app.core.storage.file_storage import FileStorage
+from app.reports.models import DocumentAttachment
+
+from loguru import logger
+
 class DocumentAttachmentService:
 
     def __init__(self, db: AsyncSession, storage: FileStorage):
