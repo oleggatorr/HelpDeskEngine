@@ -15776,3 +15776,10 @@ TypeError: 'bool' object can't be awaited
 2026-04-28 15:25:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57274 - "POST /reports/problem-registrations/create HTTP/1.1" 303
 2026-04-28 15:25:14 | INFO     | logging:callHandlers:1737 | 127.0.0.1:57274 - "GET /reports/problem-registrations/15 HTTP/1.1" 200
 2026-04-28 15:25:21 | INFO     | logging:callHandlers:1737 | 127.0.0.1:61531 - "GET /reports/documents/attachments/30/download HTTP/1.1" 200
+2026-04-28 15:33:47 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-28 15:33:47 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-28 15:33:47 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-28 15:33:47 | INFO     | logging:callHandlers:1737 | Finished server process [18820]
+2026-04-28 15:33:49 | INFO     | logging:callHandlers:1737 | Started server process [7652]
+2026-04-28 15:33:49 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
+2026-04-28 15:33:49 | INFO     | logging:callHandlers:1737 | Application startup complete.
