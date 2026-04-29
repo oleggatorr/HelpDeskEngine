@@ -2,6 +2,13 @@ from typing import List
 from fastapi import APIRouter, Request, Depends, Form, UploadFile, File
 from fastapi.responses import RedirectResponse, FileResponse
 
+from app.core.storage.local_storage import LocalFileStorage
+from app.core.storage.file_storage import FileStorage
+from app.messages.message_attachment_service import MessageAttachmentService
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from loguru import logger
+
 # from fastapi.templating import Jinja2Templates
 # from jinja2 import ChoiceLoader, FileSystemLoader, Environment
 from app.core.templates import templates
@@ -29,6 +36,16 @@ global_templates = Path(__file__).parent.parent / "templates"
 # )
 
 # templates = Jinja2Templates(env=env)
+
+def get_file_storage() -> FileStorage:
+    """Factory для хранилища — легко заменить на S3/MinIO в будущем."""
+    return LocalFileStorage(base_path="uploads/attachments")
+
+async def get_attachment_service(
+    db: AsyncSession = Depends(get_db),
+    storage: FileStorage = Depends(get_file_storage)
+) -> MessageAttachmentService:
+    return MessageAttachmentService(db=db, storage=storage)
 
 
 @router.get("/messages")
@@ -102,55 +119,57 @@ async def chat_send(
     chat_id: int,
     content: str = Form(""),
     files: List[UploadFile] = File(default=[]),
-    db=Depends(get_db),
+    db: AsyncSession = Depends(get_db),
+    attachment_service: MessageAttachmentService = Depends(get_attachment_service),
 ):
-    """Отправка сообщения в чат с вложениями."""
+    """Отправка сообщения в чат с вложениями: сначала сообщение, потом файлы."""
+    
+    # 🔐 Авторизация
     auth_result = await require_auth(request, db)
     if isinstance(auth_result, RedirectResponse):
         return auth_result
     current_user = auth_result
 
+    # 📝 Валидация
     if not content.strip() and not files:
         return RedirectResponse(
             url=f"/messages/{chat_id}?error=Сообщение не может быть пустым",
             status_code=303,
         )
 
-    # Обработка загруженных файлов
-    attachments = []
-    if files:
-        upload_dir = os.path.join("uploads", "attachments")
-        os.makedirs(upload_dir, exist_ok=True)
-
-        for file in files:
-            if file.filename:
-                ext = os.path.splitext(file.filename)[1]
-                unique_name = f"{uuid.uuid4().hex}{ext}"
-                file_path = os.path.join(upload_dir, unique_name)
-
-                content_bytes = await file.read()
-                with open(file_path, "wb") as f:
-                    f.write(content_bytes)
-
-                attachments.append(MessageAttachmentCreate(
-                    file_path=file_path,
-                    original_filename=file.filename,
-                    file_type=file.content_type or "application/octet-stream",
-                ))
-
     message_service = PublicMessageService(db)
+    
     try:
+        # ✅ ШАГ 1: Создаём сообщение (пока без вложений)
         msg = MessageCreate(
             chat_id=chat_id,
             content=content.strip() if content.strip() else "📎 Вложение",
-            attachments=attachments if attachments else None,
+            # attachments пока не передаём — создадим их после
         )
-        await message_service.create(msg, sender_id=current_user.id)
+        created_message = await message_service.create(msg, sender_id=current_user.id)
+        message_id = created_message.id  # ← получили ID нового сообщения
+        
+        # ✅ ШАГ 2: Загружаем файлы и привязываем к сообщению
+        for file in files:
+            if file.filename:
+                content_bytes = await file.read()
+                
+                await attachment_service.upload(
+                    message_id=message_id,  # ← теперь есть куда привязать
+                    content=content_bytes,
+                    filename=file.filename,
+                    user_id=current_user.id,
+                    file_type=file.content_type or "application/octet-stream",
+                )
+        
+        # ✅ Коммит всех изменений (сообщение + вложения)
+        await db.commit()
+        
     except Exception as e:
-        import logging
-        logging.error(f"Ошибка отправки сообщения в чат {chat_id}: {e}", exc_info=True)
+        await db.rollback()  # ← откат и сообщения, и вложений при ошибке
+        logger.error(f"Ошибка отправки сообщения в чат {chat_id}: {e}", exc_info=True)
         return RedirectResponse(
-            url=f"/messages/{chat_id}?error=Ошибка отправки сообщения: {str(e)}",
+            url=f"/messages/{chat_id}?error=Ошибка отправки: {str(e)}",
             status_code=303,
         )
 
@@ -163,27 +182,28 @@ async def download_attachment(
     attachment_id: int,
     db=Depends(get_db),
 ):
-    """Скачать вложение сообщения."""
+    """Открытие/скачивание вложения сообщения."""
     auth_result = await require_auth(request, db)
     if isinstance(auth_result, RedirectResponse):
         return auth_result
 
     from app.messages.models import MessageAttachment
     from sqlalchemy import select
+    from pathlib import Path
 
     result = await db.execute(
         select(MessageAttachment).where(MessageAttachment.id == attachment_id)
     )
     attachment = result.scalar_one_or_none()
-    if not attachment or attachment.is_deleted:
+    if not attachment or getattr(attachment, "is_deleted", False):
         return RedirectResponse(url="/messages", status_code=303)
 
     file_path = attachment.file_path
-    if not file_path or not os.path.exists(file_path):
+    if not file_path or not Path(file_path).exists():
         return RedirectResponse(url="/messages", status_code=303)
-
     return FileResponse(
         path=file_path,
-        filename=attachment.original_filename or file_path.split(os.sep)[-1],
+        filename=attachment.original_filename or Path(file_path).name,
         media_type=attachment.file_type or "application/octet-stream",
+        content_disposition_type="inline",  # ← Браузер откроет файл, если умеет
     )

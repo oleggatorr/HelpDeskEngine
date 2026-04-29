@@ -77,6 +77,7 @@ class MessageAttachment(Base):
     file_type = Column(String(255))
     uploaded_at = Column(DateTime(timezone=True), server_default=func.now())
     is_deleted = Column(Boolean, default=False, nullable=False)
+    uploaded_by = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
 
     # Связи
     message = relationship("Message", back_populates="attachments")
