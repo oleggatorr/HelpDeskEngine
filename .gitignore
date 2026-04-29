@@ -32,3 +32,6 @@ uploads/*
 
 # Docker (опционально, если не коммитите образы)
 *.dockerignore
+
+.logs/
+./logs/

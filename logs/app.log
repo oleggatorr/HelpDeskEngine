@@ -15825,3 +15825,7 @@ TypeError: 'bool' object can't be awaited
 2026-04-28 17:08:59 | INFO     | logging:callHandlers:1737 | Started server process [17964]
 2026-04-28 17:08:59 | INFO     | logging:callHandlers:1737 | Waiting for application startup.
 2026-04-28 17:08:59 | INFO     | logging:callHandlers:1737 | Application startup complete.
+2026-04-28 17:20:03 | INFO     | logging:callHandlers:1737 | Shutting down
+2026-04-28 17:20:03 | INFO     | logging:callHandlers:1737 | Waiting for application shutdown.
+2026-04-28 17:20:03 | INFO     | logging:callHandlers:1737 | Application shutdown complete.
+2026-04-28 17:20:03 | INFO     | logging:callHandlers:1737 | Finished server process [17964]
