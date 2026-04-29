@@ -105,11 +105,11 @@ async def get_by_track(
     response_model=CorrectionResponse,
     summary="Коррекция по ID заявки",
 )
-async def get_by_problem_registration(
+async def get_by_target_document_id(
     pr_id: int,
     service: PublicCorrectionService = Depends(_get_service),
 ):
-    result = await service.get_by_problem_registration_id(pr_id)
+    result = await service.get_by_target_document_id(pr_id)
     if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Коррекция не найдена")
     return result

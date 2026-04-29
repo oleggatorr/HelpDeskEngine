@@ -64,9 +64,9 @@ class PublicCorrectionService:
         logger.debug("Fetching correction by track_id", track_id=track_id)
         return await self._service.get_by_track_id(track_id)
 
-    async def get_by_problem_registration_id(self, pr_id: int) -> Optional[CorrectionResponse]:
-        logger.debug("Fetching correction by problem_registration_id", pr_id=pr_id)
-        return await self._service.get_by_problem_registration_id(pr_id)
+    async def get_by_target_document_id(self, pr_id: int) -> Optional[CorrectionResponse]:
+        logger.debug("Fetching correction by target_document_id", pr_id=pr_id)
+        return await self._service.get_by_target_document_id(pr_id)
 
     async def get_all(
         self,

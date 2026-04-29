@@ -20,11 +20,11 @@
                 <div class="row g-3">
                     <div class="col-md-12">
                         <label class="form-label">Регистрация проблемы <span class="text-danger">*</span></label>
-                        <select name="problem_registration_id" class="form-select" required>
+                        <select name="target_document_id" class="form-select" required>
                             <option value="">— Выберите заявку —</option>
-                            {% for pr in problem_registrations %}
+                            {% for pr in target_document %}
                             <option value="{{ pr.id }}" 
-                                    {% if form_data and form_data.problem_registration_id == pr.id %}selected{% endif %}>
+                                    {% if form_data and form_data.target_document_id == pr.id %}selected{% endif %}>
                                 #{{ pr.track_id }} — {{ pr.subject }}
                             </option>
                             {% endfor %}

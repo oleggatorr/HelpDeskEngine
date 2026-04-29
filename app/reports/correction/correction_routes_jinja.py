@@ -9,7 +9,7 @@ import uuid
 from app.core.database import get_db
 from app.core.templates import templates
 from app.auth.routes_jinja import require_auth
-from app.reports.correction.correction_public_services import PublicCorrectionService
+from app.reports.correction.correction_public_services import PublicDocumentService
 from app.reports.correction.correction_schemas import CorrectionCreate, CorrectionStatus
 from app.reports.documents.document_models import DocumentLanguage, DocumentPriority, DocumentStatus as DocStatus
 from app.reports.problem_registrations.pr_public_services import PublicProblemRegistrationService

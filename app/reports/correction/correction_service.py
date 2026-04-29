@@ -45,14 +45,14 @@ class CorrectionService:
         
         # 1. Проверка заявки
         pr_exists = await self.db.execute(
-            select(func.count()).select_from(ProblemRegistration).where(
-                ProblemRegistration.id == request.problem_registration_id
+            select(func.count()).select_from(Document).where(
+                Document.id == request.target_document_id
             )
         )
         if pr_exists.scalar_one() == 0:
-            logger.warning("ProblemRegistration not found", pr_id=request.problem_registration_id)
-            raise HTTPException(status_code=404, detail="ProblemRegistration not found")
-        logger.debug("ProblemRegistration validated", pr_id=request.problem_registration_id)
+            logger.warning("target_document_id not found", pr_id=request.target_document_id)
+            raise HTTPException(status_code=404, detail="target_document_id not found")
+        logger.debug("target_document_id validated", pr_id=request.target_document_id)
 
         # 2. Тип документа
         doc_type_id = (await self.db.execute(
@@ -78,7 +78,7 @@ class CorrectionService:
         # 4. Создание коррекции
         correction = Correction(
             document_id=doc_resp.id,
-            problem_registration_id=request.problem_registration_id,
+            target_document_id=request.target_document_id,
             title=request.title,
             description=request.description,
             corrective_action=request.corrective_action,
@@ -153,9 +153,9 @@ class CorrectionService:
             logger.debug("Correction not found by track_id", track_id=track_id)
         return result
 
-    async def get_by_problem_registration_id(self, pr_id: int) -> Optional[CorrectionResponse]:
-        logger.debug("Fetching correction by problem_registration_id", pr_id=pr_id)
-        result = await self._get_correction_row(Correction.problem_registration_id == pr_id)
+    async def get_by_target_document_id(self, pr_id: int) -> Optional[CorrectionResponse]:
+        logger.debug("Fetching correction by target_document_id", pr_id=pr_id)
+        result = await self._get_correction_row(Correction.target_document_id == pr_id)
         if not result:
             logger.debug("Correction not found by pr_id", pr_id=pr_id)
         return result
@@ -197,7 +197,7 @@ class CorrectionService:
             return await self.get_by_id(correction_id)
 
         # Убираем защищённые поля
-        for fk in ("document_id", "problem_registration_id"):
+        for fk in ("document_id", "target_document_id"):
             update_data.pop(fk, None)
 
         logger.debug("Applying update fields", fields=list(update_data.keys()))
@@ -363,7 +363,7 @@ class CorrectionService:
         return CorrectionResponse(
             id=corr.id,
             document_id=corr.document_id,
-            problem_registration_id=corr.problem_registration_id,
+            target_document_id=corr.target_document_id,
             title=corr.title,
             description=corr.description,
             corrective_action=corr.corrective_action,

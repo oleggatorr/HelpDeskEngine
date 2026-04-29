@@ -59,7 +59,7 @@ class AttachmentFileCreate(BaseModel):
 class CorrectionCreate(BaseModel):
     model_config = ConfigDict(use_enum_values=True)  # ✅ В сервис/БД уйдут .value
 
-    problem_registration_id: int = Field(..., gt=0, description="ID заявки", examples=[123])
+    target_document_id: int = Field(..., gt=0, description="ID заявки", examples=[123])
     title: str = Field(..., min_length=3, max_length=200, examples=["Некорректная валидация email"])
     description: Optional[str] = Field(None, examples=["Поля принимают адреса без @"])
     corrective_action: str = Field(..., min_length=3, examples=["Добавлена проверка формата"])
@@ -103,7 +103,7 @@ class CorrectionResponse(BaseModel):
 
     id: int
     document_id: int
-    problem_registration_id: int
+    target_document_id: int
 
     # JOIN с Document
     track_id: Optional[str] = Field(None, examples=["TRK-2026-00123"])
