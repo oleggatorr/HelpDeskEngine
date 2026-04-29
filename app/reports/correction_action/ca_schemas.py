@@ -1,18 +1,17 @@
 # app/reports/correction_action/schemas.py
 
-from pydantic import BaseModel, ConfigDict, Field, BeforeValidator, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from datetime import datetime
 from typing import Optional, List, Any, Literal
-from typing_extensions import Annotated
 
 from app.reports.documents.document_models import (
-    DocumentStage, DocumentLanguage, DocumentPriority, DocumentStatus
+    DocumentLanguage, DocumentPriority, DocumentStatus
 )
 from app.reports.correction_action.ca_models import CorrectionActionStatus
 
 
 # ========================
-# UNIVERSAL ENUM PARSER (SOFT MODE)
+# UNIVERSAL ENUM PARSER (SAFE)
 # ========================
 
 def parse_enum_safe(enum_cls, value: Any, default=None, strict=False):
@@ -40,31 +39,6 @@ def parse_enum_safe(enum_cls, value: Any, default=None, strict=False):
     return default
 
 
-# ========================
-# ENUM FIELDS
-# ========================
-
-ActionStatusField = Annotated[
-    Optional[CorrectionActionStatus],
-    BeforeValidator(lambda v: parse_enum_safe(CorrectionActionStatus, v, CorrectionActionStatus.PENDING))
-]
-
-DocStatusField = Annotated[
-    Optional[DocumentStatus],
-    BeforeValidator(lambda v: parse_enum_safe(DocumentStatus, v, DocumentStatus.OPEN))
-]
-
-DocLangField = Annotated[
-    Optional[DocumentLanguage],
-    BeforeValidator(lambda v: parse_enum_safe(DocumentLanguage, v, DocumentLanguage.RU))
-]
-
-DocPriorityField = Annotated[
-    Optional[DocumentPriority],
-    BeforeValidator(lambda v: parse_enum_safe(DocumentPriority, v, DocumentPriority.MEDIUM))
-]
-
-
 # =========================================================
 # CREATE
 # =========================================================
@@ -79,10 +53,26 @@ class CorrectionActionCreate(BaseModel):
     comment: Optional[str] = Field(None, max_length=2000)
 
     # document auto-create
-    doc_status: DocStatusField = Field(default=DocumentStatus.OPEN)
-    doc_language: DocLangField = Field(default=DocumentLanguage.RU)
-    doc_priority: DocPriorityField = Field(default=DocumentPriority.MEDIUM)
+    doc_status: Optional[DocumentStatus] = DocumentStatus.OPEN
+    doc_language: Optional[DocumentLanguage] = DocumentLanguage.RU
+    doc_priority: Optional[DocumentPriority] = DocumentPriority.MEDIUM
     doc_assigned_to: Optional[int] = Field(None, gt=0)
+
+    # --- validators ---
+    @field_validator("doc_status", mode="before")
+    @classmethod
+    def parse_doc_status(cls, v):
+        return parse_enum_safe(DocumentStatus, v, DocumentStatus.OPEN)
+
+    @field_validator("doc_language", mode="before")
+    @classmethod
+    def parse_doc_language(cls, v):
+        return parse_enum_safe(DocumentLanguage, v, DocumentLanguage.RU)
+
+    @field_validator("doc_priority", mode="before")
+    @classmethod
+    def parse_doc_priority(cls, v):
+        return parse_enum_safe(DocumentPriority, v, DocumentPriority.MEDIUM)
 
 
 # =========================================================
@@ -95,8 +85,13 @@ class CorrectionActionUpdate(BaseModel):
     assigned_user_id: Optional[int] = Field(None, gt=0)
     description: Optional[str] = Field(None, min_length=1, max_length=5000)
 
-    status: ActionStatusField = None
+    status: Optional[CorrectionActionStatus] = None
     comment: Optional[str] = Field(None, max_length=2000)
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def parse_status(cls, v):
+        return parse_enum_safe(CorrectionActionStatus, v, None)
 
 
 # =========================================================
@@ -159,7 +154,8 @@ class CorrectionActionFilter(BaseModel):
     document_id: Optional[int] = Field(None, gt=0)
     assigned_user_id: Optional[int] = Field(None, gt=0)
 
-    status: ActionStatusField = None
+    # ❗ ВАЖНО: НЕТ дефолта
+    status: Optional[CorrectionActionStatus] = None
 
     description: Optional[str] = Field(None, max_length=100)
     comment: Optional[str] = Field(None, max_length=100)
@@ -173,6 +169,7 @@ class CorrectionActionFilter(BaseModel):
     limit: int = Field(20, ge=1, le=100)
     offset: int = Field(0, ge=0)
 
+    # --- validators ---
     @field_validator("status", mode="before")
     @classmethod
     def parse_status(cls, v):

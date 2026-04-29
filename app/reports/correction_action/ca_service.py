@@ -14,6 +14,7 @@ from app.reports.models import ProblemRegistration, Document, DocumentType
 from app.reports.documents.schemas.document import DocumentCreate, DocumentStage
 from app.reports.documents.document_public_service import PublicDocumentService
 from app.auth.models import User
+from app.reports.documents.document_models import *
 
 from app.reports.correction_action.ca_schemas import (
     CorrectionActionCreate,
@@ -184,7 +185,7 @@ class CorrectionActionService:
             selectinload(CorrectionAction.assignee),
             selectinload(CorrectionAction.correction),
         )
-
+        print(filters.model_dump())
         conditions = self._build_filters(filters)
         if conditions:
             query = query.where(and_(*conditions))

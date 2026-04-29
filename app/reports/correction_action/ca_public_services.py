@@ -36,9 +36,10 @@ class PublicCorrectionActionService:
             await message_service.send_system_message(chat_id, message)
 
     async def _check_document_lock(self, document_id: int):
-        doc_status = await self._doc_service.get_status_and_lock(document_id)
-        if doc_status.get("is_locked"):
-            raise ValueError("Документ заблокирован")
+        # doc_status = await self._doc_service.get_status_and_lock(document_id)
+        # if doc_status.get("is_locked"):
+        #     raise ValueError("Документ заблокирован")
+        pass
 
     # =========================================================
     # CREATE

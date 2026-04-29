@@ -56,10 +56,10 @@ class CorrectionService:
 
         # 2. Тип документа
         doc_type_id = (await self.db.execute(
-            select(DocumentType.id).where(DocumentType.code == "CorrectiveAction")
+            select(DocumentType.id).where(DocumentType.code == "Correction")
         )).scalar_one_or_none()
         if not doc_type_id:
-            logger.error("DocumentType 'CorrectiveAction' not found in DB")
+            logger.error("DocumentType 'Correction' not found in DB")
             raise HTTPException(status_code=500, detail="Missing document type configuration")
         logger.debug("DocumentType resolved", doc_type_id=doc_type_id)
 
