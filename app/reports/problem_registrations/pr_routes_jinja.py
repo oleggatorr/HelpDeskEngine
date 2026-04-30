@@ -355,110 +355,6 @@ async def create_problem_registration_page(
     })
 
 
-@router.post("/reports/problem-registrations/create")
-async def create_problem_registration_post(
-    request: Request,
-    subject: str = Form(""),
-    detected_at: str = Form(""),
-    location_id: str = Form(""),
-    description: str = Form(""),
-    nomenclature: str = Form(""),
-    doc_status: str = Form("open"),
-    doc_language: str = Form("ru"),
-    doc_priority: str = Form("medium"),
-    files: List[UploadFile] = File(default=[]),
-    db=Depends(get_db),
-):
-    """Обработка формы создания регистрации проблемы."""
-    auth_result = await require_auth(request, db)
-    
-    if isinstance(auth_result, RedirectResponse):
-        return auth_result
-    current_user = auth_result
-    attachment_service = DocumentAttachmentService(
-        db=db,
-        storage=LocalFileStorage("uploads/document_attachments")
-        )
-
-
-
-    service = PublicProblemRegistrationService(db)
-
-    # Конвертируем location_id из строки формы
-    loc_id = int(location_id) if location_id and location_id.strip() else 0
-
-    # Парсим detected_at
-    parsed_detected_at = None
-    if detected_at and detected_at.strip():
-        try:
-            parsed_detected_at = datetime.fromisoformat(detected_at.strip())
-        except (ValueError, TypeError):
-            pass
-
-    # Обработка загруженных файлов
-    attachment_files = []
-    if files:
-        upload_dir = os.path.join("uploads", "document_attachments")
-        os.makedirs(upload_dir, exist_ok=True)
-
-        for file in files:
-            if file.filename:
-                ext = os.path.splitext(file.filename)[1]
-                unique_name = f"{uuid.uuid4().hex}{ext}"
-                file_path = os.path.join(upload_dir, unique_name)
-
-                content_bytes = await file.read()
-                with open(file_path, "wb") as f:
-                    f.write(content_bytes)
-
-                attachment_files.append({
-                    "file_path": file_path,
-                    "original_filename": file.filename,
-                    "file_type": file.content_type or "application/octet-stream",
-                })
-
-    # Безопасная очистка строк
-    def clean_str(v):
-        return v.strip() if v and v.strip() else None
-    try:
-        create_data = ProblemRegistrationCreate(
-            subject=clean_str(subject),
-            detected_at=parsed_detected_at,
-            location_id=loc_id or None,
-            description=clean_str(description),
-            nomenclature=clean_str(nomenclature),
-            doc_status=doc_status,
-            doc_language=doc_language,
-            doc_priority=doc_priority,
-            attachment_files=attachment_files if attachment_files else None,
-        )
-        result = await service.create(create_data, created_by=current_user.id)
-        return RedirectResponse(url=f"/reports/problem-registrations/{result.id}", status_code=303)
-    except Exception as e:
-        from app.knowledge_base.public_services import PublicLocationService
-        location_service = PublicLocationService(db)
-        locations = await location_service.get_all(skip=0, limit=1000)
-
-        return templates.TemplateResponse("create_problem_registration.html.j2", {
-            "request": request,
-            "current_user": current_user,
-            "locations": locations.items,
-            "statuses": [s.value for s in DocumentStatus],
-            "languages": ["ru", "en"],
-            "priorities": ["low", "medium", "high", "urgent"],
-            "error": str(e),
-            "form_data": {
-                "subject": subject,
-                "detected_at": detected_at,
-                "location_id": loc_id,
-                "description": description,
-                "nomenclature": nomenclature,
-                "doc_status": doc_status,
-                "doc_language": doc_language,
-                "doc_priority": doc_priority,
-            },
-            "now": datetime.now,
-        })
 
 
 @router.post("/reports/problem-registrations/create")
@@ -486,7 +382,7 @@ async def create_problem_registration_post(
 
     attachment_service = DocumentAttachmentService(
         db=db,
-        storage=LocalFileStorage("uploads", "reports/attachments")
+        storage=LocalFileStorage("uploads\document_attachments")
     )
 
     # --- helpers ---
@@ -518,7 +414,7 @@ async def create_problem_registration_post(
         )
 
         result = await service.create(create_data, created_by=current_user.id)
-
+        print(result.document_id)
         # ✅ 2. сохраняем файлы через сервис
         for file in files or []:
             if not file.filename:
@@ -527,10 +423,11 @@ async def create_problem_registration_post(
             content = await file.read()
 
             await attachment_service.upload(
-                document_id=result.id,
+                document_id=result.document_id,
                 content=content,
                 filename=file.filename,
                 user_id=current_user.id,
+                file_type=file.content_type or "application/octet-stream",
             )
 
         # ✅ 3. редирект
