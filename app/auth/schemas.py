@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Dict
 from datetime import datetime
 from pydantic import BaseModel, EmailStr
 from app.auth.models import UserRole
@@ -6,16 +6,18 @@ from app.knowledge_base.schemas import DepartmentResponse
 
 
 # ==========================================
-# AUTH SCHEMAS (без изменений)
+# AUTH SCHEMAS
 # ==========================================
 class LoginRequest(BaseModel):
     login: str
     password: str
 
+
 class LoginResponse(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
+
 
 class RegisterRequest(BaseModel):
     login: str
@@ -23,9 +25,11 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
 
+
 class PasswordChangeRequest(BaseModel):
     old_password: str
     new_password: str
+
 
 class TokenPayload(BaseModel):
     sub: int
@@ -33,26 +37,23 @@ class TokenPayload(BaseModel):
 
 
 # ==========================================
-# DEPARTMENT SCHEMAS (👈 добавлено)
-# ==========================================
-
-
-
-# ==========================================
-# USER SCHEMAS (обновлено)
+# USER SCHEMAS
 # ==========================================
 class UserBase(BaseModel):
     login: str
     full_name: str
     email: EmailStr
 
+
 class UserCreate(UserBase):
     password: str
+
 
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     email: Optional[EmailStr] = None
     is_active: Optional[bool] = None
+
 
 class UserProfileDTO(BaseModel):
     """Схема профиля пользователя"""
@@ -60,12 +61,16 @@ class UserProfileDTO(BaseModel):
     user_id: int
     role: Optional[UserRole] = None
     position: Optional[str] = None
-    permissions: Optional[str] = None
-    department_id: Optional[int] = None          # 👈 ID для форм/обновлений
-    department: Optional[DepartmentResponse] = None    # 👈 Вложенный объект для GET-ответов
+
+    # ✅ JSON поле
+    permissions: Optional[Dict[str, List[str]]] = None
+
+    department_id: Optional[int] = None
+    department: Optional[DepartmentResponse] = None
 
     class Config:
         from_attributes = True
+
 
 class UserResponse(BaseModel):
     id: int
@@ -74,17 +79,22 @@ class UserResponse(BaseModel):
     email: str
     is_active: bool
     created_at: datetime
-    profile: Optional[UserProfileDTO] = None 
+    profile: Optional[UserProfileDTO] = None
 
     class Config:
         from_attributes = True
+
 
 class ProfileUpdateRequest(BaseModel):
     """Схема обновления профиля"""
     role: Optional[UserRole] = None
     position: Optional[str] = None
-    permissions: Optional[str] = None
-    department_id: Optional[int] = None  # 👈 Добавлено
+
+    # ✅ JSON поле
+    permissions: Optional[Dict[str, List[str]]] = None
+
+    department_id: Optional[int] = None
+
 
 class UserFilter(BaseModel):
     """Фильтры для поиска пользователей"""
@@ -94,9 +104,21 @@ class UserFilter(BaseModel):
     is_active: Optional[bool] = None
     role: Optional[UserRole] = None
     position: Optional[str] = None
-    permissions: Optional[str] = None
-    department_id: Optional[int] = None  # 👈 Добавлено
+
+    # ⚠️ Фильтрация по JSON может потребовать доп. логики
+    permissions: Optional[Dict[str, List[str]]] = None
+
+    department_id: Optional[int] = None
+
 
 class UserListResponse(BaseModel):
     users: List[UserResponse]
     total: int
+
+class AppPermissionRequest(BaseModel):
+    app: str
+
+
+class PermissionModifyRequest(BaseModel):
+    app: str
+    permissions: List[str]

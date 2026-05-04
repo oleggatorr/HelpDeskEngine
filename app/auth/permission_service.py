@@ -1,7 +1,9 @@
-from fastapi import HTTPException, status
-from app.auth.models import User, UserRole
-from typing import Any
+# app/auth/permission_service.py
 
+from fastapi import HTTPException, status
+from app.auth.models import UserRole, UserProfile
+from typing import Any, Dict, List
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class PermissionDeniedException(HTTPException):
@@ -10,32 +12,33 @@ class PermissionDeniedException(HTTPException):
 
 
 class PermissionService:
+    def __init__(self, db: AsyncSession):
+        self.db = db
+
+    # ==========================================
+    # ROLE & PERMISSION CHECKS (STATIC)
+    # Не требуют состояния экземпляра или подключения к БД
+    # ==========================================
+
     @staticmethod
     def _normalize_role(raw_role: Any) -> UserRole:
-        """Безопасно приводит значение из БД/DTO к UserRole."""
         if isinstance(raw_role, UserRole):
             return raw_role
         try:
-            # str() работает и для "admin", и для UserRole.ADMIN
             return UserRole(str(raw_role)) if raw_role else UserRole.USER
         except (ValueError, TypeError):
-            # Если в БД попал неизвестный статус, считаем его обычным юзером
             return UserRole.USER
 
     @staticmethod
     def has_role(user: Any, role: UserRole) -> bool:
         if not user:
             return False
-            
         profile = getattr(user, 'profile', None)
         raw_role = getattr(profile, 'role', None) if profile else None
         user_role = PermissionService._normalize_role(raw_role)
-        
-        # Админ имеет все роли
+
         if user_role == UserRole.ADMIN:
             return True
-            
-        # Сравниваем напрямую (UserRole наследуется от str)
         return user_role == role
 
     @staticmethod
@@ -54,18 +57,67 @@ class PermissionService:
             raise PermissionDeniedException(f"Требуется одна из ролей: {roles_str}")
 
     @staticmethod
-    def has_permission(user: Any, permission: str) -> bool:
-        """Проверка прав. Предполагает, что поле permissions хранит список через запятую."""
+    def _get_permissions(user: Any) -> Dict[str, List[str]]:
         if not user:
-            return False
+            return {}
         profile = getattr(user, 'profile', None)
-        perms_str = getattr(profile, 'permissions', None) if profile else None
-        if not perms_str:
-            return False
-        # Поддержка форматов: "read,write,delete" или JSON-массива
-        return permission.strip().lower() in [p.strip().lower() for p in perms_str.replace(",", " ").split()]
+        permissions = getattr(profile, 'permissions', None) if profile else None
+        return permissions or {}
 
     @staticmethod
-    def require_permission(user: Any, permission: str) -> None:
-        if not PermissionService.has_permission(user, permission):
-            raise PermissionDeniedException(f"Отсутствует право: {permission}")
+    def has_permission(user: Any, app: str, permission: str) -> bool:
+        if not user:
+            return False
+        if PermissionService.has_role(user, UserRole.ADMIN):
+            return True
+        permissions = PermissionService._get_permissions(user)
+        app_perms = permissions.get(app, [])
+        return permission in app_perms
+
+    @staticmethod
+    def require_permission(user: Any, app: str, permission: str) -> None:
+        if not PermissionService.has_permission(user, app, permission):
+            raise PermissionDeniedException(f"Нет доступа: {app}:{permission}")
+
+    # ==========================================
+    # PERMISSION MANAGEMENT (INSTANCE METHODS)
+    # Могут использовать self.db для сохранения в БД
+    # ==========================================
+
+    def add_app(self, profile: UserProfile, app: str) -> Dict[str, List[str]]:
+        permissions = profile.permissions or {}
+        print(permissions, app)
+        if app in permissions:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Приложение уже существует")
+        permissions[app] = permissions.get(app, [])
+        print(permissions)
+        profile.permissions = permissions  # Важно для SQLAlchemy change tracking
+        return permissions
+
+    def remove_app(self, profile: UserProfile, app: str) -> Dict[str, List[str]]:
+        permissions = profile.permissions or {}
+        if app not in permissions:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Приложение не найдено")
+        del permissions[app]
+        profile.permissions = permissions
+        return permissions
+
+    def add_permissions(self, profile: UserProfile, app: str, perms: List[str]) -> Dict[str, List[str]]:
+        permissions = profile.permissions or {}
+        if app not in permissions:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Приложение не найдено")
+        existing = set(permissions.get(app, []))
+        existing.update(perms)
+        permissions[app] = list(existing)
+        profile.permissions = permissions
+        return permissions
+
+    def remove_permissions(self, profile: UserProfile, app: str, perms: List[str]) -> Dict[str, List[str]]:
+        permissions = profile.permissions or {}
+        if app not in permissions:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Приложение не найдено")
+        existing = set(permissions.get(app, []))
+        existing -= set(perms)
+        permissions[app] = list(existing)
+        profile.permissions = permissions
+        return permissions

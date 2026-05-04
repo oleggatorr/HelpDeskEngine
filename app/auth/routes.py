@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.auth.schemas import AppPermissionRequest, PermissionModifyRequest
+from app.auth.permission_service import PermissionService
+from app.auth.models import *
+
 
 from app.core.database import get_db
 from app.core.dependencies import get_current_user
@@ -30,22 +34,14 @@ def _get_public_user_service(db: AsyncSession = Depends(get_db)) -> PublicUserSe
 
 
 # ==========================================
-# AUTH ROUTES (public — без авторизации)
+# AUTH ROUTES (public)
 # ==========================================
 
-@router.post(
-    "/login",
-    response_model=LoginResponse,
-    summary="Вход в систему",
-)
+@router.post("/login", response_model=LoginResponse, summary="Вход в систему")
 async def login(
     form: OAuth2PasswordRequestForm = Depends(),
     service: PublicAuthService = Depends(_get_public_auth_service),
 ):
-    """
-    Вход по логину и паролю.
-    Для Swagger: используйте login как username, пароль как password.
-    """
     request = LoginRequest(login=form.username, password=form.password)
     return await service.login(request)
 
@@ -60,144 +56,111 @@ async def register(
     request: RegisterRequest,
     service: PublicAuthService = Depends(_get_public_auth_service),
 ):
-    """Регистрация нового пользователя."""
     return await service.register(request)
 
 
-@router.post(
-    "/refresh",
-    response_model=LoginResponse,
-    summary="Обновить токен",
-)
+@router.post("/refresh", response_model=LoginResponse, summary="Обновить токен")
 async def refresh(
     refresh_token: str,
     service: PublicAuthService = Depends(_get_public_auth_service),
 ):
-    """Обновление access_token по refresh_token."""
     return await service.refresh_token(refresh_token)
 
 
 # ==========================================
-# AUTH ROUTES (требуется авторизация)
+# AUTH ROUTES (protected)
 # ==========================================
 
-@router.post(
-    "/logout",
-    summary="Выход из системы",
-)
+@router.post("/logout", summary="Выход из системы")
 async def logout(
     token: str,
     current_user: User = Depends(get_current_user),
     service: PublicAuthService = Depends(_get_public_auth_service),
 ):
-    """Выход и инвалидация токена."""
     result = await service.logout(token)
     return {"success": result}
 
 
-@router.post(
-    "/change-password",
-    summary="Смена пароля",
-)
+@router.post("/change-password", summary="Смена пароля")
 async def change_password(
     request: PasswordChangeRequest,
     current_user: User = Depends(get_current_user),
     service: PublicAuthService = Depends(_get_public_auth_service),
 ):
-    """Смена пароля текущего пользователя."""
     result = await service.change_password(current_user.id, request)
     return {"success": result}
 
 
 # ==========================================
-# USER ROUTES (требуется авторизация)
+# USER ROUTES
 # ==========================================
 
-@router.get(
-    "/users/me",
-    response_model=UserResponse,
-    summary="Текущий пользователь",
-)
+@router.get("/users/me", response_model=UserResponse, summary="Текущий пользователь")
 async def get_current_user_info(
     current_user: User = Depends(get_current_user),
     service: PublicUserService = Depends(_get_public_user_service),
 ):
-    """Получить информацию о текущем пользователе."""
     user = await service.get_by_id(current_user.id)
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден")
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
     return user
 
 
-@router.get(
-    "/users/me/profile",
-    response_model=UserProfileDTO,
-    summary="Профиль текущего пользователя",
-)
+@router.get("/users/me/profile", response_model=UserProfileDTO, summary="Профиль текущего пользователя")
 async def get_current_user_profile(
     current_user: User = Depends(get_current_user),
     service: PublicUserService = Depends(_get_public_user_service),
 ):
-    """Получить профиль текущего пользователя."""
     profile = await service.get_profile(current_user.id)
     if not profile:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Профиль не найден")
+        raise HTTPException(status_code=404, detail="Профиль не найден")
     return profile
 
 
-@router.put(
-    "/users/me/profile",
-    response_model=UserProfileDTO,
-    summary="Обновить профиль текущего пользователя",
-)
+@router.put("/users/me/profile", response_model=UserProfileDTO, summary="Обновить профиль")
 async def update_current_user_profile(
     request: ProfileUpdateRequest,
     current_user: User = Depends(get_current_user),
     service: PublicUserService = Depends(_get_public_user_service),
 ):
-    """Обновить роль, должность, допуски текущего пользователя."""
+    """
+    🔥 Теперь permissions принимается как JSON:
+
+    {
+        "permissions": {
+            "app1": ["read", "write"],
+            "app2": ["read"]
+        }
+    }
+    """
     return await service.update_profile(current_user.id, request)
 
 
-@router.get(
-    "/users/{user_id}",
-    response_model=UserResponse,
-    summary="Получить пользователя по ID",
-)
+@router.get("/users/{user_id}", response_model=UserResponse, summary="Получить пользователя")
 async def get_user(
     user_id: int,
     current_user: User = Depends(get_current_user),
     service: PublicUserService = Depends(_get_public_user_service),
 ):
-    """Получить пользователя по ID."""
     user = await service.get_by_id(user_id)
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден")
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
     return user
 
 
-@router.get(
-    "/users/login/{login}",
-    response_model=UserResponse,
-    summary="Получить пользователя по логину",
-)
+@router.get("/users/login/{login}", response_model=UserResponse, summary="Поиск по логину")
 async def get_user_by_login(
     login: str,
     current_user: User = Depends(get_current_user),
     service: PublicUserService = Depends(_get_public_user_service),
 ):
-    """Поиск пользователя по логину."""
     user = await service.get_by_login(login)
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден")
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
     return user
 
 
-@router.get(
-    "/users",
-    response_model=UserListResponse,
-    summary="Список пользователей",
-)
+@router.get("/users", response_model=UserListResponse, summary="Список пользователей")
 async def list_users(
     skip: int = 0,
     limit: int = 100,
@@ -205,53 +168,45 @@ async def list_users(
     current_user: User = Depends(get_current_user),
     service: PublicUserService = Depends(_get_public_user_service),
 ):
-    """Пагинированный список пользователей с фильтрами."""
+    """
+    🔥 Фильтр permissions теперь JSON:
+
+    Пример:
+    ?permissions={"app1":["read"]}
+    """
     return await service.list_filtered(filters, skip=skip, limit=limit)
 
 
-@router.get(
-    "/users/{user_id}/profile",
-    response_model=UserProfileDTO,
-    summary="Получить профиль пользователя",
-)
+@router.get("/users/{user_id}/profile", response_model=UserProfileDTO, summary="Профиль пользователя")
 async def get_user_profile(
     user_id: int,
     current_user: User = Depends(get_current_user),
     service: PublicUserService = Depends(_get_public_user_service),
 ):
-    """Получить профиль пользователя."""
     profile = await service.get_profile(user_id)
     if not profile:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Профиль не найден")
+        raise HTTPException(status_code=404, detail="Профиль не найден")
     return profile
 
 
-@router.patch(
-    "/users/{user_id}/toggle-active",
-    summary="Активировать/деактивировать пользователя",
-)
+@router.patch("/users/{user_id}/toggle-active", summary="Переключить активность")
 async def toggle_user_active(
     user_id: int,
     current_user: User = Depends(get_current_user),
     service: PublicUserService = Depends(_get_public_user_service),
 ):
-    """Переключение статуса активности пользователя."""
     result = await service.toggle_active(user_id)
     if not result:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Пользователь не найден")
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
     return {"success": result}
 
 
-@router.get(
-    "/users/{user_id}/has-profile",
-    summary="Проверить наличие профиля",
-)
+@router.get("/users/{user_id}/has-profile", summary="Есть ли профиль")
 async def check_user_profile(
     user_id: int,
     current_user: User = Depends(get_current_user),
     service: PublicUserService = Depends(_get_public_user_service),
 ):
-    """Проверка наличия профиля у пользователя."""
     result = await service.has_profile(user_id)
     return {"has_profile": result}
 
@@ -259,3 +214,102 @@ async def check_user_profile(
 @router.get("/", summary="Auth модуль")
 async def auth_root():
     return {"module": "auth"}
+
+
+"""
+_________________________________---------------
+"""
+
+
+@router.post("/users/{user_id}/permissions/app", summary="Добавить приложение")
+async def add_app(
+    user_id: int,
+    request: AppPermissionRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    # 🔐 Проверка: только админ может управлять правами
+    PermissionService.require_role(current_user, UserRole.ADMIN)
+    
+    service = PermissionService(db)
+    profile = await service.db.get(UserProfile, user_id)  # или через UserService
+    
+    if not profile:
+        raise HTTPException(status_code=404, detail="Профиль пользователя не найден")
+    
+    profile.permissions = service.add_app(profile, request.app)
+    print(profile.permissions)
+
+    await db.commit()
+    await db.refresh(profile)
+    print(profile.permissions)
+    return {"permissions": profile.permissions}
+
+
+@router.delete("/users/{user_id}/permissions/app", summary="Удалить приложение")
+async def remove_app(
+    user_id: int,
+    request: AppPermissionRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    PermissionService.require_role(current_user, UserRole.ADMIN)
+    
+    service = PermissionService(db)
+    profile = await service.db.get(UserProfile, user_id)
+    
+    if not profile:
+        raise HTTPException(status_code=404, detail="Профиль пользователя не найден")
+    
+    permissions = service.remove_app(profile, request.app)
+    
+    await db.commit()
+    await db.refresh(profile)
+    
+    return {"permissions": permissions}
+
+
+@router.post("/users/{user_id}/permissions", summary="Добавить права")
+async def add_permissions(
+    user_id: int,
+    request: PermissionModifyRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    PermissionService.require_role(current_user, UserRole.ADMIN)
+    
+    service = PermissionService(db)
+    profile = await service.db.get(UserProfile, user_id)
+    
+    if not profile:
+        raise HTTPException(status_code=404, detail="Профиль пользователя не найден")
+    
+    permissions = service.add_permissions(profile, request.app, request.permissions)
+    
+    await db.commit()
+    await db.refresh(profile)
+    
+    return {"permissions": permissions}
+
+
+@router.delete("/users/{user_id}/permissions", summary="Удалить права")
+async def remove_permissions(
+    user_id: int,
+    request: PermissionModifyRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    PermissionService.require_role(current_user, UserRole.ADMIN)
+    
+    service = PermissionService(db)
+    profile = await service.db.get(UserProfile, user_id)
+    
+    if not profile:
+        raise HTTPException(status_code=404, detail="Профиль пользователя не найден")
+    
+    permissions = service.remove_permissions(profile, request.app, request.permissions)
+    
+    await db.commit()
+    await db.refresh(profile)
+    
+    return {"permissions": permissions}

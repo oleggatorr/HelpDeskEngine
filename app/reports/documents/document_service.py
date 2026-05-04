@@ -472,3 +472,14 @@ class DocumentService:
             }
             for log in logs
         ]
+    
+    async def auto_assigned(self, doc_id: int, strategy: str = "round_robin",):
+        """Метод автоназначения """
+        doc = await self._get_or_fail(doc_id)
+        
+        # получить список операторов
+        operators = []
+        
+        if not operators: 
+            return None
+        pass

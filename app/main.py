@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # Jinja routers
 from app.home.routes_jinja import router as home_router
@@ -40,7 +41,17 @@ app = FastAPI(
         "usePkceWithAuthorizationCodeGrant": False,
     },
 )
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_origins=["*"],
+)
 # Настраиваем логгер при старте приложения
 logger = setup_logger(log_level="DEBUG")  # или "INFO" для прода
 

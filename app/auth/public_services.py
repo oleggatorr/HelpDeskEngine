@@ -2,6 +2,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.services import AuthService, UserService
 
+from sqlalchemy import select, update as sa_update
+from fastapi import HTTPException, status
+
 
 class PublicAuthService:
     """Публичный слой аутентификации."""
@@ -54,3 +57,5 @@ class PublicUserService:
 
     async def has_profile(self, *args, **kwargs):
         return await self._service.has_profile(*args, **kwargs)
+
+    

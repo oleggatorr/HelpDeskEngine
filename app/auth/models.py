@@ -1,6 +1,7 @@
 from enum import Enum as PyEnum
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Enum, CheckConstraint
+from sqlalchemy.ext.mutable import MutableDict 
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Enum, CheckConstraint, JSON
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.core.database import Base
@@ -43,8 +44,12 @@ class UserProfile(Base):
         nullable=False,
         default=UserRole.USER.value,
     )
-    position = Column(String(100))  # должность
-    permissions = Column(String(255))  # допуски (текстовое поле)
+    permissions = Column(
+        MutableDict.as_mutable(JSON),  # <-- теперь изменения отслеживаются автоматически
+        default=dict,
+        server_default="{}"
+    )
+
 
     # Связь 1 к 1 с User
     user = relationship("User", back_populates="profile")

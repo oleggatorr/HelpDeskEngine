@@ -8,9 +8,6 @@ from sqlalchemy.orm import selectinload  # 🔥 Импортируем
 from app.core.database import get_db
 from app.core.config import settings
 from app.auth.models import User, UserProfile, UserRole
-
-
-# app/auth/dependencies.py
 from app.auth.permission_service import PermissionService
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -20,7 +17,7 @@ async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: AsyncSession = Depends(get_db),
 ) -> User:
-    """Получение текущего пользователя из JWT-токена."""
+    """Получение текущего пользователя из JWT-токена с загруженным профилем."""
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         user_id = int(payload.get("sub"))
@@ -30,8 +27,14 @@ async def get_current_user(
             detail="Невалидный токен",
         )
 
-    result = await db.execute(select(User).where(User.id == user_id))
+    # 🔥 Ключевое: загружаем profile сразу через selectinload
+    result = await db.execute(
+        select(User)
+        .options(selectinload(User.profile))  # <-- загружаем профиль одним запросом
+        .where(User.id == user_id)
+    )
     user = result.scalar_one_or_none()
+    
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -45,21 +48,22 @@ async def require_admin(
     db: AsyncSession = Depends(get_db),
 ) -> User:
     """Проверка, что пользователь — администратор."""
-    result = await db.execute(
-        select(UserProfile).where(UserProfile.user_id == current_user.id)
-    )
-    profile = result.scalar_one_or_none()
-
-    if not profile or profile.role != UserRole.ADMIN:
+    # 🔥 profile уже загружен благодаря selectinload в get_current_user
+    if not current_user.profile or current_user.profile.role != UserRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Требуется роль администратора",
         )
     return current_user
 
-def require_roles(*allowed_roles: UserRole):
-    async def checker(current_user: User = Depends(get_current_user)):
 
+def require_roles(*allowed_roles: UserRole):
+    """Dependency-фабрика для проверки ролей."""
+    async def checker(
+        current_user: User = Depends(get_current_user)
+    ) -> User:
+        # 🔥 PermissionService.has_any_role() теперь работает синхронно,
+        # потому что current_user.profile уже в памяти
         if not PermissionService.has_any_role(current_user, list(allowed_roles)):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
